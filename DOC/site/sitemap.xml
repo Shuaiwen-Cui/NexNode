@@ -2,126 +2,28 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
         <loc>https://localhost:8000/</loc>
-        <lastmod>2025-02-07</lastmod>
+        <lastmod>2025-02-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/"/>
     </url>
     <url>
-        <loc>https://localhost:8000/ARCHITECTURE/ARCHITECTURE/architecture/</loc>
-        <lastmod>2025-02-07</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/ARCHITECTURE/ARCHITECTURE/architecture/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/ARCHITECTURE/ARCHITECTURE/architecture/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/GET-STARTED/get-started/</loc>
-        <lastmod>2025-02-07</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/GET-STARTED/get-started/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/GET-STARTED/get-started/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/INSTRUCTIONS/instructions/</loc>
-        <lastmod>2025-02-07</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/INSTRUCTIONS/instructions/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/INSTRUCTIONS/instructions/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/INSTRUCTIONS/PROJECT-INITIALIZATION/project-initialization/</loc>
-        <lastmod>2025-02-07</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/INSTRUCTIONS/PROJECT-INITIALIZATION/project-initialization/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/INSTRUCTIONS/PROJECT-INITIALIZATION/project-initialization/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/TUTORIALS/tutorials/</loc>
-        <lastmod>2025-02-07</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/TUTORIALS/tutorials/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/TUTORIALS/tutorials/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/TUTORIALS/ALIENTEK/alientek/</loc>
-        <lastmod>2025-02-07</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/TUTORIALS/ALIENTEK/alientek/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/TUTORIALS/ALIENTEK/alientek/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/TUTORIALS/DURUOFU/duruofu/</loc>
-        <lastmod>2025-02-07</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/TUTORIALS/DURUOFU/duruofu/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/TUTORIALS/DURUOFU/duruofu/"/>
-    </url>
-    <url>
         <loc>https://localhost:8000/blog/</loc>
-        <lastmod>2025-02-07</lastmod>
+        <lastmod>2025-02-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/blog/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/blog/"/>
     </url>
     <url>
         <loc>https://localhost:8000/zh/</loc>
-        <lastmod>2025-02-07</lastmod>
+        <lastmod>2025-02-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/"/>
     </url>
     <url>
-        <loc>https://localhost:8000/zh/ARCHITECTURE/ARCHITECTURE/architecture/</loc>
-        <lastmod>2025-02-07</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/ARCHITECTURE/ARCHITECTURE/architecture/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/ARCHITECTURE/ARCHITECTURE/architecture/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/zh/GET-STARTED/get-started/</loc>
-        <lastmod>2025-02-07</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/GET-STARTED/get-started/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/GET-STARTED/get-started/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/zh/INSTRUCTIONS/instructions/</loc>
-        <lastmod>2025-02-07</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/INSTRUCTIONS/instructions/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/INSTRUCTIONS/instructions/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/zh/INSTRUCTIONS/PROJECT-INITIALIZATION/project-initialization/</loc>
-        <lastmod>2025-02-07</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/INSTRUCTIONS/PROJECT-INITIALIZATION/project-initialization/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/INSTRUCTIONS/PROJECT-INITIALIZATION/project-initialization/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/zh/TUTORIALS/tutorials/</loc>
-        <lastmod>2025-02-07</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/TUTORIALS/tutorials/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/TUTORIALS/tutorials/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/zh/TUTORIALS/ALIENTEK/alientek/</loc>
-        <lastmod>2025-02-07</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/TUTORIALS/ALIENTEK/alientek/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/TUTORIALS/ALIENTEK/alientek/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/zh/TUTORIALS/DURUOFU/duruofu/</loc>
-        <lastmod>2025-02-07</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/TUTORIALS/DURUOFU/duruofu/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/TUTORIALS/DURUOFU/duruofu/"/>
-    </url>
-    <url>
         <loc>https://localhost:8000/zh/blog/</loc>
-        <lastmod>2025-02-07</lastmod>
+        <lastmod>2025-02-16</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/blog/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/blog/"/>
