@@ -2,28 +2,112 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
         <loc>https://localhost:8000/</loc>
-        <lastmod>2025-02-16</lastmod>
+        <lastmod>2025-02-17</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/"/>
     </url>
     <url>
+        <loc>https://localhost:8000/KICK_START/kick_start/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/KICK_START/kick_start/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/KICK_START/kick_start/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/KICK_START/ESP32/ENVIRONMENT/environment/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/KICK_START/ESP32/ENVIRONMENT/environment/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/KICK_START/ESP32/ENVIRONMENT/environment/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/KICK_START/ESP32/HANDS-ON/hands-on/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/KICK_START/ESP32/HANDS-ON/hands-on/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/KICK_START/ESP32/HANDS-ON/hands-on/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/KICK_START/ESP32/HARDWARE/hardware/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/KICK_START/ESP32/HARDWARE/hardware/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/KICK_START/ESP32/HARDWARE/hardware/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/KICK_START/ESP32/TEMPLATE/template/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/KICK_START/ESP32/TEMPLATE/template/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/KICK_START/ESP32/TEMPLATE/template/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/ROADMAP/roadmap/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/ROADMAP/roadmap/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/ROADMAP/roadmap/"/>
+    </url>
+    <url>
         <loc>https://localhost:8000/blog/</loc>
-        <lastmod>2025-02-16</lastmod>
+        <lastmod>2025-02-17</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/blog/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/blog/"/>
     </url>
     <url>
         <loc>https://localhost:8000/zh/</loc>
-        <lastmod>2025-02-16</lastmod>
+        <lastmod>2025-02-17</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/"/>
     </url>
     <url>
+        <loc>https://localhost:8000/zh/KICK_START/kick_start/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/KICK_START/kick_start/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/KICK_START/kick_start/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/KICK_START/ESP32/ENVIRONMENT/environment/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/KICK_START/ESP32/ENVIRONMENT/environment/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/KICK_START/ESP32/ENVIRONMENT/environment/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/KICK_START/ESP32/HANDS-ON/hands-on/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/KICK_START/ESP32/HANDS-ON/hands-on/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/KICK_START/ESP32/HANDS-ON/hands-on/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/KICK_START/ESP32/HARDWARE/hardware/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/KICK_START/ESP32/HARDWARE/hardware/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/KICK_START/ESP32/HARDWARE/hardware/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/KICK_START/ESP32/TEMPLATE/template/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/KICK_START/ESP32/TEMPLATE/template/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/KICK_START/ESP32/TEMPLATE/template/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/ROADMAP/roadmap/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/ROADMAP/roadmap/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/ROADMAP/roadmap/"/>
+    </url>
+    <url>
         <loc>https://localhost:8000/zh/blog/</loc>
-        <lastmod>2025-02-16</lastmod>
+        <lastmod>2025-02-17</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/blog/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/blog/"/>
