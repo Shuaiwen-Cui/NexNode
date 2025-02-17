@@ -124,12 +124,13 @@ plugins:
             TEMPLATE: 模板
             STM32: STM32
             DNESP32S3M: DNESP32S3M
+            MAIN-CONTROL: 主控
+            PERCEPTION: 感知
+            COMMUNICATION: 通信
+            ACTUATION: 执行
             DNESP32S3: DNESP32S3
             FKH743M2-IIT6: FKH743M2-IIT6
             RELEASE: 发布
-
-
-
 
 # # Hooks
 # hooks:
@@ -269,6 +270,10 @@ nav:
           - "KICK_START/STM32/stm32.md"
   - DNESP32S3M:
       - ROADMAP: "DNESP32S3M/dnesp32s3m.md"
+      - MAIN-CONTROL: "DNESP32S3M/MAIN-CONTROL/main-control.md"
+      - PERCEPTION: "DNESP32S3M/PERCEPTION/perception.md"
+      - COMMUNICATION: "DNESP32S3M/COMMUNICATION/communication.md"
+      - ACTUATION: "DNESP32S3M/ACTUATION/actuation.md"
   - DNESP32S3:
       - ROADMAP: "DNESP32S3/dnesp32s3.md"
   - FKH743M2-IIT6:
