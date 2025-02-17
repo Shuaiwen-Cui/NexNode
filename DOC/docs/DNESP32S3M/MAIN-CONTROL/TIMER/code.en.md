@@ -4,10 +4,10 @@
 
 ```plaintext
 - driver
-    - timer
+    - tim
         - include
-            - timer.h
-        - timer.c
+            - tim.h
+        - tim.c
         - CMakeLists.txt
 ```
 
@@ -56,7 +56,7 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/gpio.h"
-#include "esp_timer.h"
+#include "esp_tim.h"
 #include "led.h"
 
 /* Function Prototypes */

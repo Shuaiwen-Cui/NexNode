@@ -127,6 +127,7 @@ plugins:
             PROJECT-CONSTRUCTION: 项目构建
             MAIN-CONTROL: 主控
             TIMER: 定时器
+            RTC: 实时时钟
             PERCEPTION: 感知
             COMMUNICATION: 通信
             ACTUATION: 执行
@@ -283,6 +284,10 @@ nav:
               - NOTE: "DNESP32S3M/MAIN-CONTROL/TIMER/note.md"
               - CODE: "DNESP32S3M/MAIN-CONTROL/TIMER/code.md"
               - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/TIMER/integration.md"
+          - RTC:
+              - NOTE: "DNESP32S3M/MAIN-CONTROL/RTC/note.md"
+              - CODE: "DNESP32S3M/MAIN-CONTROL/RTC/code.md"
+              - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/RTC/integration.md"
       - PERCEPTION: "DNESP32S3M/PERCEPTION/perception.md"
       - COMMUNICATION: "DNESP32S3M/COMMUNICATION/communication.md"
       - ACTUATION: 

@@ -1,12 +1,12 @@
 /**
  * @file main.c
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
- * @brief 
+ * @brief
  * @version 1.0
  * @date 2024-11-17
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 /* Dependencies */
@@ -25,7 +25,11 @@
 // BSP
 #include "led.h"
 #include "exit.h"
-#include "tim.h"
+#include "esp_rtc.h"
+
+/* Global variables */
+char *weekdays[] = {"Sunday", "Monday", "Tuesday", "Wednesday",
+                    "Thursday", "Friday", "Saterday"};
 
 /**
  * @brief Entry point of the program
@@ -35,43 +39,39 @@
 void app_main(void)
 {
     esp_err_t ret;
-    uint32_t flash_size;
-    esp_chip_info_t chip_info;
+    uint8_t tbuf[40];
+    uint8_t t = 0;
 
-    // uint8_t key;
-
-    // Initialize NVS
     ret = nvs_flash_init();
+
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
     {
-        ESP_ERROR_CHECK(nvs_flash_erase()); // Erase if needed
+        ESP_ERROR_CHECK(nvs_flash_erase());
         ret = nvs_flash_init();
     }
 
-    // Get FLASH size
-    esp_flash_get_size(NULL, &flash_size);
-    esp_chip_info(&chip_info);
-
-    // Display CPU core count
-    printf("CPU Cores: %d\n", chip_info.cores);
-
-    // Display FLASH size
-    printf("Flash size: %ld MB flash\n", flash_size / (1024 * 1024));
-
-    // Display PSRAM size
-    printf("PSRAM size: %d bytes\n", esp_psram_get_size());
-
-    // BSP
     led_init();
-
-    // key_init();
-    exit_init();
-    esptim_int_init(1000000); // 1s enable timer, of which the callback function toggles the LED
+    rtc_set_time(2025, 02, 18, 22, 23, 00);
 
     while (1)
     {
-        printf("Hello-ESP32\r\n");
-        vTaskDelay(1000);
-    }
+        t++;
 
+        if ((t % 10) == 0)
+        {
+            rtc_get_time();
+            sprintf((char *)tbuf, "Time:%02d:%02d:%02d", calendar.hour, calendar.min, calendar.sec);
+            printf("Time:%02d:%02d:%02d\r\n", calendar.hour, calendar.min, calendar.sec);
+            sprintf((char *)tbuf, "Date:%04d-%02d-%02d", calendar.year, calendar.month, calendar.date);
+            printf("Date:%02d-%02d-%02d\r\n", calendar.year, calendar.month, calendar.date);
+            sprintf((char *)tbuf, "Week:%s", weekdays[calendar.week - 1]);
+        }
+
+        if ((t % 20) == 0)
+        {
+            led_toggle();
+        }
+
+        vTaskDelay(10);
+    }
 }

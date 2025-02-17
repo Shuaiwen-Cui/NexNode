@@ -76,5 +76,7 @@ In short, you can refer to the dependency relationship in each chapter. Ensure a
 0. PROJECT CONSTRRUCTION
 1. ACTUATION>LED
 2. ACTUATION>EXIT (External Interrupt)
+3. MAIN-CONTROL>TIMER
+4. MAIN-CONTROL>RTC
 
 🏗️
