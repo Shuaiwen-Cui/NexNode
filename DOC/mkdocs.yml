@@ -126,6 +126,7 @@ plugins:
             DNESP32S3M: DNESP32S3M
             DNESP32S3: DNESP32S3
             FKH743M2-IIT6: FKH743M2-IIT6
+            RELEASE: 发布
 
 
 
@@ -272,6 +273,8 @@ nav:
       - "DNESP32S3/dnesp32s3.md"
   - FKH743M2-IIT6:
       - "FKH743M2-IIT6/fkh743m2-iit6.md"
+  - RELEASE:
+      - "RELEASE/release.md"
 
 
 
