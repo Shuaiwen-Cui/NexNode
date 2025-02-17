@@ -1,0 +1,1 @@
+INIT + LED + EXIT(KEY)
