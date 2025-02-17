@@ -127,6 +127,34 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/RTC/note/"/>
     </url>
     <url>
+        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/code/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/code/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/integration/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/integration/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/note/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/note/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/note/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/spi/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/spi/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/spi/"/>
+    </url>
+    <url>
         <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/TIMER/code/</loc>
         <lastmod>2025-02-17</lastmod>
         <changefreq>daily</changefreq>
@@ -356,6 +384,34 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/RTC/note/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/RTC/note/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/code/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/code/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/integration/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/integration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/note/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/note/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/note/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/spi/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/spi/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/spi/"/>
     </url>
     <url>
         <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/TIMER/code/</loc>
