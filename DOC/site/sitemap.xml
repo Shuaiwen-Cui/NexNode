@@ -106,13 +106,6 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/RNG/note/"/>
     </url>
     <url>
-        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/RNG/rng/</loc>
-        <lastmod>2025-02-17</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/RNG/rng/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/RNG/rng/"/>
-    </url>
-    <url>
         <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/RTC/code/</loc>
         <lastmod>2025-02-17</lastmod>
         <changefreq>daily</changefreq>
@@ -342,13 +335,6 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/RNG/note/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/RNG/note/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/RNG/rng/</loc>
-        <lastmod>2025-02-17</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/RNG/rng/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/RNG/rng/"/>
     </url>
     <url>
         <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/RTC/code/</loc>
