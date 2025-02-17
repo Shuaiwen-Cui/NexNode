@@ -14,3 +14,15 @@
 ![LED_CIRCUIT](LED_CIRCUIT.png){ width=800px }
 
 如图所示，控制LED的GPIO是IO1。
+
+## 效果图
+
+![LED-RED](LED-RED.png){ width=800px }
+
+## 关键函数
+
+| 函数原型 | 说明 | 示例 |
+| --- | --- | --- |
+| `void led_init(void)` | 初始化LED | `led_init();` |
+| `void led(int x)` | 控制LED | `led(1);` |
+| `void led_toggle(void)` | 切换LED | `led_toggle();` |

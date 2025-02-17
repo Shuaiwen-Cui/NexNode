@@ -29,6 +29,34 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/actuation/"/>
     </url>
     <url>
+        <loc>https://localhost:8000/DNESP32S3M/ACTUATION/LED/code/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/ACTUATION/LED/code/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/DNESP32S3M/ACTUATION/LED/integration/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/ACTUATION/LED/integration/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/DNESP32S3M/ACTUATION/LED/led/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/ACTUATION/LED/led/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/led/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/DNESP32S3M/ACTUATION/LED/note/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/ACTUATION/LED/note/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/note/"/>
+    </url>
+    <url>
         <loc>https://localhost:8000/DNESP32S3M/COMMUNICATION/communication/</loc>
         <lastmod>2025-02-17</lastmod>
         <changefreq>daily</changefreq>
@@ -48,6 +76,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/PERCEPTION/perception/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/PERCEPTION/perception/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/DNESP32S3M/PROJECT/project/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/PROJECT/project/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/PROJECT/project/"/>
     </url>
     <url>
         <loc>https://localhost:8000/FKH743M2-IIT6/fkh743m2-iit6/</loc>
@@ -148,6 +183,34 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/ACTUATION/actuation/"/>
     </url>
     <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/code/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/code/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/ACTUATION/LED/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/integration/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/integration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/ACTUATION/LED/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/led/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/led/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/ACTUATION/LED/led/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/note/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/note/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/ACTUATION/LED/note/"/>
+    </url>
+    <url>
         <loc>https://localhost:8000/zh/DNESP32S3M/COMMUNICATION/communication/</loc>
         <lastmod>2025-02-17</lastmod>
         <changefreq>daily</changefreq>
@@ -167,6 +230,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/PERCEPTION/perception/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/PERCEPTION/perception/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/PROJECT/project/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/PROJECT/project/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/PROJECT/project/"/>
     </url>
     <url>
         <loc>https://localhost:8000/zh/FKH743M2-IIT6/fkh743m2-iit6/</loc>

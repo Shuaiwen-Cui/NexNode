@@ -14,3 +14,15 @@
 ![LED_CIRCUIT](LED_CIRCUIT.png){ width=800px }
 
 As can be seen, the GPIO to control the LED is IO1.
+
+## The Effect
+
+![LED-RED](LED-RED.png){ width=800px }
+
+## Key Functions
+
+| Function Prototype | Explanation | Example |
+| --- | --- | --- |
+| `void led_init(void)` | Initialize the LED | `led_init();` |
+| `void led(int x)` | Control the LED | `led(1);` |
+| `void led_toggle(void)` | Toggle the LED | `led_toggle();` |
