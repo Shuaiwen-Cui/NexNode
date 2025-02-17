@@ -32,8 +32,6 @@ There is no dependency for this chapter.
 
 | Function Prototype | Explanation | Example |
 | --- | --- | --- |
-| void rtc_set_time(int year, int mon, int mday, int hour, int min, int sec);  | Set RTC time | rtc_set_time(2022, 12, 31, 23, 59, 59); |
-| void rtc_get_time(void); /* Get time */ | Get RTC time, store it in the global variable calendar | rtc_get_time(); |
 
 
 

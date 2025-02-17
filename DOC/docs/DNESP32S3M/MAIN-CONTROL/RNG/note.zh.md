@@ -30,7 +30,5 @@
 
 | 函数原型 | 说明 | 示例 |
 | --- | --- | --- |
-| void rtc_set_time(int year, int mon, int mday, int hour, int min, int sec);  | 设置 RTC 时间 | rtc_set_time(2022, 12, 31, 23, 59, 59); |
-| void rtc_get_time(void); /* Get time */ | 获取 RTC 时间, 存入全局变量calendar | rtc_get_time(); |
 
 
