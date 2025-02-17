@@ -126,6 +126,7 @@ plugins:
             DNESP32S3M: DNESP32S3M
             PROJECT-CONSTRUCTION: 项目构建
             MAIN-CONTROL: 主控
+            TIMER: 定时器
             PERCEPTION: 感知
             COMMUNICATION: 通信
             ACTUATION: 执行
@@ -277,7 +278,11 @@ nav:
   - DNESP32S3M:
       - ROADMAP: "DNESP32S3M/dnesp32s3m.md"
       - PROJECT-CONSTRUCTION: "DNESP32S3M/PROJECT/project.md"
-      - MAIN-CONTROL: "DNESP32S3M/MAIN-CONTROL/main-control.md"
+      - MAIN-CONTROL: 
+          - TIMER: 
+              - NOTE: "DNESP32S3M/MAIN-CONTROL/TIMER/note.md"
+              - CODE: "DNESP32S3M/MAIN-CONTROL/TIMER/code.md"
+              - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/TIMER/integration.md"
       - PERCEPTION: "DNESP32S3M/PERCEPTION/perception.md"
       - COMMUNICATION: "DNESP32S3M/COMMUNICATION/communication.md"
       - ACTUATION: 
