@@ -21,3 +21,30 @@ project(DNESP32S3-CORE)
 !!! danger
     Must note that `set(EXTRA_COMPONENT_DIRS "./driver" "./middleware" "./application")` should be placed before `project(DNESP32S3-CORE)`. Otherwise, the project will not be able to find the components in the directories. Refer to [LINK](https://blog.51cto.com/u_16099361/12129084).
 
+## MAIN FOLDEER CMakelists.txt
+
+```cmake
+# Define source directories
+set(src_dirs
+    .
+)
+
+# Define include directories
+set(include_dirs
+    .
+)
+
+# Define required components
+set(requires
+)
+
+# Register the component
+idf_component_register(
+    SRC_DIRS ${src_dirs}
+    INCLUDE_DIRS ${include_dirs}
+    REQUIRES ${requires}
+)
+
+# Add compilation options
+# component_compile_options(-ffast-math -O3 -Wno-error=format -Wno-format)
+```

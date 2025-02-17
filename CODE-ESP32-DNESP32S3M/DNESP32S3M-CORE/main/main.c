@@ -1,3 +1,14 @@
+/**
+ * @file main.c
+ * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
+ * @brief 
+ * @version 1.0
+ * @date 2024-11-17
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
 /* Dependencies */
 // Basic
 #include "esp_system.h"
@@ -5,6 +16,7 @@
 #include "esp_psram.h"
 #include "esp_flash.h"
 #include "nvs_flash.h"
+#include "esp_log.h"
 
 // RTOS
 #include "freertos/FreeRTOS.h"
@@ -12,6 +24,7 @@
 
 // BSP
 #include "led.h"
+#include "exit.h"
 
 /**
  * @brief Entry point of the program
@@ -46,12 +59,15 @@ void app_main(void)
     printf("PSRAM size: %d bytes\n", esp_psram_get_size());
 
     // BSP
-    led_init(); 
+    led_init();
+    
+    // key_init();
+    exit_init();
 
     while (1)
     {
-        printf("Hello-ESP32\r\n");
-        led_toggle();
-        vTaskDelay(1000);
+        vTaskDelay(10);
+
     }
+
 }

@@ -19,6 +19,10 @@ As can be seen, the GPIO to control the LED is IO1.
 
 ![LED-RED](LED-RED.png){ width=800px }
 
+## Dependencies
+
+![dep](dep-01-led.png)
+
 ## Key Functions
 
 | Function Prototype | Explanation | Example |

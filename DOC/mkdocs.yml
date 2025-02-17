@@ -283,6 +283,10 @@ nav:
               - NOTE: "DNESP32S3M/ACTUATION/LED/note.md"
               - CODE: "DNESP32S3M/ACTUATION/LED/code.md"
               - INTEGRATION: "DNESP32S3M/ACTUATION/LED/integration.md"
+          - KEY(EXIT):
+              - NOTE: "DNESP32S3M/ACTUATION/KEY(EXIT)/note.md"
+              - CODE: "DNESP32S3M/ACTUATION/KEY(EXIT)/code.md"
+              - INTEGRATION: "DNESP32S3M/ACTUATION/KEY(EXIT)/integration.md"
   - DNESP32S3:
       - ROADMAP: "DNESP32S3/dnesp32s3.md"
   - FKH743M2-IIT6:

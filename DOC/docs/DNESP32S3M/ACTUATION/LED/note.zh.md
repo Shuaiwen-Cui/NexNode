@@ -19,6 +19,13 @@
 
 ![LED-RED](LED-RED.png){ width=800px }
 
+## 依赖关系
+
+![dep](dep-01-led.png)
+
+!!! tip
+    "[ ]" 代表该依赖来自于ESP-IDF内置的库
+
 ## 关键函数
 
 | 函数原型 | 说明 | 示例 |
