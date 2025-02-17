@@ -59,7 +59,17 @@ By far, we have finished the project initialization. The configuration is now co
 ## TEMPLATE PROGRAM
 Now, let's create a simple program to test the board. 
 
-Go to the main.c file and replace the content with the following code:
+Go to the main.c file and the default content is:
+
+```c
+#include <stdio.h>
+
+void app_main(void)
+{
+
+}
+```
+replace the content with the following code:
 
 ```c
 #include "freertos/FreeRTOS.h"
@@ -115,4 +125,7 @@ Then, ensure the serial port number is corrrect, the target board is selected, t
 ## CONCLUSIONS
 
 !!! note
-    This project sets up the minimal system development board DNESP32S3M, and this project can serve as a useful template for future development. Compared to STM32, many low level details are hidden from the user, therefore the set up process is much simpler.
+    This project sets up the minimal system development board DNESP32S3M/DNESP32S3, and this project can serve as a useful template for future development. Compared to STM32, many low level details are hidden from the user, therefore the set up process is much simpler.
+
+!!! tip
+    This template is applicable to both DNESP32S3M and DNESP32S3.

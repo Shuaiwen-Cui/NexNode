@@ -61,7 +61,17 @@ sample_proj/ # 项目根目录
 
 现在，让我们创建一个简单的程序来测试板子。
 
-转到 main.c 文件并用以下代码替换内容：
+转到 main.c 文件, 默认内容是：
+
+```c
+#include <stdio.h>
+
+void app_main(void)
+{
+
+}
+```
+用以下代码替换：
 
 ```c
 #include "freertos/FreeRTOS.h"
@@ -117,4 +127,7 @@ void app_main(void)
 ## 结论
 
 !!! note
-    这个项目对DNESP32S3M最小系统板进行了初始化，并且可以为后续开发提供一个非常有用的模板。相比较与STM32，ESP32的开发隐藏了许多细节，同时也使得设置流程更加简单。
+    这个项目对DNESP32S3M/DNESP32S3进行了初始化，并且可以为后续开发提供一个非常有用的模板。相比较与STM32，ESP32的开发隐藏了许多细节，同时也使得设置流程更加简单。
+
+!!! tip
+    这个模板对DNESP32S3M和DNESP32S3两个板子都适用。
