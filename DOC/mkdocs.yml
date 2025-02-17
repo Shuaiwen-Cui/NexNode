@@ -37,7 +37,7 @@ theme:
     - navigation.instant.progress # loading progress bar
     - navigation.path # breadcrumb path on top of page
     # - navigation.prune # only build the visible part of the navigation tree
-    # - navigation.sections # navigation - top level will render as sections
+    - navigation.sections # navigation - top level will render as sections
     - navigation.tabs
     - navigation.tabs.sticky # tabs stick to the top of the page
     - navigation.top
@@ -124,10 +124,14 @@ plugins:
             TEMPLATE: 模板
             STM32: STM32
             DNESP32S3M: DNESP32S3M
+            PROJECT-CONSTRUCTION: 项目构建
             MAIN-CONTROL: 主控
             PERCEPTION: 感知
             COMMUNICATION: 通信
             ACTUATION: 执行
+            NOTE: 笔记
+            CODE: 代码
+            INTEGRATION: 集成
             DNESP32S3: DNESP32S3
             FKH743M2-IIT6: FKH743M2-IIT6
             RELEASE: 发布
@@ -270,10 +274,15 @@ nav:
           - "KICK_START/STM32/stm32.md"
   - DNESP32S3M:
       - ROADMAP: "DNESP32S3M/dnesp32s3m.md"
+      - PROJECT-CONSTRUCTION: "DNESP32S3M/PROJECT/project.md"
       - MAIN-CONTROL: "DNESP32S3M/MAIN-CONTROL/main-control.md"
       - PERCEPTION: "DNESP32S3M/PERCEPTION/perception.md"
       - COMMUNICATION: "DNESP32S3M/COMMUNICATION/communication.md"
-      - ACTUATION: "DNESP32S3M/ACTUATION/actuation.md"
+      - ACTUATION: 
+          - LED: 
+              - NOTE: "DNESP32S3M/ACTUATION/LED/note.md"
+              - CODE: "DNESP32S3M/ACTUATION/LED/code.md"
+              - INTEGRATION: "DNESP32S3M/ACTUATION/LED/integration.md"
   - DNESP32S3:
       - ROADMAP: "DNESP32S3/dnesp32s3.md"
   - FKH743M2-IIT6:
