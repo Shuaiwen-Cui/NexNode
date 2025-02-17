@@ -43,13 +43,6 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/integration/"/>
     </url>
     <url>
-        <loc>https://localhost:8000/DNESP32S3M/ACTUATION/LED/led/</loc>
-        <lastmod>2025-02-17</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/ACTUATION/LED/led/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/led/"/>
-    </url>
-    <url>
         <loc>https://localhost:8000/DNESP32S3M/ACTUATION/LED/note/</loc>
         <lastmod>2025-02-17</lastmod>
         <changefreq>daily</changefreq>
@@ -195,13 +188,6 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/integration/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/ACTUATION/LED/integration/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/led/</loc>
-        <lastmod>2025-02-17</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/led/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/ACTUATION/LED/led/"/>
     </url>
     <url>
         <loc>https://localhost:8000/zh/DNESP32S3M/ACTUATION/LED/note/</loc>
