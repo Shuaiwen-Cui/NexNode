@@ -26,7 +26,7 @@
 
 ## Dependencies
 
-![dep](dep-04-rtc.png)
+There is no dependency for this chapter.
 
 ## Key Functions
 
