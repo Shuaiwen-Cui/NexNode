@@ -71,6 +71,13 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/KICK_START/STM32/stm32/"/>
     </url>
     <url>
+        <loc>https://localhost:8000/RELEASE/release/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/RELEASE/release/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/RELEASE/release/"/>
+    </url>
+    <url>
         <loc>https://localhost:8000/ROADMAP/roadmap/</loc>
         <lastmod>2025-02-17</lastmod>
         <changefreq>daily</changefreq>
@@ -153,6 +160,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/KICK_START/STM32/stm32/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/KICK_START/STM32/stm32/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/RELEASE/release/</loc>
+        <lastmod>2025-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/RELEASE/release/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/RELEASE/release/"/>
     </url>
     <url>
         <loc>https://localhost:8000/zh/ROADMAP/roadmap/</loc>
