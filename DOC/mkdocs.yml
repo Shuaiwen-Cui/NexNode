@@ -115,6 +115,14 @@ plugins:
           build: true
           nav_translations: # note that all titles and subtitles in the navigation bar that need to be translated can be put here, but with no indentation
             ABOUT: 关于
+            ROADMAP: 路线图
+            KICK-START: 快速上手
+            ESP32: ESP32
+            HARDWARE: 硬件
+            ENVIRONMENT: 环境
+            HANDS-ON: 实践
+            TEMPLATE: 模板
+
 
 
 
@@ -244,6 +252,16 @@ markdown_extensions:
 nav:
   - ABOUT: 
       - "index.md"
+  - ROADMAP:
+      - "ROADMAP/roadmap.md"
+  - KICK-START:
+      - ESP32:
+          - HARDWARE: "./KICK_START/ESP32/HARDWARE/hardware.md"
+          - ENVIRONMENT: "./KICK_START/ESP32/ENVIRONMENT/environment.md"
+          - HANDS-ON: "./KICK_START/ESP32/HANDS-ON/hands-on.md"
+          - TEMPLATE: "./KICK_START/ESP32/TEMPLATE/template.md"
+
+
 
 
 
