@@ -293,6 +293,10 @@ nav:
               - NOTE: "DNESP32S3M/MAIN-CONTROL/RNG/note.md"
               - CODE: "DNESP32S3M/MAIN-CONTROL/RNG/code.md"
               - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/RNG/integration.md"
+          - SPI:
+              - NOTE: "DNESP32S3M/MAIN-CONTROL/SPI/note.md"
+              - CODE: "DNESP32S3M/MAIN-CONTROL/SPI/code.md"
+              - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/SPI/integration.md"
       - PERCEPTION: "DNESP32S3M/PERCEPTION/perception.md"
       - COMMUNICATION: "DNESP32S3M/COMMUNICATION/communication.md"
       - ACTUATION: 

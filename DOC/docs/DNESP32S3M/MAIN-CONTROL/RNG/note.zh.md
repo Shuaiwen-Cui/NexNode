@@ -29,5 +29,6 @@ RNG_DATA_REG 随机数数据 0x0110 只读
 
 | 函数原型 | 说明 | 示例 |
 | --- | --- | --- |
-
+| uint32_t rng_get_random_num(void) | 获取一个随机数 | rng_get_random_num() |
+| int rng_get_random_range(int min, int max) | 获取指定范围内的随机数 | rng_get_random_range(0, 9) |
 
