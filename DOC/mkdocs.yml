@@ -122,6 +122,10 @@ plugins:
             ENVIRONMENT: 环境
             HANDS-ON: 实践
             TEMPLATE: 模板
+            STM32: STM32
+            DNESP32S3M: DNESP32S3M
+            DNESP32S3: DNESP32S3
+            FKH743M2-IIT6: FKH743M2-IIT6
 
 
 
@@ -260,6 +264,14 @@ nav:
           - ENVIRONMENT: "./KICK_START/ESP32/ENVIRONMENT/environment.md"
           - HANDS-ON: "./KICK_START/ESP32/HANDS-ON/hands-on.md"
           - TEMPLATE: "./KICK_START/ESP32/TEMPLATE/template.md"
+      - STM32:
+          - "KICK_START/STM32/stm32.md"
+  - DNESP32S3M:
+      - "DNESP32S3M/dnesp32s3m.md"
+  - DNESP32S3:
+      - "DNESP32S3/dnesp32s3.md"
+  - FKH743M2-IIT6:
+      - "FKH743M2-IIT6/fkh743m2-iit6.md"
 
 
 
