@@ -1,7 +1,7 @@
 /**
  * @file main.c
- * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
- * @brief
+ * @author
+ * @brief Main application to demonstrate the use of ESP32 internal temperature sensor
  * @version 1.0
  * @date 2024-11-17
  *
@@ -25,24 +25,14 @@
 // BSP
 #include "led.h"
 #include "exit.h"
-#include "esp_rtc.h"
+#include "rng.h"
 
-/* Global variables */
-char *weekdays[] = {"Sunday", "Monday", "Tuesday", "Wednesday",
-                    "Thursday", "Friday", "Saterday"};
-
-/**
- * @brief Entry point of the program
- * @param None
- * @retval None
- */
 void app_main(void)
 {
+    uint32_t random1, random2;
     esp_err_t ret;
-    uint8_t tbuf[40];
-    uint8_t t = 0;
-
-    ret = nvs_flash_init();
+    
+    ret = nvs_flash_init();                                         /* Initialize NVS */
 
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
     {
@@ -50,28 +40,15 @@ void app_main(void)
         ret = nvs_flash_init();
     }
 
-    led_init();
-    rtc_set_time(2025, 02, 18, 22, 23, 00);
+    led_init();                                                     /* Initialize LED */
 
-    while (1)
+    while(1)
     {
-        t++;
-
-        if ((t % 10) == 0)
-        {
-            rtc_get_time();
-            sprintf((char *)tbuf, "Time:%02d:%02d:%02d", calendar.hour, calendar.min, calendar.sec);
-            printf("Time:%02d:%02d:%02d\r\n", calendar.hour, calendar.min, calendar.sec);
-            sprintf((char *)tbuf, "Date:%04d-%02d-%02d", calendar.year, calendar.month, calendar.date);
-            printf("Date:%02d-%02d-%02d\r\n", calendar.year, calendar.month, calendar.date);
-            sprintf((char *)tbuf, "Week:%s", weekdays[calendar.week - 1]);
-        }
-
-        if ((t % 20) == 0)
-        {
-            led_toggle();
-        }
-
-        vTaskDelay(10);
+        random1 = rng_get_random_num();
+        printf("Random number 1: %ld\n", random1);
+        random2 = rng_get_random_range(0, 9);
+        printf("Random number 2: %ld\n", random2);
+        led_toggle();
+        vTaskDelay(1000);
     }
 }

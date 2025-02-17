@@ -3,7 +3,7 @@
 ## Introduction
 
 !!! note
-    In this section, we introduce how to integrate the esp_rtcer driver into the project.
+    In this section, we introduce how to integrate the rnger driver into the project.
 
 ## Create a New Component
 
@@ -15,21 +15,21 @@ Open the project in VSCode, open the integrated terminal, and type in
 ```bash
 get_idf 
 ```
-to actiate the ESP-IDF environment. Then type in the following command to create a new component named esp_rtc`:
+to actiate the ESP-IDF environment. Then type in the following command to create a new component named rng`:
 
 ```bash
-idf.py -C driver create-component esp_rtc
+idf.py -C driver create-component rng
 ```
 
-The command above means to create a new component named `esp_rtc` in the `driver` directory. After executing the command, you will see a new directory named `esp_rtc` in the `driver` directory. And the command will automatically generate the `CMakeLists.txt` file for the new component, as well as the `esp_rtc.h` and `esp_rtc.c` files.
+The command above means to create a new component named `rng` in the `driver` directory. After executing the command, you will see a new directory named `rng` in the `driver` directory. And the command will automatically generate the `CMakeLists.txt` file for the new component, as well as the `rng.h` and `rng.c` files.
 
-Alternatively, you can mannually create the `esp_rtc` directory in the `driver` directory, and then create the `CMakeLists.txt`, `esp_rtc.h`, and `esp_rtc.c` files in the `esp_rtc` directory.
+Alternatively, you can mannually create the `rng` directory in the `driver` directory, and then create the `CMakeLists.txt`, `rng.h`, and `rng.c` files in the `rng` directory.
 
 ## Replace the Code
 
 > Component Level
 
-Replace the code in this section into the `CMakelists.txt`, `esp_rtc.h`, and `esp_rtc.c` files under the component.
+Replace the code in this section into the `CMakelists.txt`, `rng.h`, and `rng.c` files under the component.
 
 > Project Level
 
@@ -43,4 +43,4 @@ Open the project in VSCode, open the integrated terminal, and type in
 idf.py build flash monitor
 ```
 
-Now, you will see printout date and time from the serial monitor.
+Now, you will see random numbers from the serial monitor.

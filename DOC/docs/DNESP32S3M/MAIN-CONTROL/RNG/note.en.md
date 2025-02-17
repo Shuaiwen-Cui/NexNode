@@ -1,37 +1,43 @@
-# RTC (Real Time Clock)
 
-## Introduction
+# RNG (Random Number Generator)
 
-!!! note
-    This chapter introduces the use of the ESP32-S3 real-time clock (RTC). The real-time clock can provide an accurate time for the system. Even if the system is reset or the main power is cut off, the RTC can still run (with battery)）. Therefore, the RTC is often used in various low-power scenarios.
+!!! info
+    ESP32-S3 features a true random number generator (RNG) that generates 32-bit random numbers, which can serve as a basis for operations such as encryption. Unlike algorithm-based generators, the ESP32-S3 RNG produces true random numbers through physical processes, ensuring an equal probability of occurrence for all numbers within a specific range.
 
-!!! note "Real Time Clock"
-    RTC (Real Time Clock) refers to a clock installed on an electronic device or an IC (integrated circuit) that implements its functions.
+## RNG Features
 
-    When you call it a "clock" in digital circuits, you may think of a periodic signal, but in English, "clock" also means "clock". So why do we need a separate RTC?
+To better understand the RNG, let's first examine its noise sources. Familiarizing yourself with the noise sources provides a solid foundation for programming and offers a clearer perspective on its workings. The noise sources of the ESP32-S3 RNG are illustrated below:
 
-    The reason is that the CPU's timer clock function only runs when it is "started" or "powered on" and stops when it is powered off. Of course, if the clock cannot continuously track time, you must manually set the time.
+![RNG](RNG.png)
 
-    Usually, the RTC is equipped with a separate power source, such as a button battery (backup battery). Even if the power of the DNESP32S3M minimum system board is turned off, it can still operate and display the time in real-time. Then, when the DNESP32S3M minimum system board is turned on again, the built-in timer clock of the computer reads the current time from the RTC and displays the time based on its own mechanism while being powered. By the way, since the button battery is relatively cheap and has a long service life, the RTC can operate at a very low cost. Based on this function, it can also be used as memory.
 
-!!! note
-    In the ESP32-S3, there is no RTC peripheral like the STM32 chip, but there is a system time. By using the system time, the function of a real-time clock can also be realized.
-    The ESP32-S3 uses two hardware clock sources to establish and maintain system time. Depending on the application purpose and the accuracy requirements of the system time, you can use only one of the clock sources or both clock sources at the same time. These two hardware clock sources are the **RTC timer** and the **high-resolution timer**. By default, both timers are used. We will introduce them one by one below.
+The ESP32 RNG generates 32-bit true random numbers via the **RNG_DATA_REG** register. Its noise sources mainly include thermal noise and asynchronous clocks:
+- Thermal noise originates from the SAR ADC or high-speed ADC. When these modules are active, they generate bitstreams that are processed through an XOR operation to serve as random seeds for the RNG.
+- When the RC_FAST_CLK (20MHz) is enabled for the digital core, the RNG samples the clock, leveraging its metastable characteristics to increase entropy.
 
-## Use Cases
+For maximum entropy, it is recommended to enable at least one ADC (SAR ADC or high-speed ADC) as a random seed source in conjunction with the RC_FAST_CLK.
 
-1. Display the RTC time in real-time through the LCD / UART
-2. The LED blinks to indicate that the program is running
+## RNG Random Number Register
 
+**RNG_DATA_REG** Random Number Data 0x0110 Read-only
+
+![RNG_REG](RNG_REG.png)
+
+
+## Example
+
+This example demonstrates how to use the ESP32-S3 built-in hardware random number generator (RNG) to obtain random numbers, for a given period, and print them.
 
 ## Dependencies
 
-There is no dependency for this chapter.
+This section does not have any dependencies.
 
 ## Key Functions
 
 | Function Prototype | Explanation | Example |
 | --- | --- | --- |
+| uint32_t rng_get_random_num(void) | Get a random number | rng_get_random_num() |
+| int rng_get_random_range(int min, int max) | Get a random number within a specific range | rng_get_random_range(0, 9) |
 
 
 

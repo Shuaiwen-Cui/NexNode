@@ -1,20 +1,17 @@
-# 实时时钟 代码
-
-!!! warning
-    看起来 ESP-IDF 中有一个名为 `rtc.h` 的内置文件，因此我们需要将我们的文件命名为 `esp_rtc.h` 以避免冲突。因此 `rtc.c` 文件也是如此。
+# 随机数字发生器 代码
 
 ## 组件架构
 
 ```plaintext
 - driver
-    - esp_rtc
+    - rng
         - include
-            - esp_rtc.h
-        - esp_rtc.c
+            - rng.h
+        - rng.c
         - CMakeLists.txt
 ```
 
-## driver/esp_rtc/CMakeLists.txt
+## driver/rng/CMakeLists.txt
 
 ```cmake
 set(src_dirs
@@ -26,7 +23,6 @@ set(include_dirs
 )
 
 set(requires
-    newlib
 )
 
 idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRES ${requires})
@@ -35,172 +31,96 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
 !!! note
     注意，在驱动程序中，我们使用了 ESP-IDF 内置的 `driver` 库中的 gpio，因此，我们需要在 `CMakeLists.txt` 文件的 `REQUIRES` 字段中指定此依赖项。
 
-## esp_rtc.h
+## rng.h
     
 ```c
 /**
- * @file esp_rtc.h
- * ! Do not name as rtc.h, as it will conflict with the built-in rtc.h
- * @author
- * @brief Header file for the RTC driver
+ * @file rng.h
+ * @author 
+ * @brief This is the header file for the RNG component.
  * @version 1.0
- * @date 2024-11-18
- * @ref Alienteck RTC Driver
+ * @date 2024-11-19
+ * @ref Alientek RNG Driver
  * @copyright Copyright (c) 2024
- *
+ * 
  */
+ 
+#ifndef __RNG_H__
+#define __RNG_H__
 
-#ifndef __ESP_RTC_H__
-#define __ESP_RTC_H__
+#include <stdint.h>
+#include <stddef.h>
+#include <string.h>
+#include <sys/param.h>
+#include "esp_attr.h"
+#include "esp_cpu.h"
+#include "soc/wdev_reg.h"
+#include "esp_random.h"
+#include "esp_private/esp_clk.h"
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include <sys/time.h>
 
-/* Time structure, including year, month, day, week, hour, minute, and second */
-typedef struct
-{
-    uint8_t hour; /* Hour */
-    uint8_t min;  /* Minute */
-    uint8_t sec;  /* Second */
-    /* Gregorian year, month, day, and week */
-    uint16_t year; /* Year */
-    uint8_t month; /* Month */
-    uint8_t date;  /* Day */
-    uint8_t week;  /* Weekday */
-} _calendar_obj;
-
-extern _calendar_obj calendar; /* Time structure */
-
-/* Function declarations */
-/**
- * @brief       Set the RTC time
- * @param       year    : Year
- * @param       mon     : Month
- * @param       mday    : Day
- * @param       hour    : Hour
- * @param       min     : Minute
- * @param       sec     : Second
- * @retval      None
- */
-void rtc_set_time(int year, int mon, int mday, int hour, int min, int sec); /* Set time */
+/* Function Declarations */
 
 /**
- * @brief       Get the current time
+ * @brief       Get a random number
  * @param       None
- * @retval      None
+ * @retval      Random number (32-bit)
  */
-void rtc_get_time(void); /* Get time */
+uint32_t rng_get_random_num(void);          /* Get a random number */
 
 /**
- * @brief       Convert year, month, and day to the day of the week
- * @note        Calculates the weekday based on the Gregorian calendar.
- *              Utilizes the Kim Larson formula for calculation.
- *              For more details, refer to:
- *              https://www.cnblogs.com/fengbohello/p/3264300.html
- * @param       year : Year
- * @param       month: Month
- * @param       day  : Day
- * @retval      0: Sunday; 1 ~ 6: Monday ~ Saturday
+ * @brief       Get a random number within a specific range
+ * @param       min,max: Minimum and maximum values
+ * @retval      Random number (rval), satisfying: min <= rval <= max
  */
-uint8_t rtc_get_week(uint16_t year, uint8_t month, uint8_t day); /* Get the weekday */
+int rng_get_random_range(int min, int max); /* Get a random number within a specific range */
 
-#endif /* __ESP_RTC_H__ */
+#endif /* __RNG_H__ */
+
 ```
 
-## esp_rtc.c
+## rng.c
 
 ```c
 /**
- * @file esp_rtc.c
- * ! Do not name as rtc.c, as it will conflict with the built-in rtc.c
- * @author
- * @brief This file contains the implementation of the RTC driver
+ * @file rng.c
+ * @author 
+ * @brief This is the source file for the RNG component.
  * @version 1.0
- * @date 2024-11-18
- * @ref Alienteck RTC Driver
- *
+ * @date 2024-11-19
+ * @ref Alientek RNG Driver
+ * @copyright Copyright (c) 2024
+ * 
  */
 
-#include "esp_rtc.h"
-
-_calendar_obj calendar; /* Time structure */
+#include "rng.h"
 
 /**
- * @brief       Set the RTC time
- * @param       year    : Year
- * @param       mon     : Month
- * @param       mday    : Day
- * @param       hour    : Hour
- * @param       min     : Minute
- * @param       sec     : Second
- * @retval      None
- */
-void rtc_set_time(int year, int mon, int mday, int hour, int min, int sec)
-{
-    struct tm datetime;
-    /* Set time */
-    datetime.tm_year = year - 1900;
-    datetime.tm_mon = mon - 1;
-    datetime.tm_mday = mday;
-    datetime.tm_hour = hour;
-    datetime.tm_min = min;
-    datetime.tm_sec = sec;
-    datetime.tm_isdst = -1;
-    /* Get total seconds since 1970-01-01 */
-    time_t second = mktime(&datetime);
-    struct timeval val = {.tv_sec = second, .tv_usec = 0};
-    /* Set current time */
-    settimeofday(&val, NULL);
-}
-
-/**
- * @brief       Get the current time
+ * @brief       Get a random number
  * @param       None
- * @retval      None
+ * @retval      Random number (32-bit)
  */
-void rtc_get_time(void)
+uint32_t rng_get_random_num(void)
 {
-    struct tm *datetime;
-    time_t second;
-    /* Get the time elapsed since (1970-01-01 00:00:00 UTC) in seconds */
-    time(&second);
-    datetime = localtime(&second);
-
-    calendar.hour = datetime->tm_hour; /* Hour */
-    calendar.min = datetime->tm_min;   /* Minute */
-    calendar.sec = datetime->tm_sec;   /* Second */
-    /* Gregorian year, month, day, and week */
-    calendar.year = datetime->tm_year + 1900; /* Year */
-    calendar.month = datetime->tm_mon + 1;    /* Month */
-    calendar.date = datetime->tm_mday;        /* Day */
-    /* Weekday */
-    calendar.week = rtc_get_week(calendar.year, calendar.month, calendar.date);
+    uint32_t randomnum;
+    
+    randomnum = esp_random();
+    
+    return randomnum;
 }
 
 /**
- * @brief       Convert year, month, and day to the day of the week
- * @note        Calculates the weekday based on the Gregorian calendar.
- *              Utilizes the Kim Larson formula for calculation.
- *              For more details, refer to:
- *              https://www.cnblogs.com/fengbohello/p/3264300.html
- * @param       year : Year
- * @param       month: Month
- * @param       day  : Day
- * @retval      0: Sunday; 1 ~ 6: Monday ~ Saturday
+ * @brief       Get a random number within a specific range
+ * @param       min,max: Minimum and maximum values
+ * @retval      Random number (rval), satisfying: min <= rval <= max
  */
-uint8_t rtc_get_week(uint16_t year, uint8_t month, uint8_t day)
-{
-    uint8_t week = 0;
-
-    if (month < 3)
-    {
-        month += 12;
-        --year;
-    }
-
-    week = (day + 1 + 2 * month + 3 * (month + 1) / 5 + year + (year >> 2) - year / 100 + year / 400) % 7;
-    return week;
+int rng_get_random_range(int min, int max)
+{ 
+    uint32_t randomnum;
+    
+    randomnum = esp_random();
+    
+    return randomnum % (max - min + 1) + min;
 }
 ```
 
@@ -209,8 +129,8 @@ uint8_t rtc_get_week(uint16_t year, uint8_t month, uint8_t day)
 ```c
 /**
  * @file main.c
- * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
- * @brief
+ * @author
+ * @brief Main application to demonstrate the use of ESP32 internal temperature sensor
  * @version 1.0
  * @date 2024-11-17
  *
@@ -234,24 +154,14 @@ uint8_t rtc_get_week(uint16_t year, uint8_t month, uint8_t day)
 // BSP
 #include "led.h"
 #include "exit.h"
-#include "esp_rtc.h"
+#include "rng.h"
 
-/* Global variables */
-char *weekdays[] = {"Sunday", "Monday", "Tuesday", "Wednesday",
-                    "Thursday", "Friday", "Saterday"};
-
-/**
- * @brief Entry point of the program
- * @param None
- * @retval None
- */
 void app_main(void)
 {
+    uint32_t random1, random2;
     esp_err_t ret;
-    uint8_t tbuf[40];
-    uint8_t t = 0;
-
-    ret = nvs_flash_init();
+    
+    ret = nvs_flash_init();                                         /* Initialize NVS */
 
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
     {
@@ -259,29 +169,16 @@ void app_main(void)
         ret = nvs_flash_init();
     }
 
-    led_init();
-    rtc_set_time(2025, 02, 18, 22, 23, 00);
+    led_init();                                                     /* Initialize LED */
 
-    while (1)
+    while(1)
     {
-        t++;
-
-        if ((t % 10) == 0)
-        {
-            rtc_get_time();
-            sprintf((char *)tbuf, "Time:%02d:%02d:%02d", calendar.hour, calendar.min, calendar.sec);
-            printf("Time:%02d:%02d:%02d\r\n", calendar.hour, calendar.min, calendar.sec);
-            sprintf((char *)tbuf, "Date:%04d-%02d-%02d", calendar.year, calendar.month, calendar.date);
-            printf("Date:%02d-%02d-%02d\r\n", calendar.year, calendar.month, calendar.date);
-            sprintf((char *)tbuf, "Week:%s", weekdays[calendar.week - 1]);
-        }
-
-        if ((t % 20) == 0)
-        {
-            led_toggle();
-        }
-
-        vTaskDelay(10);
+        random1 = rng_get_random_num();
+        printf("Random number 1: %ld\n", random1);
+        random2 = rng_get_random_range(0, 9);
+        printf("Random number 2: %ld\n", random2);
+        led_toggle();
+        vTaskDelay(1000);
     }
 }
 ```
