@@ -34,4 +34,14 @@ idf.py -C driver create-component led
 
 > 项目层面
 
-将`main.c`中的代码替换为相应的代码。
+将`main.c`中的代码替换为相应的代码。项目层面的`CMakeLists.txt`文件无需更改。
+
+## 编译烧录
+
+在 VSCode 中打开项目，打开集成终端，输入
+
+```bash
+idf.py build flash monitor
+```
+
+或者点击 VSCode 左下角的小火焰图标，编译烧录并打开监视器。此时应该可以看到开发板上的 LED 灯亮起，且在监视器中看到相应的输出。

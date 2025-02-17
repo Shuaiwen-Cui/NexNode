@@ -25,3 +25,22 @@ The command above means to create a new component named `led` in the `driver` di
 
 Alternatively, you can mannually create the `led` directory in the `driver` directory, and then create the `CMakeLists.txt`, `led.h`, and `led.c` files in the `led` directory.
 
+## Replace the Code
+
+> Component Level
+
+Replace the code in this section into the `CMakelists.txt`, `led.h`, and `led.c` files under the component.
+
+> Project Level
+
+Replace the code in `main.c` with the corresponding code. No need to change the `CMakeLists.txt` file at the project level.
+
+## Compile and Flash the Project
+
+Open the project in VSCode, open the integrated terminal, and type in
+
+```bash
+idf.py build flash monitor
+```
+
+Or click the small flame icon in the lower-left corner of VSCode to compile, flash, and open the monitor. At this point, you should see the LED light up on the development board and see the corresponding output in the monitor.
