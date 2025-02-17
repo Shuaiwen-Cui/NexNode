@@ -43,13 +43,6 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/KEY%28EXIT%29/integration/"/>
     </url>
     <url>
-        <loc>https://localhost:8000/DNESP32S3M/ACTUATION/KEY%28EXIT%29/key-itr/</loc>
-        <lastmod>2025-02-17</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/ACTUATION/KEY%28EXIT%29/key-itr/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/KEY%28EXIT%29/key-itr/"/>
-    </url>
-    <url>
         <loc>https://localhost:8000/DNESP32S3M/ACTUATION/KEY%28EXIT%29/note/</loc>
         <lastmod>2025-02-17</lastmod>
         <changefreq>daily</changefreq>
@@ -216,13 +209,6 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/KEY%28EXIT%29/integration/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/ACTUATION/KEY%28EXIT%29/integration/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/zh/DNESP32S3M/ACTUATION/KEY%28EXIT%29/key-itr/</loc>
-        <lastmod>2025-02-17</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/ACTUATION/KEY%28EXIT%29/key-itr/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/ACTUATION/KEY%28EXIT%29/key-itr/"/>
     </url>
     <url>
         <loc>https://localhost:8000/zh/DNESP32S3M/ACTUATION/KEY%28EXIT%29/note/</loc>
