@@ -71,7 +71,28 @@ ST7735S支持连续读写RAM中存放的LCD上颜色对应的数据，并且连�
 
 ## 依赖关系
 
+![dep](dep-06-spi-lcd.png)
+
 ## 关键函数
 
+```plaintext
+/* Function declarations */
+void lcd_init(void);                                                                                                  /* Initialize the LCD */
+void lcd_clear(uint16_t color);                                                                                       /* Clear the screen */
+void lcd_scan_dir(uint8_t dir);                                                                                       /* Set the LCD auto scan direction */
+void lcd_write_data(const uint8_t *data, int len);                                                                    /* Write data to the LCD */
+void lcd_write_data16(uint16_t data);                                                                                 /* Write 16-bit data to the LCD */
+void lcd_set_cursor(uint16_t xpos, uint16_t ypos);                                                                    /* Set the cursor position */
+void lcd_set_window(uint16_t xstar, uint16_t ystar, uint16_t xend, uint16_t yend);                                    /* Set the display window size */
+void lcd_fill(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t color);                                    /* Fill a specific area with a single color */
+void lcd_show_num(uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint8_t size, uint16_t color);                   /* Display a number with len digits */
+void lcd_show_xnum(uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint8_t size, uint8_t mode, uint16_t color);    /* Display an extended number with len digits */
+void lcd_show_string(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t size, char *p, uint16_t color); /* Display a string */
+void lcd_draw_rectangle(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);                          /* Draw a rectangle */
+void lcd_draw_hline(uint16_t x, uint16_t y, uint16_t len, uint16_t color);                                            /* Draw a horizontal line */
+void lcd_draw_line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);                               /* Draw a straight or slanted line */
+void lcd_draw_pixel(uint16_t x, uint16_t y, uint16_t color);                                                          /* Draw a pixel */
+void lcd_show_char(uint16_t x, uint16_t y, uint8_t chr, uint8_t size, uint8_t mode, uint16_t color);                  /* Display a character at a specified position */
+```
 
 

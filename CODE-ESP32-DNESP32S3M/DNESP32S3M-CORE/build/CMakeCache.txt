@@ -96,8 +96,8 @@ CMAKE_C_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 //Path to a program.
 CMAKE_DLLTOOL:FILEPATH=CMAKE_DLLTOOL-NOTFOUND
 
-//Flags used by the linker during all build types.
-CMAKE_EXE_LINKER_FLAGS:STRING=
+//Linker Base Flags
+CMAKE_EXE_LINKER_FLAGS:STRING='-nostartfiles '
 
 //Flags used by the linker during DEBUG builds.
 CMAKE_EXE_LINKER_FLAGS_DEBUG:STRING=
@@ -281,7 +281,7 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 CMAKE_STRIP:FILEPATH=/home/cshwstem/esp/esp-idf/tools/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/xtensa-esp32s3-elf-strip
 
 //The CMake toolchain file
-CMAKE_TOOLCHAIN_FILE:FILEPATH=/home/cshwstem/esp/v5.4/esp-idf/tools/cmake/toolchain-esp32s3.cmake
+CMAKE_TOOLCHAIN_FILE:FILEPATH=/home/cshwstem/esp/esp-idf/tools/cmake/toolchain-esp32s3.cmake
 
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
@@ -347,7 +347,7 @@ Mbed TLS_BINARY_DIR:STATIC=/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNE
 Mbed TLS_IS_TOP_LEVEL:STATIC=OFF
 
 //Value Computed by CMake
-Mbed TLS_SOURCE_DIR:STATIC=/home/cshwstem/esp/v5.4/esp-idf/components/mbedtls/mbedtls
+Mbed TLS_SOURCE_DIR:STATIC=/home/cshwstem/esp/esp-idf/components/mbedtls/mbedtls
 
 //No help, variable specified on the command line.
 PYTHON_DEPS_CHECKED:UNINITIALIZED=1
@@ -371,7 +371,7 @@ esp-idf_BINARY_DIR:STATIC=/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNES
 esp-idf_IS_TOP_LEVEL:STATIC=OFF
 
 //Value Computed by CMake
-esp-idf_SOURCE_DIR:STATIC=/home/cshwstem/esp/v5.4/esp-idf
+esp-idf_SOURCE_DIR:STATIC=/home/cshwstem/esp/esp-idf
 
 //Dependencies for the target
 everest_LIB_DEPENDS:STATIC=general;__idf_cxx;general;__idf_newlib;general;__idf_freertos;general;__idf_esp_hw_support;general;__idf_heap;general;__idf_log;general;__idf_soc;general;__idf_hal;general;__idf_esp_rom;general;__idf_esp_common;general;__idf_esp_system;general;__idf_xtensa;
@@ -536,7 +536,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=124
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=127
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -584,15 +584,15 @@ C_COMPILER_SUPPORTS_WFORMAT_SIGNEDNESS:INTERNAL=1
 //Details about finding Git
 FIND_PACKAGE_MESSAGE_DETAILS_Git:INTERNAL=[/usr/bin/git][v2.34.1()]
 //Details about finding Python3
-FIND_PACKAGE_MESSAGE_DETAILS_Python3:INTERNAL=[/home/cshwstem/esp/esp-idf/tools/python_env/idf5.4_py3.10_env/bin/python][cfound components: Interpreter ][v3.10.12()]
+FIND_PACKAGE_MESSAGE_DETAILS_Python3:INTERNAL=[/home/cshwstem/esp/esp-idf/tools/python_env/idf5.5_py3.12_env/bin/python][cfound components: Interpreter ][v3.12.4()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //ADVANCED property for variable: GIT_EXECUTABLE
 GIT_EXECUTABLE-ADVANCED:INTERNAL=1
 //CMAKE_INSTALL_PREFIX during last run
 _GNUInstallDirs_LAST_CMAKE_INSTALL_PREFIX:INTERNAL=/usr/local
-_Python3_EXECUTABLE:INTERNAL=/home/cshwstem/esp/esp-idf/tools/python_env/idf5.4_py3.10_env/bin/python
+_Python3_EXECUTABLE:INTERNAL=/home/cshwstem/esp/esp-idf/tools/python_env/idf5.5_py3.12_env/bin/python
 //Python3 Properties
-_Python3_INTERPRETER_PROPERTIES:INTERNAL=Python;3;10;12;32;;;/usr/lib/python3.10;/usr/lib/python3.10;/home/cshwstem/esp/esp-idf/tools/python_env/idf5.4_py3.10_env/lib/python3.10/site-packages;/home/cshwstem/esp/esp-idf/tools/python_env/idf5.4_py3.10_env/lib/python3.10/site-packages
-_Python3_INTERPRETER_SIGNATURE:INTERNAL=6b8abf2a350c4994091bcf2ee5c4b937
+_Python3_INTERPRETER_PROPERTIES:INTERNAL=Python;3;12;4;32;;;/home/cshwstem/anaconda3/lib/python3.12;/home/cshwstem/anaconda3/lib/python3.12;/home/cshwstem/esp/esp-idf/tools/python_env/idf5.5_py3.12_env/lib/python3.12/site-packages;/home/cshwstem/esp/esp-idf/tools/python_env/idf5.5_py3.12_env/lib/python3.12/site-packages
+_Python3_INTERPRETER_SIGNATURE:INTERNAL=536ba08e22c13e928108169bf9c40979
 

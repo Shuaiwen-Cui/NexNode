@@ -1,4 +1,4 @@
-# Install script for directory: /home/cshwstem/esp/v5.4/esp-idf/components/esp_app_format
+# Install script for directory: /home/cshwstem/esp/esp-idf/components/esp_app_format
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
