@@ -183,6 +183,27 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/RTC/note/"/>
     </url>
     <url>
+        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SD-CARD/code/</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SD-CARD/code/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SD-CARD/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SD-CARD/integration/</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SD-CARD/integration/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SD-CARD/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SD-CARD/note/</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SD-CARD/note/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SD-CARD/note/"/>
+    </url>
+    <url>
         <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/code/</loc>
         <lastmod>2025-02-18</lastmod>
         <changefreq>daily</changefreq>
@@ -510,6 +531,27 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/RTC/note/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/RTC/note/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SD-CARD/code/</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SD-CARD/code/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SD-CARD/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SD-CARD/integration/</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SD-CARD/integration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SD-CARD/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SD-CARD/note/</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SD-CARD/note/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SD-CARD/note/"/>
     </url>
     <url>
         <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/code/</loc>
