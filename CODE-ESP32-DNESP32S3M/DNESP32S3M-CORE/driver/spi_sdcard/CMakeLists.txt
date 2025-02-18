@@ -10,7 +10,7 @@ set(requires
     driver
     fatfs
     vfs
-    # sdmmc
+    sdmmc
     spi
 )
 

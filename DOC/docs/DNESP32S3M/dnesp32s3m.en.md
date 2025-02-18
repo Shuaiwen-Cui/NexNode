@@ -80,4 +80,5 @@ In short, you can refer to the dependency relationship in each chapter. Ensure a
 4. MAIN-CONTROL>RTC
 5. MAIN-CONTROL>RNG
 6. MAIN-CONTROL>SPI & ACTUATION LCD
+7. MAIN-CONTROL>SPI & SD-CARD
 

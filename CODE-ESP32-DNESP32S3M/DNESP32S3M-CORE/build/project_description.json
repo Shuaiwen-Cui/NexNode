@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "DNESP32S3-CORE",
-    "project_version":    "c06f8b2-dirty",
+    "project_version":    "c8e3852-dirty",
     "project_path":       "/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE",
     "idf_path":           "/home/cshwstem/esp/esp-idf",
     "build_dir":          "/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE/build",
@@ -1550,12 +1550,12 @@
             "dir": "/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE/driver/spi_sdcard",
             "type": "LIBRARY",
             "lib": "__idf_spi_sdcard",
-            "reqs": [ "driver", "fatfs", "vfs", "spi" ],
+            "reqs": [ "driver", "fatfs", "vfs", "sdmmc", "spi" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE/build/esp-idf/spi_sdcard/libspi_sdcard.a",
-            "sources": [ "/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE/driver/spi_sdcard/spi_sdcard.c" ],
+            "sources": [ "/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE/driver/spi_sdcard/exfuns.c", "/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE/driver/spi_sdcard/spi_sdcard.c" ],
             "include_dirs": [ "include" ]
         },
         "spiffs": {
@@ -3126,7 +3126,7 @@
             "prefix": "idf",
             "dir": "/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE/driver/spi_sdcard",
             "lib": "__idf_spi_sdcard",
-            "reqs": [ "driver", "fatfs", "vfs", "spi" ],
+            "reqs": [ "driver", "fatfs", "vfs", "sdmmc", "spi" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],

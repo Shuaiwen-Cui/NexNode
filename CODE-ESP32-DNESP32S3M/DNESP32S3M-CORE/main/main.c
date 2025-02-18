@@ -1,75 +1,133 @@
 /**
  * @file main.c
- * @author
- * @brief Main application to demonstrate the use of ESP32 internal temperature sensor
+ * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
+ * @brief 
  * @version 1.0
- * @date 2024-11-17
- *
+ * @date 2024-11-20
+ * 
  * @copyright Copyright (c) 2024
- *
+ * 
  */
 
-/* Dependencies */
-// Basic
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "esp_system.h"
-#include "esp_chip_info.h"
-#include "esp_psram.h"
-#include "esp_flash.h"
-#include "nvs_flash.h"
-#include "esp_log.h"
-#include "esp_spiffs.h"
-#include <sys/stat.h>
-
-// RTOS
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+/* DEPENDENCIES */
+// ESP
+#include "esp_system.h" // ESP32 System
+#include "nvs_flash.h"  // ESP32 NVS
+#include "esp_chip_info.h" // ESP32 Chip Info
+#include "esp_psram.h" // ESP32 PSRAM
+#include "esp_flash.h" // ESP32 Flash
+#include "esp_log.h" // ESP32 Logging
 
 // BSP
 #include "led.h"
 #include "exit.h"
-#include "lcd.h"
 #include "spi.h"
+#include "lcd.h"
+#include "tim.h"
 #include "esp_rtc.h"
 #include "rng.h"
+// #include "spiffs.h"
 #include "spi_sdcard.h"
-#include "fs.h"
+
+
+/* CONSTANTS */
+
+
+/* MACROS */
+
+
+/* VARIABLES */
+
+// LCD Background Color 
+uint8_t background_color = 0;
+
+// Weekdays
+char* weekdays[]={"Sunday","Monday","Tuesday","Wednesday",
+                  "Thursday","Friday","Saterday"};
+
+// Time buffer
+uint8_t tbuf[40];
+uint8_t t = 0;
+
+// Random Number
+uint32_t random_num;
+
+// Key Value
+uint8_t key_val;
 
 /**
- * @brief       Program entry point
- * @param       None
- * @retval      None
+ * @brief Entry point of the program
+ * @param None
+ * @retval None
  */
 void app_main(void)
 {
     esp_err_t ret;
+    uint32_t flash_size;
+    esp_chip_info_t chip_info;
 
-    ret = nvs_flash_init();                                         /* Initialize NVS */
-
+    // Initialize NVS
+    ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
     {
-        ESP_ERROR_CHECK(nvs_flash_erase());
+        ESP_ERROR_CHECK(nvs_flash_erase()); // Erase if needed
         ret = nvs_flash_init();
     }
 
-    ESP_ERROR_CHECK(ret);
+    // Get FLASH size
+    esp_flash_get_size(NULL, &flash_size);
+    esp_chip_info(&chip_info);
 
-    led_init();                                                     /* Initialize LED */
-    spi2_init();                                                    /* Initialize SPI */
-    lcd_init();                                                     /* Initialize LCD */
-    spiffs_init("storage", DEFAULT_MOUNT_POINT, DEFAULT_FD_NUM);    /* Initialize SPIFFS */
+    // Display CPU core count
+    printf("CPU Cores: %d\n", chip_info.cores);
+
+    // Display FLASH size
+    printf("Flash size: %ld MB flash\n", flash_size / (1024 * 1024));
+
+    // Display PSRAM size
+    printf("PSRAM size: %d bytes\n", esp_psram_get_size());
+
+    // BSP Initialization
+    led_init();
+    exit_init();
+    spi2_init();
+    lcd_init();
+
+    // esptim_int_init(1000000); // 1s enable timer, of which the callback function toggles the LED
+    rtc_set_time(2024,11,20,18,22,00); 
+
+    // lcd_show_string(0, 0, 200, 16, 16, "RNG Test", RED);
+    // lcd_show_string(0, 20, 200, 16, 16, "BOOT:Get Random Num", RED);
+    // lcd_show_string(0, 40, 200, 16, 16, "Num:", RED);
+    // lcd_show_string(0, 60, 200, 16, 16, "Num[0-9]:", RED);
 
     /* Display test information */
-    lcd_show_string(0, 0, 200, 16, 16, "SPIFFS TEST", RED);
-    lcd_show_string(0, 20, 200, 16, 16, "Read file:", BLUE);
+    // lcd_show_string(0, 0, 200, 16, 16, "SPIFFS TEST", RED);
+    // lcd_show_string(0, 20, 200, 16, 16, "Read file:", BLUE);
 
-    spiffs_test();                                                  /* Run SPIFFS test */
+    // spiffs_test();                                                  /* Run SPIFFS test */
+    while (sd_card_init())                               /* SD card not detected */
+    {
+        lcd_show_string(0, 0, 200, 16, 16, "SD Card Error!", RED);
+        vTaskDelay(500);
+        lcd_show_string(0, 20, 200, 16, 16, "Please Check!", RED);
+        vTaskDelay(500);
+    }
+
+    // clean the screen
+    lcd_clear(WHITE);
+
+    lcd_show_string(0, 0, 200, 16, 16, "SD Initialized!", RED);
+
+    sd_card_test_filesystem();                                        /* Run SD card test */
+
+    lcd_show_string(0, 0, 200, 16, 16, "SD Tested CSW! ", RED);
+
+    // sd_card_unmount();
 
     while (1)
     {
         led_toggle();
-        vTaskDelay(500);
+        vTaskDelay(1000);
     }
 }
