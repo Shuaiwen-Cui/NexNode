@@ -113,6 +113,34 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/main-control/"/>
     </url>
     <url>
+        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/code/</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/code/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/fs/</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/fs/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/fs/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/integration/</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/integration/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/note/</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/note/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/note/"/>
+    </url>
+    <url>
         <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/RNG/code/</loc>
         <lastmod>2025-02-18</lastmod>
         <changefreq>daily</changefreq>
@@ -174,13 +202,6 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/note/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/note/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/spi/</loc>
-        <lastmod>2025-02-18</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/spi/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/spi/"/>
     </url>
     <url>
         <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/TF-CARD/code/</loc>
@@ -421,6 +442,34 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/main-control/"/>
     </url>
     <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/code/</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/code/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/fs/</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/fs/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/fs/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/integration/</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/integration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/note/</loc>
+        <lastmod>2025-02-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/note/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/note/"/>
+    </url>
+    <url>
         <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/RNG/code/</loc>
         <lastmod>2025-02-18</lastmod>
         <changefreq>daily</changefreq>
@@ -482,13 +531,6 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/note/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/note/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/spi/</loc>
-        <lastmod>2025-02-18</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/SPI/spi/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/SPI/spi/"/>
     </url>
     <url>
         <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/TF-CARD/code/</loc>
