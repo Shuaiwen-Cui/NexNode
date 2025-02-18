@@ -18,6 +18,6 @@ git push -f https://github.com/Shuaiwen-Cui/NexNode.git main
 # git push -u origin main
 echo '--------push to GitHub successfully--------'
 
-cd ./DOC/
-mkdocs gh-deploy
-echo '--------deployed to Github Pages sucessfully--------'
+# cd ./DOC/
+# mkdocs gh-deploy
+# echo '--------deployed to Github Pages sucessfully--------'
