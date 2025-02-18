@@ -11,12 +11,17 @@
 
 /* Dependencies */
 // Basic
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "esp_system.h"
 #include "esp_chip_info.h"
 #include "esp_psram.h"
 #include "esp_flash.h"
 #include "nvs_flash.h"
 #include "esp_log.h"
+#include "esp_spiffs.h"
+#include <sys/stat.h>
 
 // RTOS
 #include "freertos/FreeRTOS.h"
@@ -24,16 +29,24 @@
 
 // BSP
 #include "led.h"
+#include "exit.h"
 #include "lcd.h"
 #include "spi.h"
+#include "esp_rtc.h"
+#include "rng.h"
 #include "spi_sdcard.h"
+#include "fs.h"
 
+/**
+ * @brief       Program entry point
+ * @param       None
+ * @retval      None
+ */
 void app_main(void)
 {
     esp_err_t ret;
-    size_t bytes_total, bytes_free;                     /* Total and free space of the SD card */
 
-    ret = nvs_flash_init();                             /* Initialize NVS */
+    ret = nvs_flash_init();                                         /* Initialize NVS */
 
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
     {
@@ -41,25 +54,18 @@ void app_main(void)
         ret = nvs_flash_init();
     }
 
-    led_init();                                         /* Initialize LED */
-    spi2_init();                                        /* Initialize SPI */
-    lcd_init();                                         /* Initialize LCD */
+    ESP_ERROR_CHECK(ret);
 
-    while (sd_spi_init())                               /* SD card not detected */
-    {
-        lcd_show_string(0, 0, 200, 16, 16, "SD Card Error!", RED);
-        vTaskDelay(500);
-        lcd_show_string(0, 20, 200, 16, 16, "Please Check!", RED);
-        vTaskDelay(500);
-    }
+    led_init();                                                     /* Initialize LED */
+    spi2_init();                                                    /* Initialize SPI */
+    lcd_init();                                                     /* Initialize LCD */
+    spiffs_init("storage", DEFAULT_MOUNT_POINT, DEFAULT_FD_NUM);    /* Initialize SPIFFS */
 
-    lcd_show_string(0, 0, 200, 16, 16, "SD Card OK!", RED);
-    lcd_show_string(0, 20, 200, 16, 16, "Total:       MB", RED);
-    lcd_show_string(0, 40, 200, 16, 16, "Free :       MB", RED);
-    sd_get_fatfs_usage(&bytes_total, &bytes_free);
+    /* Display test information */
+    lcd_show_string(0, 0, 200, 16, 16, "SPIFFS TEST", RED);
+    lcd_show_string(0, 20, 200, 16, 16, "Read file:", BLUE);
 
-    lcd_show_num(60, 20, (int)bytes_total / 1024, 5, 16, BLUE);
-    lcd_show_num(60, 40, (int)bytes_free / 1024, 5, 16, BLUE);
+    spiffs_test();                                                  /* Run SPIFFS test */
 
     while (1)
     {

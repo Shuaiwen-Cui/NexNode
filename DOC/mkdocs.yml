@@ -130,7 +130,8 @@ plugins:
             RTC: 实时时钟
             RNG: 随机数生成器
             SPI: 串行外设接口SPI
-            TF-CARD: TF卡
+            TF-CARD: TF(SD)卡
+            FILE-SYSTEM: 文件系统(SPIFFS)
             PERCEPTION: 感知
             COMMUNICATION: 通信
             ACTUATION: 执行
@@ -307,6 +308,10 @@ nav:
               - NOTE: "DNESP32S3M/MAIN-CONTROL/TF-CARD/note.md"
               - CODE: "DNESP32S3M/MAIN-CONTROL/TF-CARD/code.md"
               - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/TF-CARD/integration.md"
+          - FILE-SYSTEM:
+              - NOTE: "DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/note.md"
+              - CODE: "DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/code.md"
+              - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/integration.md"
       - PERCEPTION: "DNESP32S3M/PERCEPTION/perception.md"
       - COMMUNICATION: "DNESP32S3M/COMMUNICATION/communication.md"
       - ACTUATION: 
