@@ -281,6 +281,10 @@ nav:
       - ROADMAP: "DNESP32S3M/dnesp32s3m.md"
       - PROJECT-CONSTRUCTION: "DNESP32S3M/PROJECT/project.md"
       - MAIN-CONTROL: 
+          - EXIT:
+              - NOTE: "DNESP32S3M/ACTUATION/KEY(EXIT)/note.md"
+              - CODE: "DNESP32S3M/ACTUATION/KEY(EXIT)/code.md"
+              - INTEGRATION: "DNESP32S3M/ACTUATION/KEY(EXIT)/integration.md"
           - TIMER: 
               - NOTE: "DNESP32S3M/MAIN-CONTROL/TIMER/note.md"
               - CODE: "DNESP32S3M/MAIN-CONTROL/TIMER/code.md"
@@ -304,10 +308,11 @@ nav:
               - NOTE: "DNESP32S3M/ACTUATION/LED/note.md"
               - CODE: "DNESP32S3M/ACTUATION/LED/code.md"
               - INTEGRATION: "DNESP32S3M/ACTUATION/LED/integration.md"
-          - EXIT:
-              - NOTE: "DNESP32S3M/ACTUATION/KEY(EXIT)/note.md"
-              - CODE: "DNESP32S3M/ACTUATION/KEY(EXIT)/code.md"
-              - INTEGRATION: "DNESP32S3M/ACTUATION/KEY(EXIT)/integration.md"
+          - LCD:
+              - NOTE: "DNESP32S3M/ACTUATION/LCD/note.md"
+              - CODE: "DNESP32S3M/ACTUATION/LCD/code.md"
+              - INTEGRATION: "DNESP32S3M/ACTUATION/LCD/integration.md"
+          
   - DNESP32S3:
       - ROADMAP: "DNESP32S3/dnesp32s3.md"
   - FKH743M2-IIT6:

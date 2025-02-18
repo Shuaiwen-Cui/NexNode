@@ -31,9 +31,6 @@ set(requires
 idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRES ${requires})
 ```
 
-!!! note
-    Note that in the drivers, we used gpio from the ESP-IDF builtin `driver` library, therefore, we need to indicate this dependency in the `REQUIRES` field of the `CMakeLists.txt` file. 
-
 ## esp_rtc.h
     
 ```c

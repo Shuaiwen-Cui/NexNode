@@ -16,21 +16,21 @@
 get_idf 
 ```
 
-激活 ESP-IDF 环境。然后输入以下命令创建一个名为 `rng` 的新组件：
+激活 ESP-IDF 环境。然后输入以下命令创建一个名为 `spi` 的新组件：
 
 ```bash
-idf.py -C driver create-component rng
+idf.py -C driver create-component spi
 ```
 
-上面的命令意味着在 `driver` 目录中创建一个名为 `rng` 的新组件。执行命令后，您将在 `driver` 目录中看到一个名为 `rng` 的新目录。命令将自动生成新组件的 `CMakeLists.txt` 文件，以及 `rng.h` 和 `rng.c` 文件。
+上面的命令意味着在 `driver` 目录中创建一个名为 `spi` 的新组件。执行命令后，您将在 `driver` 目录中看到一个名为 `spi` 的新目录。命令将自动生成新组件的 `CMakeLists.txt` 文件，以及 `spi.h` 和 `spi.c` 文件。
 
-或者，您可以在 `driver` 目录中手动创建 `rng` 目录，然后在 `rng` 目录中创建 `CMakeLists.txt`、`rng.h` 和 `rng.c` 文件。
+或者，您可以在 `driver` 目录中手动创建 `spi` 目录，然后在 `spi` 目录中创建 `CMakeLists.txt`、`spi.h` 和 `spi.c` 文件。
 
 ## 替换代码
 
 > 组件层面
 
-将本节中代码分别替换到组件下的`CMakelists.txt`、`rng.h`和`rng.c`文件中。
+将本节中代码分别替换到组件下的`CMakelists.txt`、`spi.h`和`spi.c`文件中。
 
 > 项目层面
 
@@ -43,4 +43,5 @@ idf.py -C driver create-component rng
 ```bash
 idf.py build flash monitor
 ```
-此时，您将在串行监视器中看到随机数。
+!!! note
+    注意，本章需要与其他使用SPI的部件联合使用，才能看到效果。

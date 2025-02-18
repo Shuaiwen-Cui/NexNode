@@ -177,5 +177,5 @@ typedef struct {
 
 ## 依赖关系
 
-
+![dep](dep-06-spi-lcd.png)
 

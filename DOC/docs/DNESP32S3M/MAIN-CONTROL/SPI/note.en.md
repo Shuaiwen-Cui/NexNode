@@ -176,3 +176,5 @@ Based on their functionality, the following functions can be categorized togethe
 | **spi_device_polling_transmit()** | This function sends a polling transaction, waits for it to complete, and returns the result. <br> **handle**: The handle of the device. <br> **trans_desc**: A pointer to an `spi_transaction_t` structure, describing the details of the transaction to be sent. |
 
 ## Dependencies
+
+![dep](dep-06-spi-lcd.png)
