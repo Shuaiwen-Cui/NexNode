@@ -43,4 +43,4 @@ Open the project in VSCode, open the integrated terminal, and type in
 idf.py build flash monitor
 ```
 
-Then you will see the information of SD card showing on the LCD screen.
+Then you will see the feedback from the serial monitor. Alternatively, you can check the SD card to verify.

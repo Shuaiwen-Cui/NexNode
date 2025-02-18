@@ -11,7 +11,7 @@
         - CMakeLists.txt
 ```
 
-## driver/rng/CMakeLists.txt
+## driver/lcd/CMakeLists.txt
 
 ```cmake
 set(src_dirs

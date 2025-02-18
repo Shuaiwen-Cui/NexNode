@@ -1,5 +1,8 @@
 # TF CARD (SD CARD) Operation - SPI Mode
 
+!!! warning
+    For this chapter, I don't recommend you to refer to the code from the Alientek. After testing, I found that the program doesn't seem to work. So I referred to the content on the Internet and rewrote the content of this chapter.
+
 ## Introduction
 
 !!! info "SD Card Overview"

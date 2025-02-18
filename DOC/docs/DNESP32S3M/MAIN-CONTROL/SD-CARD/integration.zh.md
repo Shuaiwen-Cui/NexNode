@@ -44,4 +44,5 @@ idf.py -C driver create-component spi_sdcard
 idf.py build flash monitor
 ```
 
-然后您将在 LCD 屏幕上看到 SD 卡信息。
+然后您将在串行监视器中看到反馈。或者，您可以检查 SD 卡以进行验证。
+
