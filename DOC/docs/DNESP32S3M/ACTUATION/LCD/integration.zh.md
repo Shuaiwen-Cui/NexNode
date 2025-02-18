@@ -26,11 +26,14 @@ idf.py -C driver create-component lcd
 
 或者，您可以在 `driver` 目录中手动创建 `lcd` 目录，然后在 `lcd` 目录中创建 `CMakeLists.txt`、`lcd.h` 和 `lcd.c` 文件。
 
+!!! note
+    本章中还有一个 `lcdfont.h` 文件，您可以将其放在 `lcd` 的`include`目录中。
+
 ## 替换代码
 
 > 组件层面
 
-将本节中代码分别替换到组件下的`CMakelists.txt`、`lcd.h`和`lcd.c`文件中。
+将本节中代码分别替换到组件下的`CMakelists.txt`、`lcdfont.h`、`lcd.h`和`lcd.c`文件中。
 
 > 项目层面
 
@@ -43,4 +46,4 @@ idf.py -C driver create-component lcd
 ```bash
 idf.py build flash monitor
 ```
-此时，您将在串行监视器中看到随机数。
+此时，您将看到LCD屏幕被点亮并显示内容。

@@ -1,0 +1,1 @@
+INIT + LED + EXIT(KEY) + TIM + RTC + RNG + SPI + LCD

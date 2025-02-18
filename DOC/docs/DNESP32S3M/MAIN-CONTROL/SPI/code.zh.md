@@ -56,9 +56,9 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
 #include "driver/gpio.h"
 
 /* GPIO Definitions */
-#define SPI_MOSI_GPIO_PIN GPIO_NUM_11 /* SPI2_MOSI */
-#define SPI_CLK_GPIO_PIN GPIO_NUM_12  /* SPI2_CLK */
-#define SPI_MISO_GPIO_PIN GPIO_NUM_13 /* SPI2_MISO */
+#define SPI2_MOSI_GPIO_PIN GPIO_NUM_11 /* SPI2_MOSI */
+#define SPI2_CLK_GPIO_PIN GPIO_NUM_12  /* SPI2_CLK */
+#define SPI2_MISO_GPIO_PIN GPIO_NUM_13 /* SPI2_MISO */
 
 /* Function Prototypes */
 
@@ -123,9 +123,9 @@ uint8_t spi2_transfer_byte(spi_device_handle_t handle, uint8_t byte);
      spi_bus_config_t spi_bus_conf = {0};
  
      /* SPI bus configuration */
-     spi_bus_conf.miso_io_num = SPI_MISO_GPIO_PIN;                               /* SPI_MISO pin */
-     spi_bus_conf.mosi_io_num = SPI_MOSI_GPIO_PIN;                               /* SPI_MOSI pin */
-     spi_bus_conf.sclk_io_num = SPI_CLK_GPIO_PIN;                                /* SPI_SCLK pin */
+     spi_bus_conf.miso_io_num = SPI2_MISO_GPIO_PIN;                               /* SPI_MISO pin */
+     spi_bus_conf.mosi_io_num = SPI2_MOSI_GPIO_PIN;                               /* SPI_MOSI pin */
+     spi_bus_conf.sclk_io_num = SPI2_CLK_GPIO_PIN;                                /* SPI_SCLK pin */
      spi_bus_conf.quadwp_io_num = -1;                                            /* SPI write protection signal pin, not enabled */
      spi_bus_conf.quadhd_io_num = -1;                                            /* SPI hold signal pin, not enabled */
      spi_bus_conf.max_transfer_sz = 160 * 80 * 2;                                /* Configure maximum transfer size in bytes */

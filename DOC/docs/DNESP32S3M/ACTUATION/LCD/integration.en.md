@@ -25,11 +25,14 @@ The command above means to create a new component named `lcd` in the `driver` di
 
 Alternatively, you can mannually create the `lcd` directory in the `driver` directory, and then create the `CMakeLists.txt`, `lcd.h`, and `lcd.c` files in the `lcd` directory.
 
+!!! note
+    There is also an `lcdfont.h` file in this chapter, which you can put in the `include` directory of the `lcd` directory.
+
 ## Replace the Code
 
 > Component Level
 
-Replace the code in this section into the `CMakelists.txt`, `lcd.h`, and `lcd.c` files under the component.
+Replace the code in this section into the `CMakelists.txt`, `lcdfont.h`、`lcd.h`, and `lcd.c` files under the component.
 
 > Project Level
 
@@ -43,4 +46,4 @@ Open the project in VSCode, open the integrated terminal, and type in
 idf.py build flash monitor
 ```
 
-Now, you will see random numbers from the serial monitor.
+Now, you will see the LCD screen light up and display content.
