@@ -15,7 +15,7 @@
 </div>
 
 !!! note
-    In this chapter, I did not use the default component manager. That is to say, the incorporated middleware are manually moved to the `middleware` directory, rather than staying in the `managed_components` directory.
+    在本章中，我没有使用默认的组件管理器。也就是说，集成的中间件是手动移动到 `middleware` 目录中的，而不是留在 `managed_components` 目录中。
 
 !!! tip
     在下载esp_dl时，您还会看到esp_jpg。这是因为esp-dl依赖于esp-jpg。
