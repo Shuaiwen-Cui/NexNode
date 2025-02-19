@@ -33,10 +33,10 @@
 
 ```
 
->DNESP32S3M 初始项目结构
+>DNESP32S3M 模板项目结构
 
 ```txt
-- DNESP32S3M-INIT/
+- DNESP32S3M-XXX/
              - .vscode/ (vscode 设置文件，可以忽略)
              - CMakeLists.txt (项目级 cmake 文件)
              - sdkconfig (项目级 sdkconfig 文件，通过 idf.py menuconfig 生成)

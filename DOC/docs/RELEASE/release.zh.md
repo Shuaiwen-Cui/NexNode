@@ -14,8 +14,19 @@
 
 ## 发布说明
 
-| MCU | 目标设备 | 文件夹 | 最后更新 | 说明 |
-| :---: | :---: | :---: | :---: | :---: |
-| ESP32 | DNESP32S3M | CODE-ESP32-DNESP32S3M | 2025年2月18日 | 🏗️ |
-| ESP32 | DNESP32S3  | CODE-ESP32-DNESP32S3  | 2025年2月17日 | 🏗️ |
-| STM32 | FKH743M2-IIT6  | CODE-STM32-FKH743M2-IIT6  | 2025年2月17日 | 📆 |
+## 文件夹 - CODE-ESP32-DNESP32S3M
+
+| 分支 | 状态 | 初始化模板 ✅ | 主控制功能 ✅ | 外设功能 📆 | 数学 + DSP + AI 🏗️|
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| DNESP32S3M-INIT | ✅ | ✔️ | | | |
+| DNESP32S3M-CORE | ✅ | ✔️ | ✔️ | | |
+| DNESP32S3M-IOT | 📆 | ✔️ | ✔️ | ✔️ | |
+| DNESP32S3M-AI | 🏗️ | ✔️ | ✔️ | ✔️ | ✔️ |
+
+## 文件夹 - CODE-ESP32-DNESP32S3
+
+📆
+
+## 文件夹 - CODE-STM32-FKH743M2-IIT6
+
+📆
