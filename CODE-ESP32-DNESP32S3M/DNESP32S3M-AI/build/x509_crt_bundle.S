@@ -1,4 +1,4 @@
-/* * Data converted from /home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from /home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-AI/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 #if !defined (__APPLE__) && !defined (__linux__)

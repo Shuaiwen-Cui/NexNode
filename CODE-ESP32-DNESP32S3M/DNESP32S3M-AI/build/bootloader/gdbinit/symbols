@@ -17,4 +17,4 @@ set confirm off
 set confirm on
 
 # Load application symbols
-file /home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE/build/bootloader/bootloader.elf
+file /home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-AI/build/bootloader/bootloader.elf

@@ -39,16 +39,16 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE/build/esp-idf/esp_hw_support/port/esp32s3/cmake_install.cmake")
+  include("/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-AI/build/esp-idf/esp_hw_support/port/esp32s3/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE/build/esp-idf/esp_hw_support/mspi_timing_tuning/port/esp32s3/cmake_install.cmake")
+  include("/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-AI/build/esp-idf/esp_hw_support/mspi_timing_tuning/port/esp32s3/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE/build/esp-idf/esp_hw_support/lowpower/cmake_install.cmake")
+  include("/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-AI/build/esp-idf/esp_hw_support/lowpower/cmake_install.cmake")
 endif()
 

@@ -1,4 +1,4 @@
-# Install script for directory: /home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE/driver/esp_rtc
+# Install script for directory: /home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-AI/driver/esp_rtc
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

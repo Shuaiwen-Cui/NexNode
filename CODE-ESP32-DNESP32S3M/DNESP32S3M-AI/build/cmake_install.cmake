@@ -1,4 +1,4 @@
-# Install script for directory: /home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE
+# Install script for directory: /home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-AI
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,7 +39,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE/build/esp-idf/cmake_install.cmake")
+  include("/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-AI/build/esp-idf/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-CORE/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M/DNESP32S3M-AI/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

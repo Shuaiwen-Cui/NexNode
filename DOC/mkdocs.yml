@@ -141,6 +141,10 @@ plugins:
             NOTE: 笔记
             CODE: 代码
             INTEGRATION: 集成
+            LCD: 液晶显示屏
+            MIDDLEWARE: 中间件
+            ESP-DSP: ESP-DSP 数字信号处理
+            ESP-DL: ESP-DL 深度学习
             DNESP32S3: DNESP32S3
             FKH743M2-IIT6: FKH743M2-IIT6
             RELEASE: 发布
@@ -328,7 +332,10 @@ nav:
               - NOTE: "DNESP32S3M/ACTUATION/LCD/note.md"
               - CODE: "DNESP32S3M/ACTUATION/LCD/code.md"
               - INTEGRATION: "DNESP32S3M/ACTUATION/LCD/integration.md"
-          
+      - MIDDLEWARE: 
+          # - MIDDLEWARE: "DNESP32S3M/MIDDLEWARE/middleware.md"
+          - ESP-DSP: "DNESP32S3M/MIDDLEWARE/ESP-DSP/esp-dsp.md"
+          - ESP-DL: "DNESP32S3M/MIDDLEWARE/ESP-DL/esp-dl.md"
   - DNESP32S3:
       - ROADMAP: "DNESP32S3/dnesp32s3.md"
   - FKH743M2-IIT6:

@@ -90,8 +90,10 @@ $<TARGET_FILE:__idf_esp_rtc>
 $<TARGET_FILE:__idf_led>
 $<TARGET_FILE:__idf_exit>
 $<TARGET_FILE:__idf_spi>
-$<TARGET_FILE:__idf_spi_sdcard>
 $<TARGET_FILE:__idf_lcd>
-$<TARGET_FILE:__idf_fs>
 $<TARGET_FILE:__idf_rng>
+$<TARGET_FILE:__idf_spi_sdcard>
 $<TARGET_FILE:__idf_tim>
+$<TARGET_FILE:__idf_espressif__esp_jpeg>
+$<TARGET_FILE:__idf_espressif__esp-dl>
+$<TARGET_FILE:__idf_espressif__esp-dsp>
