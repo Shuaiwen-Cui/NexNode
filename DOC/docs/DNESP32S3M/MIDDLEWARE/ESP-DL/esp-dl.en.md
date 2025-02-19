@@ -4,10 +4,11 @@
 
 <div class="grid cards" markdown>
 
--   :material-file:{ .lg .middle } __ESP-DL COMPONENT IN ESP REGISTRY__
+-   :material-file:{ .lg .middle } __ESP-DL COMPONENT__
 
     ---
 
+    Provided by Espressif Official
 
     [:octicons-arrow-right-24: <a href="https://components.espressif.com/components/espressif/esp-dl" target="_blank"> Portal </a>](#)
 

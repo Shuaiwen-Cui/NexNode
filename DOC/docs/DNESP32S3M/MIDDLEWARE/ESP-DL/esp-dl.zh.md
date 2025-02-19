@@ -4,9 +4,11 @@
 
 <div class="grid cards" markdown>
 
--   :material-file:{ .lg .middle } __ESP-DL 组件 & ESP 注册表__
+-   :material-file:{ .lg .middle } __ESP-DL 组件__
 
     ---
+
+    由 Espressif 官方提供
 
     [:octicons-arrow-right-24: <a href="https://components.espressif.com/components/espressif/esp-dl" target="_blank"> 传送门 </a>](#)
 
