@@ -132,6 +132,11 @@ esp_err_t sd_card_init(void)
         return false;
     }
 
+    // Print FAT FS size information
+    uint64_t bytes_total, bytes_free;
+    esp_vfs_fat_info(mount_point, &bytes_total, &bytes_free);
+    ESP_LOGI(TAG_SD, "FAT FS: %" PRIu64 " kB total, %" PRIu64 " kB free", bytes_total / 1024, bytes_free / 1024);
+
     // The card has been initialized, print its properties
     sdmmc_card_print_info(stdout, card);
 

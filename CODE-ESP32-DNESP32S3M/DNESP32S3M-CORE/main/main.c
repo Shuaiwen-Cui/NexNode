@@ -26,6 +26,7 @@
 #include "tim.h"
 #include "esp_rtc.h"
 #include "spi_sdcard.h"
+#include "wifi.h"
 
 /**
  * @brief Entry point of the program
@@ -84,6 +85,11 @@ void app_main(void)
     lcd_show_string(0, 0, 200, 16, 16, "SD Tested CSW! ", RED);
 
     // sd_card_unmount();
+
+    vTaskDelay(3000);
+
+    lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test", RED);
+    wifi_sta_init();
 
     while (1)
     {
