@@ -17,9 +17,9 @@ git push -f https://github.com/Shuaiwen-Cui/NexNode.git main
 @REM git push -u origin main
 echo '--------push to GitHub successfully--------'
 
-@REM cd ./DOC/
-@REM mkdocs gh-deploy
-@REM echo '--------deployed to Github Pages sucessfully--------'
+cd ./DOC/
+mkdocs gh-deploy
+echo '--------deployed to Github Pages sucessfully--------'
 
 @REM git push -f <url> master
 @REM git push -u <url> master
