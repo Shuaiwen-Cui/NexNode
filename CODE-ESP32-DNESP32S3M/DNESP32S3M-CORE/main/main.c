@@ -26,7 +26,10 @@
 #include "tim.h"
 #include "esp_rtc.h"
 #include "spi_sdcard.h"
-#include "wifi.h"
+#include "wifi_wpa2_enterprise.h"
+
+/* Variables */
+const char *TAG = "NEXNODE";
 
 /**
  * @brief Entry point of the program
@@ -88,12 +91,44 @@ void app_main(void)
 
     vTaskDelay(3000);
 
-    lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test", RED);
-    wifi_sta_init();
+    lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test  ", RED);
+    
+    ret = wifi_sta_wpa2_init();
+    if(ret == ESP_OK)
+    {
+        ESP_LOGI(TAG_WIFI, "WiFi STA Init OK");
+        lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test OK", RED);
+    }
+    else
+    {
+        ESP_LOGE(TAG_WIFI, "WiFi STA Init Failed");
+    }
 
     while (1)
     {
         led_toggle();
+        ESP_LOGI(TAG, "Hello World!");
         vTaskDelay(1000);
     }
 }
+
+
+
+// static void wpa2_enterprise_example_task(void *pvParameters)
+// {
+//     esp_netif_ip_info_t ip;
+//     memset(&ip, 0, sizeof(esp_netif_ip_info_t));
+//     vTaskDelay(2000 / portTICK_PERIOD_MS);
+
+//     while (1) {
+//         vTaskDelay(2000 / portTICK_PERIOD_MS);
+
+//         if (esp_netif_get_ip_info(sta_netif, &ip) == 0) {
+//             ESP_LOGI(TAG, "~~~~~~~~~~~");
+//             ESP_LOGI(TAG, "IP:"IPSTR, IP2STR(&ip.ip));
+//             ESP_LOGI(TAG, "MASK:"IPSTR, IP2STR(&ip.netmask));
+//             ESP_LOGI(TAG, "GW:"IPSTR, IP2STR(&ip.gw));
+//             ESP_LOGI(TAG, "~~~~~~~~~~~");
+//         }
+//     }
+// }

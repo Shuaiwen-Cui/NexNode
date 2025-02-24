@@ -322,7 +322,11 @@ nav:
           #     - CODE: "DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/code.md"
           #     - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/integration.md"
       - PERCEPTION: "DNESP32S3M/PERCEPTION/perception.md"
-      - COMMUNICATION: "DNESP32S3M/COMMUNICATION/communication.md"
+      - COMMUNICATION: 
+          - WIFI: 
+              - NOTE: "DNESP32S3M/COMMUNICATION/WIFI/note.md"
+              - CODE: "DNESP32S3M/COMMUNICATION/WIFI/code.md"
+              - INTEGRATION: "DNESP32S3M/COMMUNICATION/WIFI/integration.md"
       - ACTUATION: 
           - LED: 
               - NOTE: "DNESP32S3M/ACTUATION/LED/note.md"
@@ -342,7 +346,6 @@ nav:
       - ROADMAP: "FKH743M2-IIT6/fkh743m2-iit6.md"
   - RELEASE:
       - "RELEASE/release.md"
-
 
 # if there are sub nodes under a node, then there should not be a link right after the node. All the stuff should be placed under the node.
 
