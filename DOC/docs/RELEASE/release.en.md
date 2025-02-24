@@ -20,7 +20,7 @@
 | :---: | :---: | :---: | :---: | :---: | :---: |
 | DNESP32S3M-INIT | ✅ | ✔️ | | | |
 | DNESP32S3M-CORE | ✅ | ✔️ | ✔️ | | |
-| DNESP32S3M-IOT | 📆 | ✔️ | ✔️ | ✔️ | |
+| DNESP32S3M-IOT | 🏗️ | ✔️ | ✔️ | ✔️ | |
 | DNESP32S3M-AI | 🏗️ | ✔️ | ✔️ | ✔️ | ✔️ |
 
 ## FOLDER - CODE-ESP32-DNESP32S3
