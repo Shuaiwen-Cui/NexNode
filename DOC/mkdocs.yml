@@ -134,6 +134,7 @@ plugins:
             # TF-CARD: TF(SD)卡
             # FILE-SYSTEM: 文件系统(SPIFFS)
             PERCEPTION: 感知
+            IMU-MPU6050: 惯性测量单元-MPU6050
             COMMUNICATION: 通信
             ACTUATION: 执行
             LED: LED
@@ -321,7 +322,11 @@ nav:
           #     - NOTE: "DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/note.md"
           #     - CODE: "DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/code.md"
           #     - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/integration.md"
-      - PERCEPTION: "DNESP32S3M/PERCEPTION/perception.md"
+      - PERCEPTION: 
+          - IMU-MPU6050:
+              - NOTE: "DNESP32S3M/PERCEPTION/IMU-MPU6050/note.md"
+              - CODE: "DNESP32S3M/PERCEPTION/IMU-MPU6050/code.md"
+              - INTEGRATION: "DNESP32S3M/PERCEPTION/IMU-MPU6050/integration.md"
       - COMMUNICATION: 
           - WIFI: 
               - NOTE: "DNESP32S3M/COMMUNICATION/WIFI/note.md"
