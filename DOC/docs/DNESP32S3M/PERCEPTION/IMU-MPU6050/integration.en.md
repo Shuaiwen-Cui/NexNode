@@ -3,7 +3,7 @@
 ## Introduction
 
 !!! note
-    In this section, we introduce how to integrate the mpu6050er driver into the project.
+    In this section, we introduce how to integrate the mpu6050 driver into the project.
 
 ## Create a New Component
 

@@ -27,6 +27,7 @@
 #include "esp_rtc.h"
 #include "spi_sdcard.h"
 #include "wifi_wpa2_enterprise.h"
+#include "mqtt.h"
 
 /* Variables */
 const char *TAG = "NEXNODE";
@@ -104,11 +105,28 @@ void app_main(void)
         ESP_LOGE(TAG_WIFI, "WiFi STA Init Failed");
     }
 
+    // only when the ip is obtained, start mqtt
+    EventBits_t ev = 0;
+    ev = xEventGroupWaitBits(wifi_event_group,CONNECTED_BIT,pdTRUE,pdFALSE,portMAX_DELAY);
+    if(ev & CONNECTED_BIT)
+    {
+        mqtt_app_start();
+    }
+
+    static char mqtt_pub_buff[64];
+    int count = 0;
     while (1)
     {
+        if(s_is_mqtt_connected)
+        {
+            snprintf(mqtt_pub_buff,64,"{\"count\":\"%d\"}",count);
+            esp_mqtt_client_publish(s_mqtt_client, MQTT_PUBLIC_TOPIC,
+                            mqtt_pub_buff, strlen(mqtt_pub_buff),1, 0);
+            count++;
+        }
         led_toggle();
         ESP_LOGI(TAG, "Hello World!");
-        vTaskDelay(1000);
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
 }
 

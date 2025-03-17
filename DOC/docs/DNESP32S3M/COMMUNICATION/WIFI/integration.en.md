@@ -3,7 +3,7 @@
 ## Introduction
 
 !!! note
-    In this section, we introduce how to integrate the wifier driver into the project.
+    In this section, we introduce how to integrate the wifi driver into the project.
 
 ## Create a New Component
 
@@ -32,7 +32,7 @@ Alternatively, you can mannually create the `wifi` directory in the `driver` dir
 
 > Component Level
 
-Replace the code in this section into the `CMakelists.txt`, `wifi.h`, and `wifi.c` files under the component.
+Replace the code in this section into the `CMakelists.txt`, `wifi_wpa2_enterprise.h`, and `wifi_wpa2_enterprise.c` files under the component.
 
 > Project Level
 

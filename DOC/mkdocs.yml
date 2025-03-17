@@ -136,6 +136,8 @@ plugins:
             PERCEPTION: 感知
             IMU-MPU6050: 惯性测量单元-MPU6050
             COMMUNICATION: 通信
+            WIFI: WIFI
+            MQTT: MQTT
             ACTUATION: 执行
             LED: LED
             EXIT: 外部中断
@@ -332,6 +334,10 @@ nav:
               - NOTE: "DNESP32S3M/COMMUNICATION/WIFI/note.md"
               - CODE: "DNESP32S3M/COMMUNICATION/WIFI/code.md"
               - INTEGRATION: "DNESP32S3M/COMMUNICATION/WIFI/integration.md"
+          - MQTT:
+              - NOTE: "DNESP32S3M/COMMUNICATION/MQTT/note.md"
+              - CODE: "DNESP32S3M/COMMUNICATION/MQTT/code.md"
+              - INTEGRATION: "DNESP32S3M/COMMUNICATION/MQTT/integration.md"
       - ACTUATION: 
           - LED: 
               - NOTE: "DNESP32S3M/ACTUATION/LED/note.md"

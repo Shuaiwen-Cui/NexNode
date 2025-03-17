@@ -33,6 +33,8 @@
 
 /* Variables */
 extern const char *TAG_WIFI; // tag for logging
+extern EventGroupHandle_t wifi_event_group;
+extern const int CONNECTED_BIT;
 
 /* Function Prototypes */
 /**
