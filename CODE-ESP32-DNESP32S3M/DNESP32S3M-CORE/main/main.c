@@ -22,6 +22,7 @@
 #include "led.h"
 #include "exit.h"
 #include "spi.h"
+#include "i2c.h"
 #include "lcd.h"
 #include "tim.h"
 #include "esp_rtc.h"
@@ -67,6 +68,7 @@ void app_main(void)
     led_init();
     exit_init();
     spi2_init();
+    i2c_bus_init();
     lcd_init();
 
     // spiffs_test();                                                  /* Run SPIFFS test */

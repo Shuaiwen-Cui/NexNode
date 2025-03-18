@@ -130,6 +130,7 @@ plugins:
             RTC: 实时时钟
             RNG: 随机数生成器
             SPI: 串行外设接口SPI
+            I2C: 串行外设接口I2C
             SD-CARD: SD卡
             # TF-CARD: TF(SD)卡
             # FILE-SYSTEM: 文件系统(SPIFFS)
@@ -312,6 +313,10 @@ nav:
               - NOTE: "DNESP32S3M/MAIN-CONTROL/SPI/note.md"
               - CODE: "DNESP32S3M/MAIN-CONTROL/SPI/code.md"
               - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/SPI/integration.md"
+          - I2C:
+              - NOTE: "DNESP32S3M/MAIN-CONTROL/I2C/note.md"
+              - CODE: "DNESP32S3M/MAIN-CONTROL/I2C/code.md"
+              - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/I2C/integration.md"
           - SD-CARD:
               - NOTE: "DNESP32S3M/MAIN-CONTROL/SD-CARD/note.md"
               - CODE: "DNESP32S3M/MAIN-CONTROL/SD-CARD/code.md"

@@ -20,8 +20,30 @@
 | :---: | :---: | :---: | :---: | :---: | :---: |
 | DNESP32S3M-INIT | ✅ | ✔️ | | | |
 | DNESP32S3M-CORE | ✅ | ✔️ | ✔️ | | |
-| DNESP32S3M-IOT | 🏗️ | ✔️ | ✔️ | ✔️ | |
+| DNESP32S3M-IOT | ✅ | ✔️ | ✔️ | ✔️ | |
 | DNESP32S3M-AI | 🏗️ | ✔️ | ✔️ | ✔️ | ✔️ |
+
+### 版本跟踪
+
+> DNESP32S3M-INIT
+
+初始化模板，无实际功能，可用于快速创建新的分支。
+
+> DNESP32S3M-CORE
+
+主控制功能，包括基本的控制功能，如串口、GPIO、定时器、中断等。不包含IOT、AI等高级功能。
+
+> DNESP32S3M-IOT
+
+DNESP32S3M-CORE + WIFI + IOT
+
+> DNESP32S3M-AI
+
+DNESP32S3M-CORE + AI
+
+> DNESP32S3M-IOT-AI
+
+DNESP32S3M-IOT + AI
 
 ## 文件夹 - CODE-ESP32-DNESP32S3
 

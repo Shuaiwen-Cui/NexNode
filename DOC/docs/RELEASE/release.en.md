@@ -20,8 +20,30 @@
 | :---: | :---: | :---: | :---: | :---: | :---: |
 | DNESP32S3M-INIT | ✅ | ✔️ | | | |
 | DNESP32S3M-CORE | ✅ | ✔️ | ✔️ | | |
-| DNESP32S3M-IOT | 🏗️ | ✔️ | ✔️ | ✔️ | |
+| DNESP32S3M-IOT | ✅ | ✔️ | ✔️ | ✔️ | |
 | DNESP32S3M-AI | 🏗️ | ✔️ | ✔️ | ✔️ | ✔️ |
+
+### VERSION TRACKING
+
+> DNESP32S3M-INIT
+
+Initialization template for rapid creation of new branches. Contains minimal configuration.
+
+> DNESP32S3M-CORE
+
+Core functionality module, providing essential controls such as UART, GPIO, timers, and interrupts. Does not include advanced features like IoT or AI.
+
+> DNESP32S3M-IOT
+
+IoT functionality extension module built upon DNESP32S3M-CORE, adding IoT-related capabilities. Does not include AI features.
+
+> DNESP32S3M-AI
+
+DNESP32S3M-CORE + AI
+
+> DNESP32S3M-IOT-AI
+
+DNESP32S3M-IOT + AI
 
 ## FOLDER - CODE-ESP32-DNESP32S3
 
