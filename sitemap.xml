@@ -183,6 +183,27 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/note/"/>
     </url>
     <url>
+        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/I2C/code/</loc>
+        <lastmod>2025-03-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/I2C/code/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/I2C/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/I2C/integration/</loc>
+        <lastmod>2025-03-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/I2C/integration/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/I2C/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/I2C/note/</loc>
+        <lastmod>2025-03-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/I2C/note/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/I2C/note/"/>
+    </url>
+    <url>
         <loc>https://localhost:8000/DNESP32S3M/MAIN-CONTROL/RNG/code/</loc>
         <lastmod>2025-03-18</lastmod>
         <changefreq>daily</changefreq>
@@ -615,6 +636,27 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/note/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/note/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/I2C/code/</loc>
+        <lastmod>2025-03-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/I2C/code/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/I2C/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/I2C/integration/</loc>
+        <lastmod>2025-03-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/I2C/integration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/I2C/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/I2C/note/</loc>
+        <lastmod>2025-03-18</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/I2C/note/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/DNESP32S3M/MAIN-CONTROL/I2C/note/"/>
     </url>
     <url>
         <loc>https://localhost:8000/zh/DNESP32S3M/MAIN-CONTROL/RNG/code/</loc>
