@@ -1,12 +1,35 @@
 # 笔记
 
+## 理论部分
+
 !!! note
-    WiFi几乎是所有ESP32开发板的内建功能。它可以在"AP（接入点）"模式、"STA（站点）"模式下工作，或者同时在这两种模式下工作。在本项目中，我们主要使用ESP32作为站点连接路由器并访问互联网。
+    MQTT 是一种基于发布/订阅模式的消息传递协议，它是一种轻量级的、简单的、开放的、易于实现的、可用于低带宽的网络连接的协议。它是一种非常适合物联网的协议，因为它是一种轻量级的协议，可以在低带宽的网络上运行。更为细致的关于ESP32 MQTT实现的内容可以参考其官方网站。
 
 !!! tip
-    正常的WiFi连接方式可以轻松在网上找到。在本项目中，我们将节点设置为AP模式，并连接到企业WiFi网络，如校园WiFi。具体来说，我们使用WPA2 Enterprise模式和PEAP-MSCHAPV2认证。
+    想要使用MQTT，其前置条件是需要先实现wifi或者蜂窝网络访问互联网，同时需要有一个MQTT服务器。以下链接是相关参考资料。
 
-有关ESP32 WiFi功能的更多信息，请查看以下网站（我另一个ESP32学习项目）。
+> ESP32的wifi功能
+
+请参考本站wifi部分的内容。
+
+> MQTT服务器
+
+下面链接是与本项目密切相关的一个项目，NEXHUB，其中有MQTT服务器的搭建方法。要使用mqtt，通常要先搭建一个mqtt服务器。因此，可以先按照以下链接搭建一个mqtt服务器。
+
+<div class="grid cards" markdown>
+
+-   :material-file:{ .lg .middle } __NEXHUB__
+
+    ---
+
+
+    [:octicons-arrow-right-24: <a href="https://shuaiwen-cui.github.io/NexHub/zh/IOT-BROKER/EMQX/emqx/" target="_blank"> Portal </a>](#)
+
+</div>
+
+> ESP32的MQTT功能
+
+知识部分请参考以下链接，而mqtt实现可以参考本站代码。
 
 <div class="grid cards" markdown>
 
@@ -15,10 +38,16 @@
     ---
 
 
-    [:octicons-arrow-right-24: <a href="https://shuaiwen-cui.github.io/ESP_STUDY/zh/COMMUNICATION/WIFI/BASICS/wifi/" target="_blank"> 入口 </a>](#)
+    [:octicons-arrow-right-24: <a href="https://shuaiwen-cui.github.io/ESP_STUDY/zh/COMMUNICATION/WIFI/MQTT/mqtt/" target="_blank"> Portal </a>](#)
 
 </div>
 
+## 效果演示
 
-!!! tip
-    如果您正在寻找家庭中的普通WiFi代码，您可以查看上面的链接。
+### 消息发布
+
+![](node-msg.png)
+
+### 消息订阅
+
+![](server-msg.png)

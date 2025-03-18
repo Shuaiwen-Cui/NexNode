@@ -1,5 +1,40 @@
 # 代码
 
+## 组件架构
+
+```plaintext
+- driver
+    - wifi
+        - include
+            - wifi_wpa2_enterprise.h
+        - wifi_wpa2_enterprise.c
+        - CMakeLists.txt
+```
+
+## driver/wifi/CMakeLists.txt
+
+```cmake
+set(src_dirs
+    .
+)
+
+set(include_dirs
+    include
+)
+
+set(requires
+    led
+    lcd
+    esp_wifi
+    wpa_supplicant
+)
+
+idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRES ${requires})
+```
+
+!!! tip
+    注意将下文代码中的用户名和密码替换为您的用户名和密码。
+
 ## wifi_wpa2_enterprise.h
 
 ```c
@@ -33,11 +68,13 @@
 
 /* Macros */
 #define ENTERPRISE_WIFI_SSID "NTUSECURE" //SSID of WiFi
-#define ENTERPRISE_WIFI_USERNAME "SHUAIWEN001@e.ntu.edu.sg" // Username
-#define ENTERPRISE_WIFI_PASSWORD "Csw19950918$" // Password
+#define ENTERPRISE_WIFI_USERNAME "YOUR USER NAME" // Username
+#define ENTERPRISE_WIFI_PASSWORD "YOUR PASSWORD" // Password
 
 /* Variables */
 extern const char *TAG_WIFI; // tag for logging
+extern EventGroupHandle_t wifi_event_group;
+extern const int CONNECTED_BIT;
 
 /* Function Prototypes */
 /**
@@ -148,6 +185,7 @@ esp_err_t wifi_sta_wpa2_init(void)
     }
     return ESP_OK;
 }
+
 
 ```
 
@@ -271,5 +309,5 @@ void app_main(void)
 ```
 
 !!! tip
-    对于主程序，只有函数`wifi_sta_wpa2_init()`与WiFi相关。你应该适当地将这个函数插入到你的程序中。不要忘记在主文件中 `#include "wifi_wpa2_enterprise.h"`。
+    对于主程序，只有函数`wifi_sta_wpa2_init()`与WiFi相关。你应该适当地将这个函数插入到你的程序中。不要忘记在主文件中 `#include "wifi_wpa2_enterprise.h"`。WIFI功能为我们下一步进行MQTT通信做好了准备。
 

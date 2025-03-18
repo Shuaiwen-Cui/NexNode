@@ -15,15 +15,18 @@ Open the project in VSCode, open the integrated terminal, and type in
 ```bash
 get_idf 
 ```
-to actiate the ESP-IDF environment. Then type in the following command to create a new component named `mqtt`:
+to actiate the ESP-IDF environment. Then type in the following command to create a new component named `esp32_mqtt`:
 
 ```bash
-idf.py -C driver create-component mqtt
+idf.py -C driver create-component esp32_mqtt
 ```
 
-The command above means to create a new component named `mqtt` in the `driver` directory. After executing the command, you will see a new directory named `mqtt` in the `driver` directory. And the command will automatically generate the `CMakeLists.txt` file for the new component, as well as the `mqtt.h` and `mqtt.c` files.
+!!! danger
+    Note that there is a built-in MQTT module in esp-idf, so to avoid conflicts, we name this module esp32_mqtt.
 
-Alternatively, you can mannually create the `mqtt` directory in the `driver` directory, and then create the `CMakeLists.txt`, `mqtt.h`, and `mqtt.c` files in the `mqtt` directory.
+The command above means to create a new component named `esp32_mqtt` in the `driver` directory. After executing the command, you will see a new directory named `esp32_mqtt` in the `driver` directory. And the command will automatically generate the `CMakeLists.txt` file for the new component, as well as the `mqtt.h` and `mqtt.c` files.
+
+Alternatively, you can mannually create the `esp32_mqtt` directory in the `driver` directory, and then create the `CMakeLists.txt`, `mqtt.h`, and `mqtt.c` files in the `esp32_mqtt` directory.
 
 
 ## Replace the Code
@@ -43,5 +46,4 @@ Open the project in VSCode, open the integrated terminal, and type in
 ```bash
 idf.py build flash monitor
 ```
-
-Now, you will see random numbers from the serial monitor.
+Now, you will be able to see the corresponding output in the terminal.

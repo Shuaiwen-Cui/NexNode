@@ -1,152 +1,200 @@
-# CODE 
+# CODE
 
-## wifi_wpa2_enterprise.h
+## Component Structure
+
+```plaintext
+- driver
+    - esp32_mqtt
+        - include
+            - mqtt.h
+        - mqtt.c
+        - CMakeLists.txt
+```
+
+!!! danger
+    Note that there is a built-in MQTT module in esp-idf, so to avoid conflicts, we name this module esp32_mqtt.
+
+## driver/esp32_mqtt/CMakeLists.txt
+
+```cmake
+set(src_dirs
+    .
+)
+
+set(include_dirs
+    include
+)
+
+set(requires
+    mqtt
+)
+
+idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRES ${requires})
+```
+
+!!! note
+    You can see that the dependency relationship here is very simple, only mqtt.
+
+## mqtt.h
 
 ```c
 /**
- * @file wifi_wpa2_enterprise.h
+ * @file mqtt.h
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
- * @brief This file contains the function prototypes for wifi connection using WPA2 enterprise.
+ * @brief This file contains the function prototypes for mqtt connection.
  * @version 1.0
- * @date 2025-02-24
+ * @date 2025-03-17
  *
  * @copyright Copyright (c) 2025
  *
  */
 
-#ifndef __WIFI_WPA2_ENTERPRISE_H__
-#define __WIFI_WPA2_ENTERPRISE_H__
+#ifndef __MQTT_H__
+#define __MQTT_H__
 
 /* Dependencies */
-#include <string.h>
-#include <stdlib.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/event_groups.h"
-#include "esp_wifi.h"
-// #include "esp_wpa2.h"
-#include "esp_eap_client.h"
-#include "esp_event.h"
+#include <stdio.h>
 #include "esp_log.h"
-#include "esp_system.h"
-#include "esp_netif.h"
+#include "mqtt_client.h"
 
 /* Macros */
-#define ENTERPRISE_WIFI_SSID "NTUSECURE" //SSID of WiFi
-#define ENTERPRISE_WIFI_USERNAME "SHUAIWEN001@e.ntu.edu.sg" // Username
-#define ENTERPRISE_WIFI_PASSWORD "Csw19950918$" // Password
+#define MQTT_ADDRESS "mqtt://8.222.194.160" // MQTT Broker URL
+#define MQTT_PORT 1883                      // MQTT Broker Port
+#define MQTT_CLIENT "ESP32-S3-Node-001" // Client ID (Unique for devices)
+#define MQTT_USERNAME "cshwstem"            // MQTT Username
+#define MQTT_PASSWORD "Cshw0918#"           // MQTT Password
+
+#define MQTT_PUBLIC_TOPIC      "/mqtt/node"       // publish topic
+#define MQTT_SUBSCRIBE_TOPIC   "/mqtt/server"     // subscribe topic
 
 /* Variables */
-extern const char *TAG_WIFI; // tag for logging
+extern const char *TAG_MQTT; // tag for logging
+extern esp_mqtt_client_handle_t s_mqtt_client;
+extern bool s_is_mqtt_connected;
 
 /* Function Prototypes */
 /**
- * @name wifi_sta_wpa2_init
- * @brief Initialize the WIFI station to connect to a WPA2 Enterprise network
- * @param void
- * @return esp_err_t 
+ * @brief MQTT client initialization and connection
  */
-esp_err_t wifi_sta_wpa2_init(void);
+void mqtt_app_start(void);
 
-#endif /* __WIFI_WPA2_ENTERPRISE_H__ */
+#endif /* __MQTT_H__ */
 ```
 
-## wifi_wpa2_enterprise.c
+## mqtt.c
 
 ```c
 /**
- * @file wifi_wpa2_enterprise.c
+ * @file mqtt.c
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
- * @brief This file contains the functions to connect to a WPA2 Enterprise network.
+ * @brief This file contains the function prototypes for mqtt connection.
  * @version 1.0
- * @date 2025-02-24
+ * @date 2025-03-17
  *
  * @copyright Copyright (c) 2025
  *
  */
 
 /* Dependencies */
-#include "wifi_wpa2_enterprise.h"
+#include "mqtt.h"
+
+/* Macros */
 
 /* Variables */
-const char *TAG_WIFI = "CSW-WIFI"; // tag for logging
-EventGroupHandle_t wifi_event_group; // FreeRTOS event group to signal when we are connected & ready to make a request
-esp_netif_t *sta_netif = NULL;       // esp netif object representing the WIFI station
-const int CONNECTED_BIT = BIT0;      // use bit 0 to indicate whether connected
+const char *TAG_MQTT = "NODE-MQTT";             // tag for logging
+esp_mqtt_client_handle_t s_mqtt_client = NULL; // MQTT client handle
+bool s_is_mqtt_connected = false;              // MQTT connection status flag
+
+/* Function Prototypes */
 
 /**
- * @name wifi_event_handler
- * @brief Event handler for WIFI and IP events
- * @param arg argument passed to the handler
- * @param event_base base of the event
- * @param event_id id of the event
- * @param event_data data of the event
- * @return void
+ * @brief MQTT event handler
  *
+ * @param event_handler_arg Argument passed to the event handler
+ * @param event_base Event base identifier
+ * @param event_id Event identifier
+ * @param event_data Event-specific data
  */
-void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
+void aliot_mqtt_event_handler(void *event_handler_arg,
+                                     esp_event_base_t event_base,
+                                     int32_t event_id,
+                                     void *event_data)
 {
-    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START)
+    esp_mqtt_event_handle_t event = event_data;
+    esp_mqtt_client_handle_t client = event->client;
+
+    switch ((esp_mqtt_event_id_t)event_id)
     {
-        esp_wifi_connect();
-    }
-    else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
-    {
-        esp_wifi_connect();                                    
-        xEventGroupClearBits(wifi_event_group, CONNECTED_BIT); // clear the connected bit
-    }
-    else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
-    {
-        xEventGroupSetBits(wifi_event_group, CONNECTED_BIT); // only when the ip is obtained, set the connected bit
+    case MQTT_EVENT_CONNECTED: // Connection established
+        ESP_LOGI(TAG_MQTT, "MQTT connected");
+        // Subscribe to the test topic upon successful connection
+        esp_mqtt_client_subscribe_single(client, MQTT_SUBSCRIBE_TOPIC, 1);
+        break;
+    case MQTT_EVENT_DISCONNECTED: // Connection disconnected
+        ESP_LOGI(TAG_MQTT, "MQTT disconnected");
+        break;
+    case MQTT_EVENT_SUBSCRIBED: // Subscription successful
+        ESP_LOGI(TAG_MQTT, "MQTT subscribed, msg_id=%d", event->msg_id);
+        break;
+    case MQTT_EVENT_UNSUBSCRIBED: // Unsubscription successful
+        ESP_LOGI(TAG_MQTT, "MQTT unsubscribed, msg_id=%d", event->msg_id);
+        break;
+    case MQTT_EVENT_PUBLISHED: // Publish acknowledgment received
+        ESP_LOGI(TAG_MQTT, "MQTT published ack, msg_id=%d", event->msg_id);
+        break;
+    case MQTT_EVENT_DATA: // Data received
+        printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
+        printf("DATA=%.*s\r\n", event->data_len, event->data);
+        break;
+    case MQTT_EVENT_ERROR: // Error event
+        ESP_LOGI(TAG_MQTT, "MQTT event error");
+        break;
+    default:
+        ESP_LOGI(TAG_MQTT, "Unhandled MQTT event id: %ld", event_id);
+        break;
     }
 }
 
 /**
- * @name wifi_sta_wpa2_init
- * @brief Initialize the WIFI station to connect to a WPA2 Enterprise network
- * @param void
- * @return esp_err_t
+ * @brief MQTT client initialization and connection
  */
-esp_err_t wifi_sta_wpa2_init(void)
+void mqtt_app_start(void)
 {
     esp_err_t ret;
 
-    /* Preparation */
-    ESP_ERROR_CHECK(esp_netif_init()); // TCP/IP stack initialization
-    wifi_event_group = xEventGroupCreate(); // create the event group
-    ESP_ERROR_CHECK(esp_event_loop_create_default()); // create the event group, later can be used to deal with a series of events by registing call back functions
-    sta_netif = esp_netif_create_default_wifi_sta(); // creat STA object using default configuration
-    assert(sta_netif);
+    esp_mqtt_client_config_t mqtt_cfg = {0};
+    mqtt_cfg.broker.address.uri = MQTT_ADDRESS;
+    mqtt_cfg.broker.address.port = MQTT_PORT;
 
-    /* WiFi Configuration*/
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT(); // use default configuration
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg)); // initialize the wifi using the configuration struct
-    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL)); // register the event handler for WIFI events: port wifi events to the wifi_event_handler for processing
-    ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL)); // register the event handler for IP events: port ip events to the wifi_event_handler for processing
-    ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM)); // set the storage to RAM
-    wifi_config_t wifi_config = {
-        .sta = {
-            .ssid = ENTERPRISE_WIFI_SSID, // set the SSID
-        },
-    };
-    ESP_LOGI(TAG_WIFI, "Setting WiFi configuration SSID %s...", wifi_config.sta.ssid);
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA)); // set the mode to station mode
-    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config)); // set the configuration with the configured struct
-    // ESP_ERROR_CHECK( esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)EXAMPLE_EAP_ID, strlen(EXAMPLE_EAP_ID)) ); // set the identity (not necessary for WAP2-ENTERPRISE)
+    // Client ID
+    mqtt_cfg.credentials.client_id = MQTT_CLIENT;
 
-    ESP_ERROR_CHECK(esp_eap_client_set_username((uint8_t *)ENTERPRISE_WIFI_USERNAME, strlen(ENTERPRISE_WIFI_USERNAME))); // ESP_ERROR_CHECK(esp_wifi_sta_wpa2_ent_set_username((uint8_t *)ENTERPRISE_WIFI_USERNAME, strlen(ENTERPRISE_WIFI_USERNAME))); 
-    ESP_ERROR_CHECK(esp_eap_client_set_password((uint8_t *)ENTERPRISE_WIFI_PASSWORD, strlen(ENTERPRISE_WIFI_PASSWORD))); // ESP_ERROR_CHECK(esp_wifi_sta_wpa2_ent_set_password((uint8_t *)ENTERPRISE_WIFI_PASSWORD, strlen(ENTERPRISE_WIFI_PASSWORD)));
-    
-    ESP_ERROR_CHECK(esp_wifi_sta_enterprise_enable()); // ESP_ERROR_CHECK(esp_wifi_sta_wpa2_ent_enable());
-    
-    /* WiFi Start */
-    ret = esp_wifi_start();
-    if (ret != ESP_OK)
+    // Username
+    mqtt_cfg.credentials.username = MQTT_USERNAME;
+
+    // Password
+    mqtt_cfg.credentials.authentication.password = MQTT_PASSWORD;
+
+    ESP_LOGI(TAG_MQTT, "Connecting to MQTT broker...");
+
+    // Initialize MQTT client with provided configuration
+    esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
+
+    // Register MQTT event handler
+    esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, aliot_mqtt_event_handler, client);
+
+    // Start MQTT client
+    ret = esp_mqtt_client_start(client);
+    if(ret == ESP_OK)
     {
-        ESP_LOGE(TAG_WIFI, "esp_wifi_start failed: %s", esp_err_to_name(ret));
-        return ret;
+        ESP_LOGI(TAG_MQTT, "MQTT client started");
+        s_mqtt_client = client;
+        s_is_mqtt_connected = true;
     }
-    return ESP_OK;
+    else
+    {
+        ESP_LOGE(TAG_MQTT, "MQTT client start failed");
+    }
 }
 
 ```
@@ -183,6 +231,7 @@ esp_err_t wifi_sta_wpa2_init(void)
 #include "esp_rtc.h"
 #include "spi_sdcard.h"
 #include "wifi_wpa2_enterprise.h"
+#include "mqtt.h"
 
 /* Variables */
 const char *TAG = "NEXNODE";
@@ -197,6 +246,9 @@ void app_main(void)
     esp_err_t ret;
     uint32_t flash_size;
     esp_chip_info_t chip_info;
+
+    char mqtt_pub_buff[64];
+    int count = 0;
 
     // Initialize NVS
     ret = nvs_flash_init();
@@ -260,16 +312,29 @@ void app_main(void)
         ESP_LOGE(TAG_WIFI, "WiFi STA Init Failed");
     }
 
+    // only when the ip is obtained, start mqtt
+    EventBits_t ev = 0;
+    ev = xEventGroupWaitBits(wifi_event_group,CONNECTED_BIT,pdTRUE,pdFALSE,portMAX_DELAY);
+    if(ev & CONNECTED_BIT)
+    {
+        mqtt_app_start();
+    }
+
     while (1)
     {
+        if(s_is_mqtt_connected)
+        {
+            snprintf(mqtt_pub_buff,64,"{\"count\":\"%d\"}",count);
+            esp_mqtt_client_publish(s_mqtt_client, MQTT_PUBLIC_TOPIC,
+                            mqtt_pub_buff, strlen(mqtt_pub_buff),1, 0);
+            count++;
+        }
         led_toggle();
+
         ESP_LOGI(TAG, "Hello World!");
-        vTaskDelay(1000);
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
 }
 
 ```
-
-!!! tip
-    For the main programe, only the function `wifi_sta_wpa2_init()` matters for wifi. You should properly insert this function into your programme. Do not forget to `#include "wifi_wpa2_enterprise.h"` in the main file.
 

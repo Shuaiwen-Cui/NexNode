@@ -1,5 +1,40 @@
 # CODE 
 
+## Component Structure
+
+```plaintext
+- driver
+    - wifi
+        - include
+            - wifi_wpa2_enterprise.h
+        - wifi_wpa2_enterprise.c
+        - CMakeLists.txt
+```
+
+## driver/wifi/CMakeLists.txt
+
+```cmake
+set(src_dirs
+    .
+)
+
+set(include_dirs
+    include
+)
+
+set(requires
+    led
+    lcd
+    esp_wifi
+    wpa_supplicant
+)
+
+idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRES ${requires})
+```
+
+!!! tip
+    Note to replace the username and password in the code with your own username and password.
+
 ## wifi_wpa2_enterprise.h
 
 ```c
@@ -33,11 +68,13 @@
 
 /* Macros */
 #define ENTERPRISE_WIFI_SSID "NTUSECURE" //SSID of WiFi
-#define ENTERPRISE_WIFI_USERNAME "SHUAIWEN001@e.ntu.edu.sg" // Username
-#define ENTERPRISE_WIFI_PASSWORD "Csw19950918$" // Password
+#define ENTERPRISE_WIFI_USERNAME "YOUR USER NAME" // Username
+#define ENTERPRISE_WIFI_PASSWORD "YOUR PASSWORD" // Password
 
 /* Variables */
 extern const char *TAG_WIFI; // tag for logging
+extern EventGroupHandle_t wifi_event_group;
+extern const int CONNECTED_BIT;
 
 /* Function Prototypes */
 /**
@@ -271,5 +308,5 @@ void app_main(void)
 ```
 
 !!! tip
-    For the main programe, only the function `wifi_sta_wpa2_init()` matters for wifi. You should properly insert this function into your programme. Do not forget to `#include "wifi_wpa2_enterprise.h"` in the main file.
+    For the main programe, only the function `wifi_sta_wpa2_init()` matters for wifi. You should properly insert this function into your programme. Do not forget to `#include "wifi_wpa2_enterprise.h"` in the main file. The WIFI function prepares us for the next step of MQTT communication.
 
