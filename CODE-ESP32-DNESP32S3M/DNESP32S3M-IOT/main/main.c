@@ -43,6 +43,9 @@ void app_main(void)
     uint32_t flash_size;
     esp_chip_info_t chip_info;
 
+    char mqtt_pub_buff[64];
+    int count = 0;
+
     // Initialize NVS
     ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
@@ -113,8 +116,6 @@ void app_main(void)
         mqtt_app_start();
     }
 
-    static char mqtt_pub_buff[64];
-    int count = 0;
     while (1)
     {
         if(s_is_mqtt_connected)
@@ -125,6 +126,7 @@ void app_main(void)
             count++;
         }
         led_toggle();
+
         ESP_LOGI(TAG, "Hello World!");
         vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
