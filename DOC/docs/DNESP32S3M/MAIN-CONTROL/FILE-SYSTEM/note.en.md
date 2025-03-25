@@ -117,6 +117,6 @@ Return Values:
 - `ESP_OK`: Success
 - Others: Failure
 
-## Dependencies
+<!-- ## Dependencies
 
-![dep](dep-07-spi-sd.png)
+![dep](dep-07-spi-sd.png) -->

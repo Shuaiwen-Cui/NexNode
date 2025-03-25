@@ -116,6 +116,6 @@ esp_err_t esp_vfs_spiffs_unregister(const char* partition_label);
 - 其他：失败
 
 
-## 依赖关系
+<!-- ## 依赖关系
 
-![dep](dep-07-spi-sd.png)
+![dep](dep-07-spi-sd.png) -->
