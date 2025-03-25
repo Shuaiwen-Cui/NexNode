@@ -1,22 +1,22 @@
 /**
  * @file main.c
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
- * @brief 
+ * @brief
  * @version 1.0
- * @date 2024-11-20
- * 
- * @copyright Copyright (c) 2024
- * 
+ * @date 2025-03-18
+ *
+ * @copyright Copyright (c) 2025
+ *
  */
 
 /* DEPENDENCIES */
 // ESP
-#include "esp_system.h" // ESP32 System
-#include "nvs_flash.h"  // ESP32 NVS
+#include "esp_system.h"    // ESP32 System
+#include "nvs_flash.h"     // ESP32 NVS
 #include "esp_chip_info.h" // ESP32 Chip Info
-#include "esp_psram.h" // ESP32 PSRAM
-#include "esp_flash.h" // ESP32 Flash
-#include "esp_log.h" // ESP32 Logging
+#include "esp_psram.h"     // ESP32 PSRAM
+#include "esp_flash.h"     // ESP32 Flash
+#include "esp_log.h"       // ESP32 Logging
 
 // BSP
 #include "led.h"
@@ -29,6 +29,7 @@
 #include "spi_sdcard.h"
 #include "wifi_wpa2_enterprise.h"
 #include "mqtt.h"
+#include "mpu6050.h"
 
 /* Variables */
 const char *TAG = "NEXNODE";
@@ -72,11 +73,12 @@ void app_main(void)
     led_init();
     exit_init();
     spi2_init();
-    i2c_bus_init();
     lcd_init();
+    i2c_bus_init();
+    i2c_sensor_mpu6050_init();
 
     // spiffs_test();                                                  /* Run SPIFFS test */
-    while (sd_card_init())                               /* SD card not detected */
+    while (sd_card_init()) /* SD card not detected */
     {
         lcd_show_string(0, 0, 200, 16, 16, "SD Card Error!", RED);
         vTaskDelay(500);
@@ -89,7 +91,7 @@ void app_main(void)
 
     lcd_show_string(0, 0, 200, 16, 16, "SD Initialized!", RED);
 
-    sd_card_test_filesystem();                                        /* Run SD card test */
+    sd_card_test_filesystem(); /* Run SD card test */
 
     lcd_show_string(0, 0, 200, 16, 16, "SD Tested CSW! ", RED);
 
@@ -98,9 +100,9 @@ void app_main(void)
     vTaskDelay(3000);
 
     lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test  ", RED);
-    
+
     ret = wifi_sta_wpa2_init();
-    if(ret == ESP_OK)
+    if (ret == ESP_OK)
     {
         ESP_LOGI(TAG_WIFI, "WiFi STA Init OK");
         lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test OK", RED);
@@ -112,45 +114,64 @@ void app_main(void)
 
     // only when the ip is obtained, start mqtt
     EventBits_t ev = 0;
-    ev = xEventGroupWaitBits(wifi_event_group,CONNECTED_BIT,pdTRUE,pdFALSE,portMAX_DELAY);
-    if(ev & CONNECTED_BIT)
+    ev = xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, pdTRUE, pdFALSE, portMAX_DELAY);
+    if (ev & CONNECTED_BIT)
     {
         mqtt_app_start();
     }
 
+    uint8_t mpu6050_deviceid;
+    mpu6050_acce_value_t acce;
+    mpu6050_gyro_value_t gyro;
+    mpu6050_temp_value_t temp;
+    complimentary_angle_t angle;
+
+    ret = mpu6050_get_deviceid(mpu6050, &mpu6050_deviceid);
+    TEST_ASSERT_EQUAL(ESP_OK, ret);
+    TEST_ASSERT_EQUAL_UINT8_MESSAGE(MPU6050_WHO_AM_I_VAL, mpu6050_deviceid, "Who Am I register does not contain expected data");
+
     while (1)
     {
-        if(s_is_mqtt_connected)
-        {
-            snprintf(mqtt_pub_buff,64,"{\"count\":\"%d\"}",count);
-            esp_mqtt_client_publish(s_mqtt_client, MQTT_PUBLIC_TOPIC,
-                            mqtt_pub_buff, strlen(mqtt_pub_buff),1, 0);
-            count++;
-        }
+        // led test
         led_toggle();
 
+        // hellow world test
         ESP_LOGI(TAG, "Hello World!");
+
+        // mpu6050 test
+        ret = mpu6050_get_acce(mpu6050, &acce);
+        // TEST_ASSERT_EQUAL(ESP_OK, ret);
+        ESP_LOGI(TAG, "acce_x:%.6f, acce_y:%.6f, acce_z:%.6f\n", acce.acce_x, acce.acce_y, acce.acce_z);
+
+        ret = mpu6050_get_gyro(mpu6050, &gyro);
+        // TEST_ASSERT_EQUAL(ESP_OK, ret);
+        ESP_LOGI(TAG, "gyro_x:%.6f, gyro_y:%.6f, gyro_z:%.6f\n", gyro.gyro_x, gyro.gyro_y, gyro.gyro_z);
+
+        ret = mpu6050_get_temp(mpu6050, &temp);
+        // TEST_ASSERT_EQUAL(ESP_OK, ret);
+        ESP_LOGI(TAG, "t:%.6f \n", temp.temp);
+
+        ret = mpu6050_complimentory_filter(mpu6050, &acce, &gyro, &angle);
+        // TEST_ASSERT_EQUAL(ESP_OK, ret);
+        ESP_LOGI(TAG, "pitch:%.6f roll:%.6f \n", angle.pitch, angle.roll);
+
+        // // mqtt test
+        // if(s_is_mqtt_connected)
+        // {
+        //     snprintf(mqtt_pub_buff,64,"{\"count\":\"%d\"}",count);
+        //     esp_mqtt_client_publish(s_mqtt_client, MQTT_PUBLIC_TOPIC,
+        //                     mqtt_pub_buff, strlen(mqtt_pub_buff),1, 0);
+        //     count++;
+        // }
+
+        // mqtt test publish acc data
+        if (s_is_mqtt_connected)
+        {
+            snprintf(mqtt_pub_buff, 64, "{\"acce_x\":\"%.6f\",\"acce_y\":\"%.6f\",\"acce_z\":\"%.6f\"}", acce.acce_x, acce.acce_y, acce.acce_z);
+            esp_mqtt_client_publish(s_mqtt_client, MQTT_PUBLIC_TOPIC,
+                                    mqtt_pub_buff, strlen(mqtt_pub_buff), 1, 0);
+        }
+
         vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
 }
-
-
-
-// static void wpa2_enterprise_example_task(void *pvParameters)
-// {
-//     esp_netif_ip_info_t ip;
-//     memset(&ip, 0, sizeof(esp_netif_ip_info_t));
-//     vTaskDelay(2000 / portTICK_PERIOD_MS);
-
-//     while (1) {
-//         vTaskDelay(2000 / portTICK_PERIOD_MS);
-
-//         if (esp_netif_get_ip_info(sta_netif, &ip) == 0) {
-//             ESP_LOGI(TAG, "~~~~~~~~~~~");
-//             ESP_LOGI(TAG, "IP:"IPSTR, IP2STR(&ip.ip));
-//             ESP_LOGI(TAG, "MASK:"IPSTR, IP2STR(&ip.netmask));
-//             ESP_LOGI(TAG, "GW:"IPSTR, IP2STR(&ip.gw));
-//             ESP_LOGI(TAG, "~~~~~~~~~~~");
-//         }
-//     }
-// }
