@@ -77,9 +77,78 @@
     - `driver` 目录下放置驱动代码
     - `main` 目录下放置主函数代码
 
-## 推荐上手顺序
+>DNESP32S3M 项目实际结构 (实时更新)
 
-总之，可以看每个章节里面的依赖关系，保证前置条件满足即可。
+```txt
+- DNESP32S3M-XXX/
+             - .vscode/ (vscode 设置文件，可以忽略)
+             - CMakeLists.txt (项目级 cmake 文件)
+             - sdkconfig (项目级 sdkconfig 文件，通过 idf.py menuconfig 生成)
+             - sdkconfig.old (sdkconfig 备份)
+             - partitions-16MiB.csv (16MiB flash 调整的分区表文件)
+             - dependencies.lock (依赖库版本锁定文件)
+             - application/         - component1/ - CMakeLists.txt
+                                                  - Kconfig
+                                                  - src1.c
+                                    - component2/ - CMakeLists.txt
+                                                  - Kconfig
+                                                  - src1.c
+                                                  - include/ - component2.h
+             - middleware/          - component1/ - CMakeLists.txt
+                                                  - Kconfig
+                                                  - src1.c
+                                    - component2/ - CMakeLists.txt
+                                                  - Kconfig
+                                                  - src1.c
+                                                  - include/ - component2.h
+             - driver/              - esp_rtc/    - CMakeLists.txt
+                                                  - include/ - esp_rtc.h
+                                                  - esp_rtc.c
+                                    - esp32_mqtt/ - CMakeLists.txt
+                                                  - include/ - mqtt.h
+                                                  - mqttc.c
+                                    - exit/       - CMakeLists.txt
+                                                  - include/ - exit.h
+                                                  - exit.c
+                                    - i2c/        - CMakeLists.txt
+                                                  - include/ - i2c.h
+                                                  - i2c.c
+                                    - lcd/        - CMakeLists.txt
+                                                  - include/ - lcd.h
+                                                  - lcd.c
+                                    - led/        - CMakeLists.txt
+                                                  - include/ - led.h
+                                                  - led.c
+                                    - mpu6050/    - CMakeLists.txt
+                                                  - include/ - mpu6050.h
+                                                  - mpu6050.c
+                                    - rng/        - CMakeLists.txt
+                                                  - include/ - rng.h
+                                                  - rng.c
+                                    - spi/        - CMakeLists.txt
+                                                  - include/ - spi.h
+                                                  - spi.c
+                                    - spi_sdcard/ - CMakeLists.txt
+                                                  - include/ - spi_sdcard.h
+                                                  - spi_sdcard.c
+                                    - tim/        - CMakeLists.txt
+                                                  - include/ - tim.h
+                                                  - tim.c
+                                    - wifi/       - CMakeLists.txt
+                                                  - include/ - wifi.h
+                                                  - wifi.c
+             - main/                - CMakeLists.txt
+                                    - main.c
+
+             - build/
+```
+
+
+
+## 本项目开发顺序
+
+!!! tip
+    对于每个组件，需要保证其前置条件已经满足，才能进行后续的开发。
 
 0. 项目构建
 1. 执行>LED

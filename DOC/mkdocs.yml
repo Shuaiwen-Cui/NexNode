@@ -130,7 +130,7 @@ plugins:
             RTC: 实时时钟
             RNG: 随机数生成器
             SPI: 串行外设接口SPI
-            I2C: 串行外设接口I2C
+            I2C: 内部集成电路总线I2C
             SD-CARD: SD卡
             # TF-CARD: TF(SD)卡
             # FILE-SYSTEM: 文件系统(SPIFFS)
