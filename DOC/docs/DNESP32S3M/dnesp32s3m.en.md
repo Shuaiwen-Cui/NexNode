@@ -164,3 +164,7 @@
 11. MAIN-CONTROL>I2C
 12. PERCEPTION>MPU6050
 
+## ADDITIONAL NOTES
+
+!!! danger "ADDITIONAL NOTES"
+    The author has observed that the same code may work correctly at one time and cause frequent reboots at another time (preliminary suspicion is that some wild pointers in certain modules are causing this). It is recommended to completely clear the build folder and power cycle the development board before flashing.
