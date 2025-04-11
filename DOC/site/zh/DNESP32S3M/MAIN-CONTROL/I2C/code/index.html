@@ -33,23 +33,32 @@
 </span><span id=__span-2-12><a id=__codelineno-2-12 name=__codelineno-2-12 href=#__codelineno-2-12></a><span class=cp>#ifndef __I2C_H__</span>
 </span><span id=__span-2-13><a id=__codelineno-2-13 name=__codelineno-2-13 href=#__codelineno-2-13></a><span class=cp>#define __I2C_H__</span>
 </span><span id=__span-2-14><a id=__codelineno-2-14 name=__codelineno-2-14 href=#__codelineno-2-14></a>
-</span><span id=__span-2-15><a id=__codelineno-2-15 name=__codelineno-2-15 href=#__codelineno-2-15></a><span class=cp>#include</span><span class=w> </span><span class=cpf>&lt;stdio.h&gt;</span>
-</span><span id=__span-2-16><a id=__codelineno-2-16 name=__codelineno-2-16 href=#__codelineno-2-16></a><span class=cp>#include</span><span class=w> </span><span class=cpf>&quot;esp_log.h&quot;</span>
-</span><span id=__span-2-17><a id=__codelineno-2-17 name=__codelineno-2-17 href=#__codelineno-2-17></a><span class=cp>#include</span><span class=w> </span><span class=cpf>&quot;unity.h&quot;</span><span class=c1> // This is for unity testing</span>
-</span><span id=__span-2-18><a id=__codelineno-2-18 name=__codelineno-2-18 href=#__codelineno-2-18></a><span class=cp>#include</span><span class=w> </span><span class=cpf>&quot;driver/i2c.h&quot;</span>
-</span><span id=__span-2-19><a id=__codelineno-2-19 name=__codelineno-2-19 href=#__codelineno-2-19></a><span class=cp>#include</span><span class=w> </span><span class=cpf>&quot;esp_system.h&quot;</span>
-</span><span id=__span-2-20><a id=__codelineno-2-20 name=__codelineno-2-20 href=#__codelineno-2-20></a>
-</span><span id=__span-2-21><a id=__codelineno-2-21 name=__codelineno-2-21 href=#__codelineno-2-21></a><span class=cp>#define I2C_MASTER_SCL_IO 4      </span><span class=cm>/*!&lt; gpio number for I2C master clock */</span>
-</span><span id=__span-2-22><a id=__codelineno-2-22 name=__codelineno-2-22 href=#__codelineno-2-22></a><span class=cp>#define I2C_MASTER_SDA_IO 5      </span><span class=cm>/*!&lt; gpio number for I2C master data  */</span>
-</span><span id=__span-2-23><a id=__codelineno-2-23 name=__codelineno-2-23 href=#__codelineno-2-23></a><span class=cp>#define I2C_MASTER_NUM I2C_NUM_0  </span><span class=cm>/*!&lt; I2C port number for master dev */</span>
-</span><span id=__span-2-24><a id=__codelineno-2-24 name=__codelineno-2-24 href=#__codelineno-2-24></a><span class=cp>#define I2C_MASTER_FREQ_HZ 100000 </span><span class=cm>/*!&lt; I2C master clock frequency */</span>
+</span><span id=__span-2-15><a id=__codelineno-2-15 name=__codelineno-2-15 href=#__codelineno-2-15></a><span class=cp>#ifdef __cplusplus</span>
+</span><span id=__span-2-16><a id=__codelineno-2-16 name=__codelineno-2-16 href=#__codelineno-2-16></a><span class=k>extern</span><span class=w> </span><span class=s>&quot;C&quot;</span>
+</span><span id=__span-2-17><a id=__codelineno-2-17 name=__codelineno-2-17 href=#__codelineno-2-17></a><span class=p>{</span>
+</span><span id=__span-2-18><a id=__codelineno-2-18 name=__codelineno-2-18 href=#__codelineno-2-18></a><span class=cp>#endif</span>
+</span><span id=__span-2-19><a id=__codelineno-2-19 name=__codelineno-2-19 href=#__codelineno-2-19></a>
+</span><span id=__span-2-20><a id=__codelineno-2-20 name=__codelineno-2-20 href=#__codelineno-2-20></a><span class=cp>#include</span><span class=w> </span><span class=cpf>&lt;stdio.h&gt;</span>
+</span><span id=__span-2-21><a id=__codelineno-2-21 name=__codelineno-2-21 href=#__codelineno-2-21></a><span class=cp>#include</span><span class=w> </span><span class=cpf>&quot;esp_log.h&quot;</span>
+</span><span id=__span-2-22><a id=__codelineno-2-22 name=__codelineno-2-22 href=#__codelineno-2-22></a><span class=cp>#include</span><span class=w> </span><span class=cpf>&quot;unity.h&quot;</span><span class=c1> // This is for unity testing</span>
+</span><span id=__span-2-23><a id=__codelineno-2-23 name=__codelineno-2-23 href=#__codelineno-2-23></a><span class=cp>#include</span><span class=w> </span><span class=cpf>&quot;driver/i2c.h&quot;</span>
+</span><span id=__span-2-24><a id=__codelineno-2-24 name=__codelineno-2-24 href=#__codelineno-2-24></a><span class=cp>#include</span><span class=w> </span><span class=cpf>&quot;esp_system.h&quot;</span>
 </span><span id=__span-2-25><a id=__codelineno-2-25 name=__codelineno-2-25 href=#__codelineno-2-25></a>
-</span><span id=__span-2-26><a id=__codelineno-2-26 name=__codelineno-2-26 href=#__codelineno-2-26></a><span class=cm>/**</span>
-</span><span id=__span-2-27><a id=__codelineno-2-27 name=__codelineno-2-27 href=#__codelineno-2-27></a><span class=cm> * @brief i2c master initialization</span>
-</span><span id=__span-2-28><a id=__codelineno-2-28 name=__codelineno-2-28 href=#__codelineno-2-28></a><span class=cm> */</span>
-</span><span id=__span-2-29><a id=__codelineno-2-29 name=__codelineno-2-29 href=#__codelineno-2-29></a><span class=kt>void</span><span class=w> </span><span class=nf>i2c_bus_init</span><span class=p>(</span><span class=kt>void</span><span class=p>);</span>
+</span><span id=__span-2-26><a id=__codelineno-2-26 name=__codelineno-2-26 href=#__codelineno-2-26></a><span class=cp>#define I2C_MASTER_SCL_IO 4      </span><span class=cm>/*!&lt; gpio number for I2C master clock */</span>
+</span><span id=__span-2-27><a id=__codelineno-2-27 name=__codelineno-2-27 href=#__codelineno-2-27></a><span class=cp>#define I2C_MASTER_SDA_IO 5      </span><span class=cm>/*!&lt; gpio number for I2C master data  */</span>
+</span><span id=__span-2-28><a id=__codelineno-2-28 name=__codelineno-2-28 href=#__codelineno-2-28></a><span class=cp>#define I2C_MASTER_NUM I2C_NUM_0  </span><span class=cm>/*!&lt; I2C port number for master dev */</span>
+</span><span id=__span-2-29><a id=__codelineno-2-29 name=__codelineno-2-29 href=#__codelineno-2-29></a><span class=cp>#define I2C_MASTER_FREQ_HZ 100000 </span><span class=cm>/*!&lt; I2C master clock frequency */</span>
 </span><span id=__span-2-30><a id=__codelineno-2-30 name=__codelineno-2-30 href=#__codelineno-2-30></a>
-</span><span id=__span-2-31><a id=__codelineno-2-31 name=__codelineno-2-31 href=#__codelineno-2-31></a><span class=cp>#endif </span><span class=cm>/* __I2C_H__ */</span>
+</span><span id=__span-2-31><a id=__codelineno-2-31 name=__codelineno-2-31 href=#__codelineno-2-31></a><span class=cm>/**</span>
+</span><span id=__span-2-32><a id=__codelineno-2-32 name=__codelineno-2-32 href=#__codelineno-2-32></a><span class=cm> * @brief i2c master initialization</span>
+</span><span id=__span-2-33><a id=__codelineno-2-33 name=__codelineno-2-33 href=#__codelineno-2-33></a><span class=cm> */</span>
+</span><span id=__span-2-34><a id=__codelineno-2-34 name=__codelineno-2-34 href=#__codelineno-2-34></a><span class=kt>void</span><span class=w> </span><span class=nf>i2c_bus_init</span><span class=p>(</span><span class=kt>void</span><span class=p>);</span>
+</span><span id=__span-2-35><a id=__codelineno-2-35 name=__codelineno-2-35 href=#__codelineno-2-35></a>
+</span><span id=__span-2-36><a id=__codelineno-2-36 name=__codelineno-2-36 href=#__codelineno-2-36></a><span class=cp>#ifdef __cplusplus</span>
+</span><span id=__span-2-37><a id=__codelineno-2-37 name=__codelineno-2-37 href=#__codelineno-2-37></a><span class=p>}</span>
+</span><span id=__span-2-38><a id=__codelineno-2-38 name=__codelineno-2-38 href=#__codelineno-2-38></a><span class=cp>#endif</span>
+</span><span id=__span-2-39><a id=__codelineno-2-39 name=__codelineno-2-39 href=#__codelineno-2-39></a>
+</span><span id=__span-2-40><a id=__codelineno-2-40 name=__codelineno-2-40 href=#__codelineno-2-40></a><span class=cp>#endif </span><span class=cm>/* __I2C_H__ */</span>
 </span></code></pre></div> <h2 id=i2cc>i2c.c<a class=headerlink href=#i2cc title="Permanent link">&para;</a></h2> <div class="language-c highlight"><pre><span></span><code><span id=__span-3-1><a id=__codelineno-3-1 name=__codelineno-3-1 href=#__codelineno-3-1></a><span class=cm>/**</span>
 </span><span id=__span-3-2><a id=__codelineno-3-2 name=__codelineno-3-2 href=#__codelineno-3-2></a><span class=cm> * @file i2c.c</span>
 </span><span id=__span-3-3><a id=__codelineno-3-3 name=__codelineno-3-3 href=#__codelineno-3-3></a><span class=cm> * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)</span>
