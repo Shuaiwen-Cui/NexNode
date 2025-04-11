@@ -51,6 +51,11 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
 #ifndef __EXIT_H__
 #define __EXIT_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include "esp_system.h"
 #include "driver/gpio.h"
 #include "led.h"
@@ -68,6 +73,10 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
  * @retval      None
  */
 void exit_init(void); /* External interrupt initialization function */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 ```
