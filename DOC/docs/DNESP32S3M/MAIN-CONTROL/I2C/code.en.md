@@ -34,69 +34,49 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
 !!! note
     Note that in the drivers, we used i2c and gpio related functions from the builtin `driver` library, therefore, we need to indicate these dependencies in the `CMakeLists.txt` file by adding `driver` to the `REQUIRES` field.
 
-## spi.h
+## i2c.h
     
 ```c
 /**
- * @file spi.h
+ * @file i2c.c
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
- * @brief
+ * @brief This file contains the function prototypes for i2c master initialization. This is to serve the peripherals that require I2C communication.
  * @version 1.0
- * @date 2024-11-18
- * @ref Alientek SPI driver
- * @copyright Copyright (c) 2024
+ * @date 2025-03-17
+ *
+ * @copyright Copyright (c) 2025
  *
  */
 
-#ifndef __SPI_H__
-#define __SPI_H__
+#ifndef __I2C_H__
+#define __I2C_H__
 
-/* Dependencies */
-#include <string.h>
-#include "esp_log.h"
-#include "driver/spi_master.h"
-#include "driver/gpio.h"
-
-/* GPIO Definitions */
-#define SPI2_MOSI_GPIO_PIN GPIO_NUM_11 /* SPI2_MOSI */
-#define SPI2_CLK_GPIO_PIN GPIO_NUM_12  /* SPI2_CLK */
-#define SPI2_MISO_GPIO_PIN GPIO_NUM_13 /* SPI2_MISO */
-
-/* Function Prototypes */
-
-/**
- * @brief       Initialize SPI
- * @param       None
- * @retval      None
- */
-void spi2_init(void);
-
-/**
- * @brief       Send command via SPI
- * @param       handle : SPI handle
- * @param       cmd    : Command to send
- * @retval      None
- */
-void spi2_write_cmd(spi_device_handle_t handle, uint8_t cmd);
-
-/**
- * @brief       Send data via SPI
- * @param       handle : SPI handle
- * @param       data   : Data to send
- * @param       len    : Length of data to send
- * @retval      None
- */
-void spi2_write_data(spi_device_handle_t handle, const uint8_t *data, int len);
-
-/**
- * @brief       Process data via SPI
- * @param       handle       : SPI handle
- * @param       data         : Data to send
- * @retval      t.rx_data[0] : Received data
- */
-uint8_t spi2_transfer_byte(spi_device_handle_t handle, uint8_t byte);
-
+#ifdef __cplusplus
+extern "C"
+{
 #endif
+
+#include <stdio.h>
+#include "esp_log.h"
+#include "unity.h" // This is for unity testing
+#include "driver/i2c.h"
+#include "esp_system.h"
+
+#define I2C_MASTER_SCL_IO 4      /*!< gpio number for I2C master clock */
+#define I2C_MASTER_SDA_IO 5      /*!< gpio number for I2C master data  */
+#define I2C_MASTER_NUM I2C_NUM_0  /*!< I2C port number for master dev */
+#define I2C_MASTER_FREQ_HZ 100000 /*!< I2C master clock frequency */
+
+/**
+ * @brief i2c master initialization
+ */
+void i2c_bus_init(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* __I2C_H__ */
 ```
 ## i2c.h
     

@@ -49,6 +49,11 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
 #ifndef __ESP_RTC_H__
 #define __ESP_RTC_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <sys/time.h>
@@ -100,6 +105,10 @@ void rtc_get_time(void); /* Get time */
  * @retval      0: Sunday; 1 ~ 6: Monday ~ Saturday
  */
 uint8_t rtc_get_week(uint16_t year, uint8_t month, uint8_t day); /* Get the weekday */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __ESP_RTC_H__ */
 ```

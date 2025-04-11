@@ -49,6 +49,11 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
 #ifndef __SPI_H__
 #define __SPI_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /* Dependencies */
 #include <string.h>
 #include "esp_log.h"
@@ -93,6 +98,10 @@ void spi2_write_data(spi_device_handle_t handle, const uint8_t *data, int len);
  * @retval      t.rx_data[0] : Received data
  */
 uint8_t spi2_transfer_byte(spi_device_handle_t handle, uint8_t byte);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 ```

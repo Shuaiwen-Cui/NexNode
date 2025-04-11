@@ -48,6 +48,11 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
 #ifndef __SPI_SDCARD_H__
 #define __SPI_SDCARD_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /* DEPENDENCIES */
 #include "esp_vfs_fat.h" // ESP32 VFS FAT
 #include "sdmmc_cmd.h" // ESP32 SDMMC
@@ -83,6 +88,11 @@ esp_err_t sd_card_test_filesystem(void);
  * @retval esp_err_t
  */
 esp_err_t sd_card_unmount(void);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif
 ```
 

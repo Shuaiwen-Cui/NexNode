@@ -50,6 +50,11 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
 #ifndef __LCDFONT_H__
 #define __LCDFONT_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /* Common ASCII Table
  * Offset: 32
  * ASCII Character Set: !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
@@ -454,6 +459,10 @@ const unsigned char asc2_3216[95][128] = {
     {0x00, 0x00, 0x1E, 0x00, 0x23, 0x00, 0x41, 0x82, 0x40, 0x82, 0x00, 0xE4, 0x00, 0x38, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, /*"~",94*/
 };
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* LCDFONT_H_ */
 
 ```
@@ -473,6 +482,11 @@ const unsigned char asc2_3216[95][128] = {
 
 #ifndef __LCD_H__
 #define __LCD_H__
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -588,6 +602,10 @@ void lcd_draw_hline(uint16_t x, uint16_t y, uint16_t len, uint16_t color);      
 void lcd_draw_line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);                               /* Draw a straight or slanted line */
 void lcd_draw_pixel(uint16_t x, uint16_t y, uint16_t color);                                                          /* Draw a pixel */
 void lcd_show_char(uint16_t x, uint16_t y, uint8_t chr, uint8_t size, uint8_t mode, uint16_t color);                  /* Display a character at a specified position */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __LCD_H__ */
 

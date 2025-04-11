@@ -52,6 +52,11 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
 #ifndef __MQTT_H__
 #define __MQTT_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /* Dependencies */
 #include <stdio.h>
 #include "esp_log.h"
@@ -77,6 +82,10 @@ extern bool s_is_mqtt_connected;
  * @brief MQTT client initialization and connection
  */
 void mqtt_app_start(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __MQTT_H__ */
 ```

@@ -52,6 +52,11 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
 #ifndef __WIFI_WPA2_ENTERPRISE_H__
 #define __WIFI_WPA2_ENTERPRISE_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /* Dependencies */
 #include <string.h>
 #include <stdlib.h>
@@ -68,8 +73,8 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
 
 /* Macros */
 #define ENTERPRISE_WIFI_SSID "NTUSECURE" //SSID of WiFi
-#define ENTERPRISE_WIFI_USERNAME "YOUR USER NAME" // Username
-#define ENTERPRISE_WIFI_PASSWORD "YOUR PASSWORD" // Password
+#define ENTERPRISE_WIFI_USERNAME "SHUAIWEN001@e.ntu.edu.sg" // Username
+#define ENTERPRISE_WIFI_PASSWORD "Csw19950918%" // Password
 
 /* Variables */
 extern const char *TAG_WIFI; // tag for logging
@@ -84,6 +89,10 @@ extern const int CONNECTED_BIT;
  * @return esp_err_t 
  */
 esp_err_t wifi_sta_wpa2_init(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __WIFI_WPA2_ENTERPRISE_H__ */
 ```
