@@ -356,10 +356,10 @@ nav:
           # - MIDDLEWARE: "DNESP32S3M/MIDDLEWARE/middleware.md"
           - ESP-DSP: "DNESP32S3M/MIDDLEWARE/ESP-DSP/esp-dsp.md"
           - ESP-DL: "DNESP32S3M/MIDDLEWARE/ESP-DL/esp-dl.md"
-  # - DNESP32S3:
-  #     - ROADMAP: "DNESP32S3/dnesp32s3.md"
-  # - FKH743M2-IIT6:
-  #     - ROADMAP: "FKH743M2-IIT6/fkh743m2-iit6.md"
+  - DNESP32S3:
+      - ROADMAP: "DNESP32S3/dnesp32s3.md"
+  - FKH743M2-IIT6:
+      - ROADMAP: "FKH743M2-IIT6/fkh743m2-iit6.md"
   - RELEASE:
       - "RELEASE/release.md"
 

@@ -1,0 +1,2 @@
+source /home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M-CPP/build/gdbinit/symbols
+source /home/cshwstem/CSW/Development/NexNode/CODE-ESP32-DNESP32S3M-CPP/build/gdbinit/connect
