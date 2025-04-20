@@ -42,7 +42,7 @@
              - sdkconfig (项目级 sdkconfig 文件，通过 idf.py menuconfig 生成)
              - sdkconfig.old (sdkconfig 备份)
              - partitions-16MiB.csv (16MiB flash 调整的分区表文件)
-             - dependencies.lock (依赖库版本锁定文件)
+             - dependencies.lock (依赖库版本锁定文件,自动生成，首次运行前请删除此文件)
              - application/         - component1/ - CMakeLists.txt
                                                   - Kconfig
                                                   - src1.c
