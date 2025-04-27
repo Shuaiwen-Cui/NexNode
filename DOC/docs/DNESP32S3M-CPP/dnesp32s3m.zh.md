@@ -22,7 +22,7 @@
              - sdkconfig (项目级 sdkconfig 文件，通过 idf.py menuconfig 生成)
              - sdkconfig.old (sdkconfig 备份)
              - partitions-16MiB.csv (16MiB flash 调整的分区表文件)
-             - dependencies.lock (依赖库版本锁定文件)
+             - dependencies.lock (依赖库版本锁定文件, 开始编译前一定删掉该文件!)
              - application/         - component1/ - CMakeLists.txt
                                                   - Kconfig
                                                   - src1.c
@@ -66,7 +66,7 @@
              - sdkconfig (项目级 sdkconfig 文件，通过 idf.py menuconfig 生成)
              - sdkconfig.old (sdkconfig 备份)
              - partitions-16MiB.csv (16MiB flash 调整的分区表文件)
-             - dependencies.lock (依赖库版本锁定文件)
+             - dependencies.lock (依赖库版本锁定文件, 开始编译前一定删掉该文件!)
              - application/         - component1/ - CMakeLists.txt
                                                   - Kconfig
                                                   - src1.c
@@ -113,3 +113,6 @@
 
 !!! danger "额外说明"
     作者观察到在开发过程中，同样一套代码在不同的时候编译和烧录有时候可以正常运行，有时候会导致频繁重启（初步怀疑是某些模块里面的野指针导致的）。建议烧录的时候，彻底清空build文件夹，开发板重新上电后烧录。
+
+!!! dangerr
+    在编译开始之前，特别是调整了项目结构后，请删除 `dependencies.lock` 文件。否则会导致编译失败。

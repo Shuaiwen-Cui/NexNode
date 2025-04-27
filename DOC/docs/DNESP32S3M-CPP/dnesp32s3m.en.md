@@ -22,7 +22,7 @@
              - sdkconfig (项目级 sdkconfig 文件，通过 idf.py menuconfig 生成)
              - sdkconfig.old (sdkconfig 备份)
              - partitions-16MiB.csv (16MiB flash 调整的分区表文件)
-             - dependencies.lock (依赖库版本锁定文件)
+             - dependencies.lock (dependencies.lock file, remove this before building!)
              - application/         - component1/ - CMakeLists.txt
                                                   - Kconfig
                                                   - src1.c
@@ -67,7 +67,7 @@
              - sdkconfig (项目级 sdkconfig 文件，通过 idf.py menuconfig 生成)
              - sdkconfig.old (sdkconfig 备份)
              - partitions-16MiB.csv (16MiB flash 调整的分区表文件)
-             - dependencies.lock (依赖库版本锁定文件)
+             - dependencies.lock (dependencies.lock file, remove this before building!)
              - application/         - component1/ - CMakeLists.txt
                                                   - Kconfig
                                                   - src1.c
@@ -149,3 +149,6 @@
 
 !!! danger "ADDITIONAL NOTES"
     The author has observed that the same code may work correctly at one time and cause frequent reboots at another time (preliminary suspicion is that some wild pointers in certain modules are causing this). It is recommended to completely clear the build folder and power cycle the development board before flashing.
+
+!!! danger "ADDITIONAL NOTES"
+    Before you compile the project, delete the `dependencies.lock` file in the project root directory. This file is used to lock the version of the dependencies. If you don't delete it, the project may not compile correctly.
