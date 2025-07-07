@@ -1,0 +1,11 @@
+dependencies:
+  idf: ^5.3
+  plasmapper/pl_spi: ^1.0.1
+description: Analog Devices ADXL355 C++ class component for ESP-IDF
+license: MIT
+repository: git://github.com/plasmapper/adxl355-esp-cpp.git
+repository_info:
+  commit_sha: 1f123020765a73b3f958fb8eaae15d7b8dc73102
+  path: pl_adxl355
+url: https://github.com/plasmapper/adxl355-esp-cpp
+version: 1.0.0

@@ -1,0 +1,11 @@
+dependencies:
+  idf: ^5.3
+  plasmapper/pl_common: ^1.2.1
+description: SPI C++ class component for ESP-IDF
+license: MIT
+repository: git://github.com/plasmapper/spi-esp-cpp.git
+repository_info:
+  commit_sha: c2b5a3dd1a3279d6f5adecd3f0a88a92046d19af
+  path: pl_spi
+url: https://github.com/plasmapper/spi-esp-cpp
+version: 1.0.2

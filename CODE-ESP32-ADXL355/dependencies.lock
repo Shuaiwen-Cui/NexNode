@@ -1,0 +1,49 @@
+dependencies:
+  idf:
+    source:
+      type: idf
+    version: 5.5.0
+  plasmapper/pl_adxl355:
+    component_hash: 0ec1cce4d9c31942ecb8d076e9a278d7e07a916f364a76caca7aabd854851fb0
+    dependencies:
+    - name: idf
+      require: private
+      version: ^5.3
+    - name: plasmapper/pl_spi
+      registry_url: https://components.espressif.com
+      require: private
+      version: ^1.0.1
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.0.0
+  plasmapper/pl_common:
+    component_hash: bc77bf671462e34ba957e32182ed8f77c8eca31edf125cfc57a19d7b74de1db0
+    dependencies:
+    - name: idf
+      require: private
+      version: ^5.0
+    source:
+      registry_url: https://components.espressif.com
+      type: service
+    version: 1.2.2
+  plasmapper/pl_spi:
+    component_hash: 4d7f78ca5727ab983b9a0f813b5012d3934a024f4c25eda701306f5b1a3bdd76
+    dependencies:
+    - name: idf
+      require: private
+      version: ^5.3
+    - name: plasmapper/pl_common
+      registry_url: https://components.espressif.com
+      require: private
+      version: ^1.2.1
+    source:
+      registry_url: https://components.espressif.com
+      type: service
+    version: 1.0.2
+direct_dependencies:
+- idf
+- plasmapper/pl_adxl355
+manifest_hash: 8b26d2117f3301a3e30f76a97c0a6bef34046cc45813ce5ff589d7f61a2c8e7a
+target: esp32s3
+version: 2.0.0

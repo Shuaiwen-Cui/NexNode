@@ -1,0 +1,2 @@
+source /home/cshwstem/CSW/Development/NexNode/CODE-ESP32-ADXL355/build/gdbinit/symbols
+source /home/cshwstem/CSW/Development/NexNode/CODE-ESP32-ADXL355/build/gdbinit/connect

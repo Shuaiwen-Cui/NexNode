@@ -1,0 +1,10 @@
+dependencies:
+  idf: ^5.0
+description: Common C++ class component for ESP-IDF
+license: MIT
+repository: git://github.com/plasmapper/common-esp-cpp.git
+repository_info:
+  commit_sha: 8c0e97c159eb8bdbce68e802d9b0858acec09059
+  path: pl_common
+url: https://github.com/plasmapper/common-esp-cpp
+version: 1.2.2
