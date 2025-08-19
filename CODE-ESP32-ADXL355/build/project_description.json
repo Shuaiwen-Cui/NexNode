@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "DNESP32S3-INIT",
-    "project_version":    "a05f198-dirty",
+    "project_version":    "8d93f1a5-dirty",
     "project_path":       "/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-ADXL355",
     "idf_path":           "/home/cshwstem/esp/esp-idf",
     "build_dir":          "/home/cshwstem/CSW/Development/NexNode/CODE-ESP32-ADXL355/build",
