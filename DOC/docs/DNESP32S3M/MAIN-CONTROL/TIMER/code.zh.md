@@ -50,13 +50,7 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
  *
  */
 
-#ifndef __TIM_H__
-#define __TIM_H__
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#pragma once
 
 /* Dependencies */
 #include "freertos/FreeRTOS.h"
@@ -64,6 +58,10 @@ extern "C"
 #include "driver/gpio.h"
 #include "esp_timer.h"
 #include "led.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* Function Prototypes */
 
@@ -85,8 +83,6 @@ void esptim_callback(void *arg);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /*__TIM_H__*/
 ```
 
 ## tim.c
@@ -104,6 +100,10 @@ void esptim_callback(void *arg);
  */
 
 #include "tim.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief       Initialize a high-precision timer (ESP_TIMER)
@@ -134,6 +134,10 @@ void esptim_callback(void *arg)
 {
     led_toggle();
 }
+
+#ifdef __cplusplus
+}
+#endif
 ```
 
 ## main.c
@@ -144,29 +148,32 @@ void esptim_callback(void *arg)
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
  * @brief 
  * @version 1.0
- * @date 2024-11-17
+ * @date 2025-08-20
  * 
  * @copyright Copyright (c) 2024
  * 
  */
 
-/* Dependencies */
-// Basic
-#include "esp_system.h"
-#include "esp_chip_info.h"
-#include "esp_psram.h"
-#include "esp_flash.h"
-#include "nvs_flash.h"
-#include "esp_log.h"
+/* DEPENDENCIES */
+// ESP
+#include "esp_system.h" // ESP32 System
+#include "nvs_flash.h"  // ESP32 NVS
+#include "esp_chip_info.h" // ESP32 Chip Info
+#include "esp_psram.h" // ESP32 PSRAM
+#include "esp_flash.h" // ESP32 Flash
+#include "esp_log.h" // ESP32 Logging
 
-// RTOS
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+// FreeRTOS
+#include "freertos/FreeRTOS.h" // ESP32 FreeRTOS
+#include "freertos/task.h" // ESP32 FreeRTOS Task
 
 // BSP
 #include "led.h"
 #include "exit.h"
 #include "tim.h"
+
+/* Variables */
+const char *TAG = "NEXNODE";
 
 /**
  * @brief Entry point of the program
@@ -178,8 +185,6 @@ void app_main(void)
     esp_err_t ret;
     uint32_t flash_size;
     esp_chip_info_t chip_info;
-
-    // uint8_t key;
 
     // Initialize NVS
     ret = nvs_flash_init();
@@ -202,18 +207,17 @@ void app_main(void)
     // Display PSRAM size
     printf("PSRAM size: %d bytes\n", esp_psram_get_size());
 
-    // BSP
+    // BSP Initialization
     led_init();
-
-    // key_init();
     exit_init();
-    esptim_int_init(1000000); // 1s enable timer, of which the callback function toggles the LED
+    esptim_int_init(1000000);
 
     while (1)
     {
-        printf("Hello-ESP32\r\n");
+        ESP_LOGI(TAG, "Hello World!");
         vTaskDelay(1000);
     }
-
 }
+
+
 ```

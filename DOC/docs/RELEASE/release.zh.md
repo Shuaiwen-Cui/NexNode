@@ -52,3 +52,25 @@ DNESP32S3M-IOT + AI
 ## 文件夹 - CODE-STM32-FKH743M2-IIT6
 
 📆
+
+## 文件夹 - CODE
+
+### 分支 - ESP32-DEFAULTS3
+
+这是使用ESP-IDF创建的默认项目，目标设备为ESP32S3
+
+### 分支 - ESP32-DNESP32S3M-ZERO
+
+这是使用ESP-IDF创建的初始项目，只有hello world功能，目标设备为ESP32S3M，没有集成其他驱动和应用。
+
+### 分支 - ESP32-DNESP32S3M-ZERO-CPP
+
+ESP32-DNESP32S3M-ZERO的C++版本。
+
+### 分支 - ESP32-DNESP32S3-CORE
+
+这是使用ESP-IDF为ALK DNESP32S3M创建的项目，基于板载设备的功能，不涉及外部组件。
+
+### 分支 - ESP32-DNESP32S3-CORE-CPP
+
+这是ESP32-DNESP32S3-CORE的C++版本。

@@ -52,3 +52,25 @@ DNESP32S3M-IOT + AI
 ## FOLDER - CODE-STM32-FKH743M2-IIT6
 
 📆
+
+## Folder - CODE
+
+### Branch - ESP32-DEFAULTS3
+
+This is the default project created using ESP-IDF, targeting the ESP32S3 device.
+
+### Branch - ESP32-DNESP32S3M-ZERO
+
+This is the initial project created using ESP-IDF, with only the hello world functionality. The target device is ESP32S3M, and no other drivers or applications are integrated.
+
+### Branch - ESP32-DNESP32S3M-ZERO-CPP
+
+The C++ version of ESP32-DNESP32S3M-ZERO.
+
+### Branch - ESP32-DNESP32S3-CORE
+
+This is a project created using ESP-IDF for ALK DNESP32S3M, based on onboard device functions and does not involve external components.
+
+### Branch - ESP32-DNESP32S3-CORE-CPP
+
+The C++ version of ESP32-DNESP32S3-CORE.

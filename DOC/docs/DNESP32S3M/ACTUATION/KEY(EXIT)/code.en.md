@@ -48,13 +48,7 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
  *
  */
 
-#ifndef __EXIT_H__
-#define __EXIT_H__
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#pragma once
 
 #include "esp_system.h"
 #include "driver/gpio.h"
@@ -65,6 +59,10 @@ extern "C"
 
 /* IO operation */
 #define BOOT_EXIT gpio_get_level(BOOT_INT_GPIO_PIN)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* Function declarations */
 /**
@@ -77,8 +75,6 @@ void exit_init(void); /* External interrupt initialization function */
 #ifdef __cplusplus
 }
 #endif
-
-#endif
 ```
 
 ## exit.c
@@ -86,16 +82,20 @@ void exit_init(void); /* External interrupt initialization function */
 ```c
 /**
  * @file exit.c
- * @author 
+ * @author
  * @brief This file is for the external interrupt initialization and configuration.
  * @version 1.0
  * @date 2024-11-17
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #include "exit.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief       External interrupt service routine
@@ -105,7 +105,7 @@ void exit_init(void); /* External interrupt initialization function */
  */
 static void IRAM_ATTR exit_gpio_isr_handler(void *arg)
 {
-    uint32_t gpio_num = (uint32_t) arg;
+    uint32_t gpio_num = (uint32_t)arg;
 
     if (gpio_num == BOOT_INT_GPIO_PIN)
     {
@@ -123,22 +123,26 @@ void exit_init(void)
     gpio_config_t gpio_init_struct;
 
     /* Configure BOOT pin and external interrupt */
-    gpio_init_struct.mode = GPIO_MODE_INPUT;                    /* Set as input mode */
-    gpio_init_struct.pull_up_en = GPIO_PULLUP_ENABLE;           /* Enable pull-up */
-    gpio_init_struct.pull_down_en = GPIO_PULLDOWN_DISABLE;      /* Disable pull-down */
-    gpio_init_struct.intr_type = GPIO_INTR_NEGEDGE;             /* Trigger on falling edge */
-    gpio_init_struct.pin_bit_mask = 1ull << BOOT_INT_GPIO_PIN;  /* Configure BOOT key pin */
-    gpio_config(&gpio_init_struct);                             /* Apply configuration */
+    gpio_init_struct.mode = GPIO_MODE_INPUT;                   /* Set as input mode */
+    gpio_init_struct.pull_up_en = GPIO_PULLUP_ENABLE;          /* Enable pull-up */
+    gpio_init_struct.pull_down_en = GPIO_PULLDOWN_DISABLE;     /* Disable pull-down */
+    gpio_init_struct.intr_type = GPIO_INTR_NEGEDGE;            /* Trigger on falling edge */
+    gpio_init_struct.pin_bit_mask = 1ull << BOOT_INT_GPIO_PIN; /* Configure BOOT key pin */
+    gpio_config(&gpio_init_struct);                            /* Apply configuration */
 
     /* Register interrupt service */
     gpio_install_isr_service(0);
 
     /* Set GPIO interrupt callback function */
-    gpio_isr_handler_add(BOOT_INT_GPIO_PIN, exit_gpio_isr_handler, (void*) BOOT_INT_GPIO_PIN);
+    gpio_isr_handler_add(BOOT_INT_GPIO_PIN, exit_gpio_isr_handler, (void *)BOOT_INT_GPIO_PIN);
 
     /* Enable GPIO interrupt */
     gpio_intr_enable(BOOT_INT_GPIO_PIN);
 }
+
+#ifdef __cplusplus
+}
+#endif
 ```
 
 ## main.c
@@ -149,28 +153,31 @@ void exit_init(void)
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
  * @brief 
  * @version 1.0
- * @date 2024-11-17
+ * @date 2025-08-20
  * 
  * @copyright Copyright (c) 2024
  * 
  */
 
-/* Dependencies */
-// Basic
-#include "esp_system.h"
-#include "esp_chip_info.h"
-#include "esp_psram.h"
-#include "esp_flash.h"
-#include "nvs_flash.h"
-#include "esp_log.h"
+/* DEPENDENCIES */
+// ESP
+#include "esp_system.h" // ESP32 System
+#include "nvs_flash.h"  // ESP32 NVS
+#include "esp_chip_info.h" // ESP32 Chip Info
+#include "esp_psram.h" // ESP32 PSRAM
+#include "esp_flash.h" // ESP32 Flash
+#include "esp_log.h" // ESP32 Logging
 
-// RTOS
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+// FreeRTOS
+#include "freertos/FreeRTOS.h" // ESP32 FreeRTOS
+#include "freertos/task.h" // ESP32 FreeRTOS Task
 
 // BSP
 #include "led.h"
 #include "exit.h"
+
+/* Variables */
+const char *TAG = "NEXNODE";
 
 /**
  * @brief Entry point of the program
@@ -204,17 +211,16 @@ void app_main(void)
     // Display PSRAM size
     printf("PSRAM size: %d bytes\n", esp_psram_get_size());
 
-    // BSP
+    // BSP Initialization
     led_init();
-    
-    // key_init();
     exit_init();
 
     while (1)
     {
-        vTaskDelay(10);
-
+        ESP_LOGI(TAG, "Hello World!");
+        vTaskDelay(1000);
     }
-
 }
+
+
 ```
