@@ -49,8 +49,7 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
  *
  */
 
-#ifndef __MQTT_H__
-#define __MQTT_H__
+#pragma once
 
 #ifdef __cplusplus
 extern "C"
@@ -65,29 +64,28 @@ extern "C"
 /* Macros */
 #define MQTT_ADDRESS "mqtt://8.222.194.160" // MQTT Broker URL
 #define MQTT_PORT 1883                      // MQTT Broker Port
-#define MQTT_CLIENT "ESP32-S3-Node-001" // Client ID (Unique for devices)
+#define MQTT_CLIENT "ESP32-S3-Node-001"     // Client ID (Unique for devices)
 #define MQTT_USERNAME "cshwstem"            // MQTT Username
 #define MQTT_PASSWORD "Cshw0918#"           // MQTT Password
 
-#define MQTT_PUBLIC_TOPIC      "/mqtt/node"       // publish topic
-#define MQTT_SUBSCRIBE_TOPIC   "/mqtt/server"     // subscribe topic
+#define MQTT_PUBLIC_TOPIC "/mqtt/node"      // publish topic
+#define MQTT_SUBSCRIBE_TOPIC "/mqtt/server" // subscribe topic
 
-/* Variables */
-extern const char *TAG_MQTT; // tag for logging
-extern esp_mqtt_client_handle_t s_mqtt_client;
-extern bool s_is_mqtt_connected;
+    /* Variables */
+    extern const char *TAG_MQTT; // tag for logging
+    extern esp_mqtt_client_handle_t s_mqtt_client;
+    extern bool s_is_mqtt_connected;
 
-/* Function Prototypes */
-/**
- * @brief MQTT client initialization and connection
- */
-void mqtt_app_start(void);
+    /* Function Prototypes */
+    /**
+     * @brief MQTT client initialization and connection
+     */
+    void mqtt_app_start(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __MQTT_H__ */
 ```
 
 ## mqtt.c
@@ -104,107 +102,116 @@ void mqtt_app_start(void);
  *
  */
 
-/* Dependencies */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include "mqtt.h"
 
-/* Macros */
+    /* Macros */
 
-/* Variables */
-const char *TAG_MQTT = "NODE-MQTT";             // tag for logging
-esp_mqtt_client_handle_t s_mqtt_client = NULL; // MQTT client handle
-bool s_is_mqtt_connected = false;              // MQTT connection status flag
+    /* Variables */
+    const char *TAG_MQTT = "NODE-MQTT";            // tag for logging
+    esp_mqtt_client_handle_t s_mqtt_client = NULL; // MQTT client handle
+    bool s_is_mqtt_connected = false;              // MQTT connection status flag
 
-/* Function Prototypes */
+    /* Function Prototypes */
 
-/**
- * @brief MQTT event handler
- *
- * @param event_handler_arg Argument passed to the event handler
- * @param event_base Event base identifier
- * @param event_id Event identifier
- * @param event_data Event-specific data
- */
-void aliot_mqtt_event_handler(void *event_handler_arg,
-                                     esp_event_base_t event_base,
-                                     int32_t event_id,
-                                     void *event_data)
-{
-    esp_mqtt_event_handle_t event = event_data;
-    esp_mqtt_client_handle_t client = event->client;
-
-    switch ((esp_mqtt_event_id_t)event_id)
+    /**
+     * @brief MQTT event handler
+     *
+     * @param event_handler_arg Argument passed to the event handler
+     * @param event_base Event base identifier
+     * @param event_id Event identifier
+     * @param event_data Event-specific data
+     */
+    void aliot_mqtt_event_handler(void *event_handler_arg,
+                                  esp_event_base_t event_base,
+                                  int32_t event_id,
+                                  void *event_data)
     {
-    case MQTT_EVENT_CONNECTED: // Connection established
-        ESP_LOGI(TAG_MQTT, "MQTT connected");
-        // Subscribe to the test topic upon successful connection
-        esp_mqtt_client_subscribe_single(client, MQTT_SUBSCRIBE_TOPIC, 1);
-        break;
-    case MQTT_EVENT_DISCONNECTED: // Connection disconnected
-        ESP_LOGI(TAG_MQTT, "MQTT disconnected");
-        break;
-    case MQTT_EVENT_SUBSCRIBED: // Subscription successful
-        ESP_LOGI(TAG_MQTT, "MQTT subscribed, msg_id=%d", event->msg_id);
-        break;
-    case MQTT_EVENT_UNSUBSCRIBED: // Unsubscription successful
-        ESP_LOGI(TAG_MQTT, "MQTT unsubscribed, msg_id=%d", event->msg_id);
-        break;
-    case MQTT_EVENT_PUBLISHED: // Publish acknowledgment received
-        ESP_LOGI(TAG_MQTT, "MQTT published ack, msg_id=%d", event->msg_id);
-        break;
-    case MQTT_EVENT_DATA: // Data received
-        printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-        printf("DATA=%.*s\r\n", event->data_len, event->data);
-        break;
-    case MQTT_EVENT_ERROR: // Error event
-        ESP_LOGI(TAG_MQTT, "MQTT event error");
-        break;
-    default:
-        ESP_LOGI(TAG_MQTT, "Unhandled MQTT event id: %ld", event_id);
-        break;
+        esp_mqtt_event_handle_t event = event_data;
+        esp_mqtt_client_handle_t client = event->client;
+
+        switch ((esp_mqtt_event_id_t)event_id)
+        {
+        case MQTT_EVENT_CONNECTED: // Connection established
+            ESP_LOGI(TAG_MQTT, "MQTT connected");
+            // Subscribe to the test topic upon successful connection
+            esp_mqtt_client_subscribe_single(client, MQTT_SUBSCRIBE_TOPIC, 1);
+            break;
+        case MQTT_EVENT_DISCONNECTED: // Connection disconnected
+            ESP_LOGI(TAG_MQTT, "MQTT disconnected");
+            break;
+        case MQTT_EVENT_SUBSCRIBED: // Subscription successful
+            ESP_LOGI(TAG_MQTT, "MQTT subscribed, msg_id=%d", event->msg_id);
+            break;
+        case MQTT_EVENT_UNSUBSCRIBED: // Unsubscription successful
+            ESP_LOGI(TAG_MQTT, "MQTT unsubscribed, msg_id=%d", event->msg_id);
+            break;
+        case MQTT_EVENT_PUBLISHED: // Publish acknowledgment received
+            ESP_LOGI(TAG_MQTT, "MQTT published ack, msg_id=%d", event->msg_id);
+            break;
+        case MQTT_EVENT_DATA: // Data received
+            printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
+            printf("DATA=%.*s\r\n", event->data_len, event->data);
+            break;
+        case MQTT_EVENT_ERROR: // Error event
+            ESP_LOGI(TAG_MQTT, "MQTT event error");
+            break;
+        default:
+            ESP_LOGI(TAG_MQTT, "Unhandled MQTT event id: %ld", event_id);
+            break;
+        }
     }
+
+    /**
+     * @brief MQTT client initialization and connection
+     */
+    void mqtt_app_start(void)
+    {
+        esp_err_t ret;
+
+        esp_mqtt_client_config_t mqtt_cfg = {0};
+        mqtt_cfg.broker.address.uri = MQTT_ADDRESS;
+        mqtt_cfg.broker.address.port = MQTT_PORT;
+
+        // Client ID
+        mqtt_cfg.credentials.client_id = MQTT_CLIENT;
+
+        // Username
+        mqtt_cfg.credentials.username = MQTT_USERNAME;
+
+        // Password
+        mqtt_cfg.credentials.authentication.password = MQTT_PASSWORD;
+
+        ESP_LOGI(TAG_MQTT, "Connecting to MQTT broker...");
+
+        // Initialize MQTT client with provided configuration
+        esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
+
+        // Register MQTT event handler
+        esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, aliot_mqtt_event_handler, client);
+
+        // Start MQTT client
+        ret = esp_mqtt_client_start(client);
+        if (ret == ESP_OK)
+        {
+            ESP_LOGI(TAG_MQTT, "MQTT client started");
+            s_mqtt_client = client;
+            s_is_mqtt_connected = true;
+        }
+        else
+        {
+            ESP_LOGE(TAG_MQTT, "MQTT client start failed");
+        }
+    }
+
+#ifdef __cplusplus
 }
+#endif
 
-/**
- * @brief MQTT client initialization and connection
- */
-void mqtt_app_start(void)
-{
-    esp_err_t ret;
-
-    esp_mqtt_client_config_t mqtt_cfg = {0};
-    mqtt_cfg.broker.address.uri = MQTT_ADDRESS;
-    mqtt_cfg.broker.address.port = MQTT_PORT;
-
-    // Client ID
-    mqtt_cfg.credentials.client_id = MQTT_CLIENT;
-
-    // Username
-    mqtt_cfg.credentials.username = MQTT_USERNAME;
-
-    // Password
-    mqtt_cfg.credentials.authentication.password = MQTT_PASSWORD;
-
-    ESP_LOGI(TAG_MQTT, "Connecting to MQTT broker...");
-
-    // Initialize MQTT client with provided configuration
-    esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
-
-    // Register MQTT event handler
-    esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, aliot_mqtt_event_handler, client);
-
-    // Start MQTT client
-    ret = esp_mqtt_client_start(client);
-    if(ret == ESP_OK)
-    {
-        ESP_LOGI(TAG_MQTT, "MQTT client started");
-        s_mqtt_client = client;
-        s_is_mqtt_connected = true;
-    }
-    else
-    {
-        ESP_LOGE(TAG_MQTT, "MQTT client start failed");
-    }
-}
 
 ```
 

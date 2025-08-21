@@ -6,4 +6,4 @@ include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
 set(EXTRA_COMPONENT_DIRS "./driver" "./middleware" "./application")
 
-project(ESP32-DNESP32S3M-INIT)
+project(ESP32-DNESP32S3M-CORE)

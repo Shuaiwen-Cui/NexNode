@@ -48,8 +48,7 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
  *
  */
 
-#ifndef __I2C_H__
-#define __I2C_H__
+#pragma once
 
 #ifdef __cplusplus
 extern "C"
@@ -62,21 +61,21 @@ extern "C"
 #include "driver/i2c.h"
 #include "esp_system.h"
 
-#define I2C_MASTER_SCL_IO 4      /*!< gpio number for I2C master clock */
-#define I2C_MASTER_SDA_IO 5      /*!< gpio number for I2C master data  */
+#define I2C_MASTER_SCL_IO 4       /*!< gpio number for I2C master clock */
+#define I2C_MASTER_SDA_IO 5       /*!< gpio number for I2C master data  */
 #define I2C_MASTER_NUM I2C_NUM_0  /*!< I2C port number for master dev */
 #define I2C_MASTER_FREQ_HZ 100000 /*!< I2C master clock frequency */
 
-/**
- * @brief i2c master initialization
- */
-void i2c_bus_init(void);
+    /**
+     * @brief i2c master initialization
+     */
+    void i2c_bus_init(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __I2C_H__ */
+
 ```
 
 ## i2c.c
@@ -93,6 +92,10 @@ void i2c_bus_init(void);
  *
  */
 #include "i2c.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief i2c master initialization
@@ -114,6 +117,10 @@ void i2c_bus_init(void)
     ret = i2c_driver_install(I2C_MASTER_NUM, conf.mode, 0, 0, 0);
     TEST_ASSERT_EQUAL_MESSAGE(ESP_OK, ret, "I2C install returned error");
 }
+
+#ifdef __cplusplus
+}
+#endif
 ```
 
 ## main.c

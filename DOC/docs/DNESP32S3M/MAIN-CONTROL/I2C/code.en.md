@@ -34,6 +34,7 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
 !!! note
     Note that in the drivers, we used i2c and gpio related functions from the builtin `driver` library, therefore, we need to indicate these dependencies in the `CMakeLists.txt` file by adding `driver` to the `REQUIRES` field.
 
+
 ## i2c.h
     
 ```c
@@ -48,8 +49,7 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
  *
  */
 
-#ifndef __I2C_H__
-#define __I2C_H__
+#pragma once
 
 #ifdef __cplusplus
 extern "C"
@@ -62,56 +62,21 @@ extern "C"
 #include "driver/i2c.h"
 #include "esp_system.h"
 
-#define I2C_MASTER_SCL_IO 4      /*!< gpio number for I2C master clock */
-#define I2C_MASTER_SDA_IO 5      /*!< gpio number for I2C master data  */
+#define I2C_MASTER_SCL_IO 4       /*!< gpio number for I2C master clock */
+#define I2C_MASTER_SDA_IO 5       /*!< gpio number for I2C master data  */
 #define I2C_MASTER_NUM I2C_NUM_0  /*!< I2C port number for master dev */
 #define I2C_MASTER_FREQ_HZ 100000 /*!< I2C master clock frequency */
 
-/**
- * @brief i2c master initialization
- */
-void i2c_bus_init(void);
+    /**
+     * @brief i2c master initialization
+     */
+    void i2c_bus_init(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __I2C_H__ */
-```
-## i2c.h
-    
-```c
-/**
- * @file i2c.c
- * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
- * @brief This file contains the function prototypes for i2c master initialization. This is to serve the peripherals that require I2C communication.
- * @version 1.0
- * @date 2025-03-17
- *
- * @copyright Copyright (c) 2025
- *
- */
 
-#ifndef __I2C_H__
-#define __I2C_H__
-
-#include <stdio.h>
-#include "esp_log.h"
-#include "unity.h" // This is for unity testing
-#include "driver/i2c.h"
-#include "esp_system.h"
-
-#define I2C_MASTER_SCL_IO 4      /*!< gpio number for I2C master clock */
-#define I2C_MASTER_SDA_IO 5      /*!< gpio number for I2C master data  */
-#define I2C_MASTER_NUM I2C_NUM_0  /*!< I2C port number for master dev */
-#define I2C_MASTER_FREQ_HZ 100000 /*!< I2C master clock frequency */
-
-/**
- * @brief i2c master initialization
- */
-void i2c_bus_init(void);
-
-#endif /* __I2C_H__ */
 ```
 
 ## i2c.c
@@ -128,6 +93,10 @@ void i2c_bus_init(void);
  *
  */
 #include "i2c.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief i2c master initialization
@@ -149,6 +118,10 @@ void i2c_bus_init(void)
     ret = i2c_driver_install(I2C_MASTER_NUM, conf.mode, 0, 0, 0);
     TEST_ASSERT_EQUAL_MESSAGE(ESP_OK, ret, "I2C install returned error");
 }
+
+#ifdef __cplusplus
+}
+#endif
 ```
 
 ## main.c

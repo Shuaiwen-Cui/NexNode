@@ -3,4 +3,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(ESP32-DNESP32S3M-INIT)
+
+set(EXTRA_COMPONENT_DIRS "./driver" "./middleware" "./application")
+
+project(ESP32-DNESP32S3M-CORE-CPP)

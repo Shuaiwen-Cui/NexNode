@@ -3,35 +3,34 @@
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
  * @brief 
  * @version 1.0
- * @date 2025-08-20
+ * @date 2024-11-17
  * 
  * @copyright Copyright (c) 2024
  * 
  */
 
-/* DEPENDENCIES */
-// ESP
-#include "esp_system.h" // ESP32 System
-#include "nvs_flash.h"  // ESP32 NVS
-#include "esp_chip_info.h" // ESP32 Chip Info
-#include "esp_psram.h" // ESP32 PSRAM
-#include "esp_flash.h" // ESP32 Flash
-#include "esp_log.h" // ESP32 Logging
+/* Dependencies */
+// Basic
+#include "esp_system.h"
+#include "esp_chip_info.h"
+#include "esp_psram.h"
+#include "esp_flash.h"
+#include "nvs_flash.h"
+#include "esp_log.h"
 
-// FreeRTOS
-#include "freertos/FreeRTOS.h" // ESP32 FreeRTOS
-#include "freertos/task.h" // ESP32 FreeRTOS Task
+// RTOS
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 // BSP
 #include "led.h"
 #include "exit.h"
-// #include "spi.h"
-// #include "i2c.h"
-// #include "lcd.h"
+#include "spi.h"
+#include "lcd.h"
 #include "tim.h"
-// #include "esp_rtc.h"
-// #include "spi_sdcard.h"
-// #include "wifi_wpa2_enterprise.h"
+#include "esp_rtc.h"
+#include "spi_sdcard.h"
+#include "wifi_wpa2_enterprise.h"
 
 /* Variables */
 const char *TAG = "NEXNODE";
@@ -71,51 +70,50 @@ void app_main(void)
     // BSP Initialization
     led_init();
     exit_init();
-    esptim_int_init(1000000);
-    // spi2_init();
-    // i2c_bus_init();
-    // lcd_init();
+    spi2_init();
+    lcd_init();
 
     // spiffs_test();                                                  /* Run SPIFFS test */
-    // while (sd_card_init())                               /* SD card not detected */
-    // {
-    //     lcd_show_string(0, 0, 200, 16, 16, "SD Card Error!", RED);
-    //     vTaskDelay(500);
-    //     lcd_show_string(0, 20, 200, 16, 16, "Please Check!", RED);
-    //     vTaskDelay(500);
-    // }
+    while (sd_card_init())                               /* SD card not detected */
+    {
+        lcd_show_string(0, 0, 200, 16, 16, "SD Card Error!", RED);
+        vTaskDelay(500);
+        lcd_show_string(0, 20, 200, 16, 16, "Please Check!", RED);
+        vTaskDelay(500);
+    }
 
     // clean the screen
-    // lcd_clear(WHITE);
+    lcd_clear(WHITE);
 
-    // lcd_show_string(0, 0, 200, 16, 16, "SD Initialized!", RED);
+    lcd_show_string(0, 0, 200, 16, 16, "SD Initialized!", RED);
 
-    // sd_card_test_filesystem();                                        /* Run SD card test */
+    sd_card_test_filesystem();                                        /* Run SD card test */
 
-    // lcd_show_string(0, 0, 200, 16, 16, "SD Tested CSW! ", RED);
+    lcd_show_string(0, 0, 200, 16, 16, "SD Tested CSW! ", RED);
 
     // sd_card_unmount();
 
-    // vTaskDelay(3000);
+    vTaskDelay(3000);
 
-    // lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test  ", RED);
-    
-    // ret = wifi_sta_wpa2_init();
-    // if(ret == ESP_OK)
-    // {
-    //     ESP_LOGI(TAG_WIFI, "WiFi STA Init OK");
-    //     lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test OK", RED);
-    // }
-    // else
-    // {
-    //     ESP_LOGE(TAG_WIFI, "WiFi STA Init Failed");
-    // }
+    lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test  ", RED);
+
+    ret = wifi_sta_wpa2_init();
+    if(ret == ESP_OK)
+    {
+        ESP_LOGI(TAG_WIFI, "WiFi STA Init OK");
+        lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test OK", RED);
+    }
+    else
+    {
+        ESP_LOGE(TAG_WIFI, "WiFi STA Init Failed");
+    }
+
+    vTaskDelay(5000);
 
     while (1)
     {
-        // led_toggle();
+        led_toggle();
         ESP_LOGI(TAG, "Hello World!");
         vTaskDelay(1000);
     }
 }
-

@@ -42,12 +42,10 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
  *
  */
 
-#ifndef __RNG_H__
-#define __RNG_H__
+#pragma once
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include <stdint.h>
@@ -60,27 +58,25 @@ extern "C"
 #include "esp_random.h"
 #include "esp_private/esp_clk.h"
 
-    /* Function Declarations */
+/* Function Declarations */
 
-    /**
-     * @brief       Get a random number
-     * @param       None
-     * @retval      Random number (32-bit)
-     */
-    uint32_t rng_get_random_num(void); /* Get a random number */
+/**
+ * @brief       Get a random number
+ * @param       None
+ * @retval      Random number (32-bit)
+ */
+uint32_t rng_get_random_num(void); /* Get a random number */
 
-    /**
-     * @brief       Get a random number within a specific range
-     * @param       min,max: Minimum and maximum values
-     * @retval      Random number (rval), satisfying: min <= rval <= max
-     */
-    int rng_get_random_range(int min, int max); /* Get a random number within a specific range */
+/**
+ * @brief       Get a random number within a specific range
+ * @param       min,max: Minimum and maximum values
+ * @retval      Random number (rval), satisfying: min <= rval <= max
+ */
+int rng_get_random_range(int min, int max); /* Get a random number within a specific range */
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* __RNG_H__ */
 
 ```
 
@@ -89,16 +85,20 @@ extern "C"
 ```c
 /**
  * @file rng.c
- * @author 
+ * @author
  * @brief This is the source file for the RNG component.
  * @version 1.0
  * @date 2024-11-19
  * @ref Alientek RNG Driver
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #include "rng.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief       Get a random number
@@ -108,9 +108,9 @@ extern "C"
 uint32_t rng_get_random_num(void)
 {
     uint32_t randomnum;
-    
+
     randomnum = esp_random();
-    
+
     return randomnum;
 }
 
@@ -120,13 +120,17 @@ uint32_t rng_get_random_num(void)
  * @retval      Random number (rval), satisfying: min <= rval <= max
  */
 int rng_get_random_range(int min, int max)
-{ 
+{
     uint32_t randomnum;
-    
+
     randomnum = esp_random();
-    
+
     return randomnum % (max - min + 1) + min;
 }
+
+#ifdef __cplusplus
+}
+#endif
 ```
 
 ## main.c

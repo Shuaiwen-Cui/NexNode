@@ -47,12 +47,10 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
  *
  */
 
-#ifndef __LCDFONT_H__
-#define __LCDFONT_H__
+#pragma once
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* Common ASCII Table
@@ -462,9 +460,6 @@ const unsigned char asc2_3216[95][128] = {
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* LCDFONT_H_ */
-
 ```
 
 ## lcd.h
@@ -480,13 +475,7 @@ const unsigned char asc2_3216[95][128] = {
  * @copyright Copyright (c) 2024
  */
 
-#ifndef __LCD_H__
-#define __LCD_H__
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -495,6 +484,10 @@ extern "C"
 #include "freertos/task.h"
 #include "driver/gpio.h"
 #include "spi.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* Pin definitions */
 #define LCD_NUM_BL GPIO_NUM_41  /* Backlight control pin */
@@ -606,9 +599,6 @@ void lcd_show_char(uint16_t x, uint16_t y, uint8_t chr, uint8_t size, uint8_t mo
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* __LCD_H__ */
-
 ```
 
 ## lcd.c
@@ -625,8 +615,13 @@ void lcd_show_char(uint16_t x, uint16_t y, uint8_t chr, uint8_t size, uint8_t mo
  *
  */
 
+
 #include "lcd.h"
 #include "lcdfont.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 spi_device_handle_t MY_LCD_Handle;
 uint8_t lcd_buf[LCD_TOTAL_BUF_SIZE];
@@ -1425,6 +1420,10 @@ void lcd_init(void)
     lcd_clear(WHITE);   /* Clear the screen */
     lcd_on();           /* Turn on the LCD */
 }
+
+#ifdef __cplusplus
+}
+#endif
 ```
 
 ## main.c
