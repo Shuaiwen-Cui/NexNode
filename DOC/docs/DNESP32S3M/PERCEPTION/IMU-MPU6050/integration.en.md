@@ -45,3 +45,5 @@ idf.py build flash monitor
 
 Then you can see the corresponding component output information.
 
+!!! warning
+    If you have introduced the MPU6050 module code but the hardware is not properly connected, it may lead to frequent reboots.

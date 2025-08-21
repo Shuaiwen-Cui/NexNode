@@ -46,3 +46,5 @@ idf.py build flash monitor
 
 然后你就可以看到相应的组件输出信息。
 
+!!! warning
+    如果引入了MPU6050模块代码，但是硬件没插好，可能导致频繁重启。
