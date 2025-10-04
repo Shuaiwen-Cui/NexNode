@@ -5,6 +5,9 @@
 !!! info
     我们使用 VSCode + ESP-IDF 进行开发。有关设置开发环境的详细信息可以在互联网上找到。我假设您已经设置好了开发环境。
 
+!!! warning
+    在开始之前请确保您已经把目标开发板设置成了目标型号，如esp32s3。
+
 ## 创建新项目
 
 1. 启动 VSCode，然后通过按 `Ctrl+Shift+P`（Windows/Linux）或 `Cmd+Shift+P`（macOS）打开命令面板。

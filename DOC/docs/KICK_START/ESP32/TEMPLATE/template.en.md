@@ -5,6 +5,9 @@
 !!! info
     We use VSCode + ESP-IDF for development. Details to setup the development environment can be found on the internet. I assume you have already set up the development environment.
 
+!!! warning
+    Make sure you have set the target development board to the target model, such as esp32s3, before getting started.
+
 ## CREATE A NEW PROJECT
 
 1. Launch VSCode and then open the command palette by pressing `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS).
