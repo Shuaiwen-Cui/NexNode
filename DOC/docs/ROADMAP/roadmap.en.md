@@ -1,40 +1,20 @@
 # ROADMAP
 
-## ARCHITECTURE
+## HARDWARE ARCHITECTURE
 
-### LAYERED ARCHITECTURE
+From an architectural perspective, an AIoT node can be divided into the following main subsystems:
 
-```txt
-+------------------------------+
-| APPLICATION                  |
-+------------------------------+
-| MIDDLEWARE                   |
-+------------------------------+
-| DRIVERS                      |
-+------------------------------+
-| HARDWARE                     |
-+------------------------------+
+- Main Control Module: Responsible for control and coordination
+- Perception Module: Responsible for environmental perception and data collection
+- Communication Module: Responsible for data transmission and network connection
+- Execution Module: Responsible for executing specific tasks and operations
+- Power Module: Responsible for providing stable power supply to each module
 
-```
+## SOFTWARE ARCHITECTURE
 
-### SYSTEM OF SYSTEMS
+From a software architecture perspective, an AIoT node can be divided into the following main layers:
 
-```txt
-MAIN CONTROL + PERCEPTION + COMMUNICATION + ACTUATION + POWER
-```
-
-## HOST MCU
-
-- ESP32
-- STM32
-
-## HOST DEV BOARDS
-
-> ESP32
-
-- DNESP32S3M 
-- DNESP32S3
-
-> STM32
-
-- FKH743M2-IIT6
+- Hardware Layer: Various physical hardware components
+- Driver Layer: Hardware drivers
+- Middleware: Provides common functions and services
+- Application Layer: Specific applications and services
