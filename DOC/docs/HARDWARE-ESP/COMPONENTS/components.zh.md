@@ -7,6 +7,10 @@
 | ESP32S3-WROOM-1 | PCB Antenna/IPEX Antenna | 16MB      | 8MB    |
 | ESP32S3-WROOM-2 | PCB Antenna      | 32MB      | 16MB   |
 
+![](ESP32S3-WROOM-1.png)
+
+![](ESP32S3-WROOM-2.png){width=70%}
+
 !!! tip
     以上两个型号初步判断为引脚兼容，后续需要进一步确认。
 
@@ -14,6 +18,8 @@
 
 
 ### 🌡️ SHT45 — Digital Temperature & Humidity Sensor
+
+![](STH45.png)
 
 | 项目 | 内容 |
 |------|------|
@@ -29,7 +35,10 @@
 | **封装尺寸** | 1.5 × 1.5 × 0.5 mm |
 | **特点** | 集成加热器、工厂校准、高精度、高稳定性、适合长期环境监测 |
 
+
 ### ⚙️ ADXL362 — Ultra-Low Power 3-Axis Accelerometer
+
+![](ADXL362.png)
 
 | 项目 | 内容 |
 |------|------|
@@ -45,8 +54,9 @@
 | **封装尺寸** | 3 × 3 × 1.06 mm（LGA） |
 | **特点** | 超低功耗、内置 FIFO、内置唤醒/活动检测，适合电池供电节点用于触发或监测睡眠唤醒事件 |
 
-
 ### 📈 ADXL355 — Low Noise, High Precision 3-Axis Accelerometer
+
+!(ADXL355.png)
 
 | 项目 | 内容 |
 |------|------|
@@ -62,7 +72,6 @@
 | **封装尺寸** | 3 × 3 × 1.25 mm（LGA） |
 | **特点** | 超低噪声、高分辨率、高稳定性、内置温度传感器与自校准机制，适合结构振动与地震监测等高精度场景 |
 
-
 ## 通讯系统
 
 | 传输方式       | 型号         | 备注                     |
@@ -72,6 +81,9 @@
 | 2.4G无线通信     | NRF24L01+      | SPI接口                   |
 | 蜂窝移动网络     | Quectel BG95   | LTE Cat.M1/NB-IoT, UART接口 |
 
+![](NRF24L01.png)
+
+![](BG95.png)
 
 ## 执行系统
 

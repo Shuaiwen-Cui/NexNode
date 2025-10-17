@@ -7,12 +7,18 @@
 | ESP32S3-WROOM-1 | PCB Antenna / IPEX Antenna | 16MB | 8MB |
 | ESP32S3-WROOM-2 | PCB Antenna | 32MB | 16MB |
 
+![](ESP32S3-WROOM-1.png)
+
+![](ESP32S3-WROOM-2.png){width=70%}
+
 !!! tip
     The above two models are preliminarily determined to be pin-compatible, but further verification is required.
 
 ## Sensing System
 
 ### 🌡️ SHT45 — Digital Temperature & Humidity Sensor
+
+![](STH45.png)
 
 | Item | Details |
 |------|------|
@@ -30,6 +36,8 @@
 
 ### ⚙️ ADXL362 — Ultra-Low Power 3-Axis Accelerometer
 
+![](ADXL362.png)
+
 | Item | Details |
 |------|------|
 | **Manufacturer** | Analog Devices (ADI) |
@@ -45,6 +53,8 @@
 | **Features** | Ultra-low power, built-in FIFO, integrated wake-up/motion detection, ideal for battery-powered nodes for event triggering or sleep monitoring |
 
 ### 📈 ADXL355 — Low Noise, High Precision 3-Axis Accelerometer
+
+!(ADXL355.png)
 
 | Item | Details |
 |------|------|
@@ -68,6 +78,10 @@
 | Bluetooth | Integrated in main MCU | Low power |
 | 2.4G RF | NRF24L01+ | SPI interface |
 | Cellular Network | Quectel BG95 | LTE Cat.M1 / NB-IoT, UART interface |
+
+![](NRF24L01.png)
+
+![](BG95.png)
 
 ## Actuation System
 

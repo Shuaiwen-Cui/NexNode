@@ -1,0 +1,3 @@
+# SCHEMATIC
+
+![](SCHEMATIC.png)
