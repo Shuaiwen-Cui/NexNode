@@ -2,7 +2,7 @@
 # Built upon MkDocs & Material for MkDocs
 
 # Project information
-site_name: NexNode
+site_name: AIoTNode
 site_url: https://localhost:8000/ # build and run on server, to visit it, type in the server's IP address and port number like this: xxx.xxx.xxx.xxx:8000
 site_author: Shuaiwen Cui
 site_description: >-
@@ -117,6 +117,7 @@ plugins:
             ABOUT: 关于
             ROADMAP: 路线图
             HARDWARE-ESP: 硬件-ESP32
+            SYSTEM: 系统设计
             COMPONENTS: 元器件选择
             SCHEMATIC: 原理图
             LAYOUT: PCB布局
@@ -286,6 +287,8 @@ nav:
   - ROADMAP:
       - "ROADMAP/roadmap.md"
   - HARDWARE-ESP:
+      - SYSTEM:
+          - "HARDWARE-ESP/SYSTEM/system.md"
       - COMPONENTS:
           - "HARDWARE-ESP/COMPONENTS/components.md"
       - SCHEMATIC:
