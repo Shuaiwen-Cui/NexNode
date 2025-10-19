@@ -1,24 +1,22 @@
 # COMPONENTS SELECTION
 
-## Main Control System
+## MAIN CONTROLLER SYSTEM
 
 | Module | Antenna Type | FLASH Size | PSRAM Size |
 | ---------------- | ---------------- | --------- | ------- |
-| ESP32S3-WROOM-1 | PCB Antenna / IPEX Antenna | 16MB | 8MB |
+| ESP32S3-WROOM-1/1U | PCB Antenna / IPEX Antenna | 16MB | 8MB |
 | ESP32S3-WROOM-2 | PCB Antenna | 32MB | 16MB |
 
-![](ESP32S3-WROOM-1.png)
-
-![](ESP32S3-WROOM-2.png){width=70%}
+![](MODULE.png)
 
 !!! tip
     The above two models are preliminarily determined to be pin-compatible, but further verification is required.
 
-## Sensing System
+## SENSING SYSTEM
 
-### 🌡️ SHT45 — Digital Temperature & Humidity Sensor
+### SHT45 — Digital Temperature & Humidity Sensor
 
-![](STH45.png)
+![](SHT45.png)
 
 | Item | Details |
 |------|------|
@@ -34,7 +32,7 @@
 | **Package Size** | 1.5 × 1.5 × 0.5 mm |
 | **Features** | Integrated heater, factory-calibrated, high accuracy, high stability, suitable for long-term environmental monitoring |
 
-### ⚙️ ADXL362 — Ultra-Low Power 3-Axis Accelerometer
+### ADXL362 — Ultra-Low Power 3-Axis Accelerometer
 
 ![](ADXL362.png)
 
@@ -52,9 +50,9 @@
 | **Package Size** | 3 × 3 × 1.06 mm (LGA) |
 | **Features** | Ultra-low power, built-in FIFO, integrated wake-up/motion detection, ideal for battery-powered nodes for event triggering or sleep monitoring |
 
-### 📈 ADXL355 — Low Noise, High Precision 3-Axis Accelerometer
+### ADXL355 — Low Noise, High Precision 3-Axis Accelerometer
 
-!(ADXL355.png)
+![](ADXL355.png)
 
 | Item | Details |
 |------|------|
@@ -83,7 +81,7 @@
 
 ![](BG95.png)
 
-## Actuation System
+<!-- ## Actuation System
 
 | Device Type | Model | Remarks |
 | ---------------- | ---------------- | ------------------------ |
@@ -102,4 +100,4 @@
 
 !!! warning "Note"
     All the above selections are preliminary and subject to change based on actual requirements.  
-    A potential issue is that there are too many I²C and SPI devices, which may require the use of a multiplexer.
+    A potential issue is that there are too many I²C and SPI devices, which may require the use of a multiplexer. -->

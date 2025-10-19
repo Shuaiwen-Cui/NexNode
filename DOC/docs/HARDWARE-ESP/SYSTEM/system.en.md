@@ -6,8 +6,10 @@
 
 ## PERCEPTION SYSTEM
 
-- Temperature and Humidity Sensing
-- Acceleration Sensing
+- Temperature and Humidity
+- Acceleration
+- Sound
+- Image
 
 ## COMMUNICATION SYSTEM
 
@@ -18,8 +20,7 @@
 
 ## ACTUATION SYSTEM
 
-- LED
-- RGB LED
+- LED/RGBLED
 - Buzzer
 - Display
 
