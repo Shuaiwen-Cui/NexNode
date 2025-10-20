@@ -12,6 +12,28 @@
 !!! tip
     The above two models are preliminarily determined to be pin-compatible, but further verification is required.
 
+<div class="grid cards" markdown>
+
+-   :fontawesome-brands-bilibili:{ .lg .middle } __ESP32S3__
+
+    ---
+
+    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3_datasheet_en.html" target="_blank"> Data Sheet </a>](#)
+
+-   :fontawesome-brands-bilibili:{ .lg .middle } __ESP32S3-WROOM-1/1U__
+
+    ---
+
+    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3-wroom-1_wroom-1u_datasheet_en.html" target="_blank"> Data Sheet </a>](#)
+
+-   :fontawesome-brands-bilibili:{ .lg .middle } __ESP32S3-WROOM-2__
+
+    ---
+
+    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3-wroom-2_datasheet_en.html" target="_blank"> Data Sheet </a>](#)
+
+</div>
+
 ## SENSING SYSTEM
 
 ### SHT45 — Digital Temperature & Humidity Sensor
@@ -74,7 +96,7 @@
 | ---------------- | ---------------- | ------------------------ |
 | Wi-Fi | Integrated in main MCU | - |
 | Bluetooth | Integrated in main MCU | Low power |
-| 2.4G RF | NRF24L01+ | SPI interface |
+| ESP-NOW | Integrated in main MCU | - |
 | Cellular Network | Quectel BG95 | LTE Cat.M1 / NB-IoT, UART interface |
 
 ![](NRF24L01.png)

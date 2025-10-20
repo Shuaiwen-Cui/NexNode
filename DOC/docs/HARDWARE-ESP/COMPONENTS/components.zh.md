@@ -12,6 +12,28 @@
 !!! tip
     以上两个型号初步判断为引脚兼容，后续需要进一步确认。
 
+<div class="grid cards" markdown>
+
+-   :fontawesome-brands-bilibili:{ .lg .middle } __ESP32S3__
+
+    ---
+
+    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3_datasheet_cn.html" target="_blank"> 技术说明书 </a>](#)
+
+-   :fontawesome-brands-bilibili:{ .lg .middle } __ESP32S3-WROOM-1/1U__
+
+    ---
+
+    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3-wroom-1_wroom-1u_datasheet_cn.html" target="_blank"> 技术说明书 </a>](#)
+
+-   :fontawesome-brands-bilibili:{ .lg .middle } __ESP32S3-WROOM-2__
+
+    ---
+
+    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3-wroom-2_datasheet_cn.html" target="_blank"> 技术说明书 </a>](#)
+
+</div>
+
 ## 感知系统
 
 ### SHT45 — 数字温湿度传感器
@@ -75,7 +97,7 @@
 | ---------------- | ---------------- | ------------------------ |
 | WIFI             | 集成在主控芯片中 | -                        |
 | 蓝牙             | 集成在主控芯片中 | 低功耗                   |
-| 2.4G无线通信     | NRF24L01+      | SPI接口                   |
+| ESP-NOW          | 集成在主控芯片中  |                   |
 | 蜂窝移动网络     | Quectel BG95   | LTE Cat.M1/NB-IoT, UART接口 |
 
 ![](NRF24L01.png)
