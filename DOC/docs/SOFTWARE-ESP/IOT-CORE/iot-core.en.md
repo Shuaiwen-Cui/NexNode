@@ -26,6 +26,34 @@ project(AIoTNode)
 !!! warning "Note"
     Please ensure that the `EXTRA_COMPONENT_DIRS` variable includes the paths of the newly added folders; otherwise, the compiler will not be able to find these components, leading to compilation failure.
 
+In addition to modifying the project-level `CMakeLists.txt` file, the `CMakeLists.txt` file under the `main` folder also needs to be modified accordingly. The modified `main/CMakeLists.txt` file content is as follows:
+
+```cmake
+# Define source directories
+set(src_dirs
+    .
+)
+
+# Define include directories
+set(include_dirs
+    .
+)
+
+# Define required components
+set(requires
+)
+
+# Register the component
+idf_component_register(
+    SRC_DIRS ${src_dirs}
+    INCLUDE_DIRS ${include_dirs}
+    REQUIRES ${requires}
+)
+
+# Add compilation options
+# component_compile_options(-ffast-math -O3 -Wno-error=format -Wno-format)
+```
+
 !!! tip "Suggestion"
     The core goal of this project is to create a sensor node, focusing on hardware design and basic driver implementation, without much involvement in middleware and application layer development. However, to make the project
     structure more complete and standardized, and to provide a foundation for future projects, we have still created these middleware and application layer folders.

@@ -306,7 +306,8 @@ nav:
           - HANDS-ON: "./SOFTWARE-ESP/KICK_START/HANDS-ON/hands-on.md"
           - TEMPLATE: "./SOFTWARE-ESP/KICK_START/TEMPLATE/template.md"
       - INITIALZATION:
-          - "SOFTWARE-ESP/INITIALZATION/initialization.md"
+          - INITIALIZATION: "SOFTWARE-ESP/INITIALZATION/initialization.md"
+          - ROADMAP: "SOFTWARE-ESP/INITIALZATION/roadmap.md"
       - IOT-CORE:
           - "SOFTWARE-ESP/IOT-CORE/iot-core.md"
       - IOT-MORE:

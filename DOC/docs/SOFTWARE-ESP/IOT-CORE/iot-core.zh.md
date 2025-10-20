@@ -26,6 +26,45 @@ project(AIoTNode)
 !!! warning "注意"
     请确保`EXTRA_COMPONENT_DIRS`变量中包含了新增加的文件夹路径，否则编译器将无法找到这些组件，导致编译失败。
 
+除了项目层面的`CMakeLists.txt`文件需要进行修改外，`main`文件夹下的`CMakeLists.txt`文件也需要进行相应的修改。修改后的`main/CMakeLists.txt`文件内容如下所示：
+
+```cmake
+# Define source directories
+set(src_dirs
+    .
+)
+
+# Define include directories
+set(include_dirs
+    .
+)
+
+# Define required components
+set(requires
+)
+
+# Register the component
+idf_component_register(
+    SRC_DIRS ${src_dirs}
+    INCLUDE_DIRS ${include_dirs}
+    REQUIRES ${requires}
+)
+
+# Add compilation options
+# component_compile_options(-ffast-math -O3 -Wno-error=format -Wno-format)
+```
+
+
+
+
+
+
+
+
+
+
+
+
 !!! tip "建议"
     本项目的核心目标是打造传感器节点，即硬件设计和基础的驱动实现，其实并不会过多涉及中间件和应用层的开发内容。但是为了让项目结构更加完整和规范，并为后续项目提供基础，这里我们依然创建了这中间件和应用层的文件夹。
 
