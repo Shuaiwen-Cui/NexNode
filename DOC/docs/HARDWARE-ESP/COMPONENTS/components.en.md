@@ -9,16 +9,13 @@
 
 ![](MODULE.png)
 
-!!! tip
-    The above two models are preliminarily determined to be pin-compatible, but further verification is required.
-
 <div class="grid cards" markdown>
 
 -   :fontawesome-brands-bilibili:{ .lg .middle } __ESP32S3__
 
     ---
 
-    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3_datasheet_en.html" target="_blank"> Data Sheet </a>](#)
+    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3_datasheet_en.html" target="_blank"> Data Sheet ✅  </a>](#)
 
     [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3_technical_reference_manual_en.pdf" target="_blank"> Technical Reference Manual </a>](#)
 
@@ -26,7 +23,7 @@
 
     ---
 
-    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3-wroom-1_wroom-1u_datasheet_en.html" target="_blank"> Data Sheet </a>](#)
+    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3-wroom-1_wroom-1u_datasheet_en.html" target="_blank"> Data Sheet ✅  </a>](#)
 
     [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/ESP32-S3-WROOM-1U_V1.4_Reference_Design_0.zip" target="_blank"> Technical Reference Manual </a>](#)
 
@@ -34,7 +31,7 @@
 
     ---
 
-    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3-wroom-2_datasheet_en.html" target="_blank"> Data Sheet </a>](#)
+    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3-wroom-2_datasheet_en.html" target="_blank"> Data Sheet ✅ </a>](#)
 
     [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/ESP32-S3-WROOM-2_Reference_Design.zip" target="_blank"> Technical Reference Manual </a>](#)
 

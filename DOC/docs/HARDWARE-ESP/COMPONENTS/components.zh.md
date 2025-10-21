@@ -9,16 +9,13 @@
 
 ![](MODULE.png)
 
-!!! tip
-    以上两个型号初步判断为引脚兼容，后续需要进一步确认。
-
 <div class="grid cards" markdown>
 
 -   :fontawesome-brands-bilibili:{ .lg .middle } __ESP32S3__
 
     ---
 
-    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3_datasheet_cn.html" target="_blank"> 技术规格书 </a>](#)
+    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3_datasheet_cn.html" target="_blank"> 技术规格书 ✅  </a>](#)
 
     [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3_technical_reference_manual_cn.pdf" target="_blank"> 技术参考手册 </a>](#)
 
@@ -26,7 +23,7 @@
 
     ---
 
-    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3-wroom-1_wroom-1u_datasheet_cn.html" target="_blank"> 技术说明书 </a>](#)
+    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3-wroom-1_wroom-1u_datasheet_cn.html" target="_blank"> 技术说明书 ✅  </a>](#)
 
     [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/ESP32-S3-WROOM-1U_V1.4_Reference_Design.zip" target="_blank"> 技术参考手册 </a>](#)
 
@@ -34,7 +31,7 @@
 
     ---
 
-    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3-wroom-2_datasheet_cn.html" target="_blank"> 技术说明书 </a>](#)
+    [:octicons-arrow-right-24: <a href="https://documentation.espressif.com/esp32-s3-wroom-2_datasheet_cn.html" target="_blank"> 技术说明书 ✅ </a>](#)
 
     [:octicons-arrow-right-24: <a href="https://www.espressif.com/sites/default/files/documentation/ESP32-S3-WROOM-2_Reference_Design.zip" target="_blank"> 技术参考手册 </a>](#)
     
