@@ -1,5 +1,8 @@
 # TEMPLATE PROJECT BUILDING-UP
 
+!!! tip
+    For the updated version of this chapter, please refer to the `Initialization` section.
+
 ## ENVIRONMENT SETUP
 
 !!! info

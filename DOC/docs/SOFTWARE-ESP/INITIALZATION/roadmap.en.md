@@ -74,6 +74,20 @@
 
 Assuming you have completed the project initialization work, it is recommended to develop each module in the following order:
 
+| Function Category    | Function Module  | Dependency Component (Official) | Dependency Component (User) |
+|----------------------|------------------|----------------------------------|-----------------------------|
+| Actuation            | LED              | driver                           |                             |
+| Actuation            | External Interrupt| driver                           |   node_led                  |
+| Main Control        | Timer            | driver                           |   node_led                  |
+| Main Control        | Real-Time Clock  |                                  |                             |
+| Main Control        | Random Number Generator|                              |                             |
+| Main Control        | SPI              | driver                           |                             |
+| Actuation            | LCD              | driver                           | node_spi                    |
+| Actuation            | SD Card          | driver, fatfs, vfs, sdmmc     | node_spi                    |
+| Communication       | WIFI             | esp_wifi, wpa_supplicant    | node_led, node_lcd           |
+
+
+
 1. Execute > LED
 2. Main Control > External Interrupt
 3. Main Control > Timer

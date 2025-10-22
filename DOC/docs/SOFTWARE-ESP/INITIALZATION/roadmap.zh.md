@@ -73,6 +73,19 @@
 
 假定您已完成项目初始化工作，建议按照以下顺序进行各个模块的开发：
 
+| 功能类别             | 功能模块         | 依赖组件（Official）     | 依赖组件（User）    |
+|----------------------|------------------|--------------------------|---------------------|
+| 执行                 | LED              | driver                     |                     |
+| 控制                 | 外部中断          | driver                     |   node_led                  |
+| 控制                 | 定时器            | driver                     |   node_led                  |
+| 控制                 | 实时时钟          |                     |                     |
+| 控制                 | 随机数发生器      |                      |                     |
+| 控制                 | SPI              | driver                     |                     |
+| 执行                 | LCD              | driver                     | node_spi                     |
+| 执行                 | SD 卡            | driver, fatfs, vfs, sdmmc   | node_spi                     |
+| 通信                 | WIFI             | esp_wifi, wpa_supplicant    | node_led, node_lcd           |
+
+
 1. 执行>LED
 2. 主控>外部中断
 3. 主控>定时器

@@ -131,16 +131,28 @@ plugins:
             ENVIRONMENT: 环境
             HANDS-ON: 实践
             TEMPLATE: 模板
-            STM32: STM32
-            DNESP32S3M: DNESP32S3M
-            PROJECT-CONSTRUCTION: 项目构建
-            MAIN-CONTROL: 主控
+            CORE: 核心功能
+            CORE-CONTROL: 核心功能-控制
+            CORE-COMMUNICATION: 核心功能-通信
+            CORE-PERCEPTION: 核心功能-感知
+            CORE-ACTUATION: 核心功能-执行
+            NOTE: 笔记
+            CODE: 代码
+            INTEGRATION: 集成
+            LED: LED灯
+            EXIT: 外部中断
             TIMER: 定时器
             RTC: 实时时钟
             RNG: 随机数生成器
             SPI: 串行外设接口SPI
-            I2C: 内部集成电路总线I2C
+            LCD: 液晶显示屏
             SD-CARD: SD卡
+            MORE: 外围功能
+            STM32: STM32
+            DNESP32S3M: DNESP32S3M
+            PROJECT-CONSTRUCTION: 项目构建
+            MAIN-CONTROL: 主控
+            I2C: 内部集成电路总线I2C
             # TF-CARD: TF(SD)卡
             # FILE-SYSTEM: 文件系统(SPIFFS)
             PERCEPTION: 感知
@@ -149,12 +161,6 @@ plugins:
             WIFI: WIFI
             MQTT: MQTT
             ACTUATION: 执行
-            LED: LED
-            EXIT: 外部中断
-            NOTE: 笔记
-            CODE: 代码
-            INTEGRATION: 集成
-            LCD: 液晶显示屏
             MIDDLEWARE: 中间件
             ESP-DSP: ESP-DSP 数字信号处理
             ESP-DL: ESP-DL 深度学习
@@ -308,10 +314,57 @@ nav:
       - INITIALZATION:
           - INITIALIZATION: "SOFTWARE-ESP/INITIALZATION/initialization.md"
           - ROADMAP: "SOFTWARE-ESP/INITIALZATION/roadmap.md"
-      - IOT-CORE:
-          - "SOFTWARE-ESP/IOT-CORE/iot-core.md"
-      - IOT-MORE:
-          - "SOFTWARE-ESP/IOT-MORE/iot-more.md"
+      - CORE:
+          - "SOFTWARE-ESP/CORE/core.md"
+      - CORE-CONTROL:
+          # - "SOFTWARE-ESP/CORE-CONTROL/core-control.md"
+          - EXIT:
+              - NOTE: "SOFTWARE-ESP/CORE-CONTROL/EXIT/note.md"
+              - CODE: "SOFTWARE-ESP/CORE-CONTROL/EXIT/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/CORE-CONTROL/EXIT/integration.md"
+          - TIMER:
+              - NOTE: "SOFTWARE-ESP/CORE-CONTROL/TIMER/note.md"
+              - CODE: "SOFTWARE-ESP/CORE-CONTROL/TIMER/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/CORE-CONTROL/TIMER/integration.md"
+          - RTC:
+              - NOTE: "SOFTWARE-ESP/CORE-CONTROL/RTC/note.md"
+              - CODE: "SOFTWARE-ESP/CORE-CONTROL/RTC/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/CORE-CONTROL/RTC/integration.md"
+          - RNG:
+              - NOTE: "SOFTWARE-ESP/CORE-CONTROL/RNG/note.md"
+              - CODE: "SOFTWARE-ESP/CORE-CONTROL/RNG/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/CORE-CONTROL/RNG/integration.md"
+          - SPI:
+              - NOTE: "SOFTWARE-ESP/CORE-CONTROL/SPI/note.md"
+              - CODE: "SOFTWARE-ESP/CORE-CONTROL/SPI/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/CORE-CONTROL/SPI/integration.md"
+          - SD-CARD:
+              - NOTE: "SOFTWARE-ESP/CORE-CONTROL/SD-CARD/note.md"
+              - CODE: "SOFTWARE-ESP/CORE-CONTROL/SD-CARD/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/CORE-CONTROL/SD-CARD/integration.md"
+      - CORE-COMMUNICATION:
+          - WIFI:
+              - NOTE: "SOFTWARE-ESP/CORE-COMMUNICATION/WIFI/note.md"
+              - CODE: "SOFTWARE-ESP/CORE-COMMUNICATION/WIFI/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/CORE-COMMUNICATION/WIFI/integration.md"
+          - MQTT:
+              - NOTE: "SOFTWARE-ESP/CORE-COMMUNICATION/MQTT/note.md"
+              - CODE: "SOFTWARE-ESP/CORE-COMMUNICATION/MQTT/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/CORE-COMMUNICATION/MQTT/integration.md"
+      - CORE-PERCEPTION:
+          - "SOFTWARE-ESP/CORE-PERCEPTION/core-perception.md"
+      - CORE-ACTUATION:
+          # - "SOFTWARE-ESP/CORE-ACTUATION/core-actuation.md"
+          - LED: 
+              - NOTE: "SOFTWARE-ESP/CORE-ACTUATION/LED/note.md"
+              - CODE: "SOFTWARE-ESP/CORE-ACTUATION/LED/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/CORE-ACTUATION/LED/integration.md"
+          - LCD:
+              - NOTE: "SOFTWARE-ESP/CORE-ACTUATION/LCD/note.md"
+              - CODE: "SOFTWARE-ESP/CORE-ACTUATION/LCD/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/CORE-ACTUATION/LCD/integration.md"
+      - MORE:
+          - "SOFTWARE-ESP/MORE/more.md"
   # - KICK-START:
   #     - ESP32:
   #         - HARDWARE: "./KICK_START/ESP32/HARDWARE/hardware.md"
