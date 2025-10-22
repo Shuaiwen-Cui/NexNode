@@ -903,6 +903,13 @@
 /home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_exit/CMakeFiles/install.dir
 /home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_exit/CMakeFiles/install/local.dir
 /home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_exit/CMakeFiles/install/strip.dir
+/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_i2c/CMakeFiles/__idf_node_i2c.dir
+/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_i2c/CMakeFiles/edit_cache.dir
+/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_i2c/CMakeFiles/rebuild_cache.dir
+/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_i2c/CMakeFiles/list_install_components.dir
+/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_i2c/CMakeFiles/install.dir
+/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_i2c/CMakeFiles/install/local.dir
+/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_i2c/CMakeFiles/install/strip.dir
 /home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_spi/CMakeFiles/__idf_node_spi.dir
 /home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_spi/CMakeFiles/edit_cache.dir
 /home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_spi/CMakeFiles/rebuild_cache.dir

@@ -57,7 +57,7 @@ extern "C"
 
 #include <stdio.h>
 #include "esp_log.h"
-#include "driver/i2c.h"
+#include "driver/i2c_master.h"
 #include "esp_system.h"
 
 #define I2C_MASTER_SCL_IO 10       /*!< gpio number for I2C master clock */
@@ -65,21 +65,76 @@ extern "C"
 #define I2C_MASTER_NUM I2C_NUM_0  /*!< I2C port number for master dev */
 #define I2C_MASTER_FREQ_HZ 100000 /*!< I2C master clock frequency */
 
+/* I2C Bus and Device Handles */
+extern i2c_master_bus_handle_t i2c_bus_handle;
+
    /**
-    * @brief i2c master initialization
+    * @brief i2c master bus initialization
     * @return esp_err_t ESP_OK on success, error code on failure
     */
    esp_err_t i2c_bus_init(void);
 
    /**
-    * @brief i2c master deinitialization
+    * @brief i2c master bus deinitialization
     * @return esp_err_t ESP_OK on success, error code on failure
     */
    esp_err_t i2c_bus_deinit(void);
 
+   /**
+    * @brief add i2c device to bus
+    * @param device_addr I2C device address
+    * @param scl_speed_hz SCL clock speed in Hz
+    * @param dev_handle pointer to store device handle
+    * @return esp_err_t ESP_OK on success, error code on failure
+    */
+   esp_err_t i2c_add_device(uint8_t device_addr, uint32_t scl_speed_hz, i2c_master_dev_handle_t *dev_handle);
+
+   /**
+    * @brief remove i2c device from bus
+    * @param dev_handle device handle to remove
+    * @return esp_err_t ESP_OK on success, error code on failure
+    */
+   esp_err_t i2c_remove_device(i2c_master_dev_handle_t dev_handle);
+
+   /**
+    * @brief write data to i2c device
+    * @param dev_handle device handle
+    * @param data data to write
+    * @param data_len length of data
+    * @param timeout_ms timeout in milliseconds
+    * @return esp_err_t ESP_OK on success, error code on failure
+    */
+   esp_err_t i2c_write_data(i2c_master_dev_handle_t dev_handle, const uint8_t *data, size_t data_len, int timeout_ms);
+
+   /**
+    * @brief read data from i2c device
+    * @param dev_handle device handle
+    * @param data buffer to store read data
+    * @param data_len length of data to read
+    * @param timeout_ms timeout in milliseconds
+    * @return esp_err_t ESP_OK on success, error code on failure
+    */
+   esp_err_t i2c_read_data(i2c_master_dev_handle_t dev_handle, uint8_t *data, size_t data_len, int timeout_ms);
+
+   /**
+    * @brief write then read data from i2c device (combined transaction)
+    * @param dev_handle device handle
+    * @param write_data data to write
+    * @param write_len length of write data
+    * @param read_data buffer to store read data
+    * @param read_len length of data to read
+    * @param timeout_ms timeout in milliseconds
+    * @return esp_err_t ESP_OK on success, error code on failure
+    */
+   esp_err_t i2c_write_read_data(i2c_master_dev_handle_t dev_handle, 
+                                 const uint8_t *write_data, size_t write_len,
+                                 uint8_t *read_data, size_t read_len, 
+                                 int timeout_ms);
+
 #ifdef __cplusplus
 }
 #endif
+
 
 ```
 
@@ -89,7 +144,7 @@ extern "C"
 /**
  * @file node_i2c.c
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
- * @brief This file contains the function prototypes for i2c master initialization. This is to serve the peripherals that require I2C communication.
+ * @brief This file contains the functions for i2c master initialization using ESP-IDF 6.0 i2c_master driver.
  * @version 1.0
  * @date 2025-10-22
  *
@@ -99,61 +154,174 @@ extern "C"
 #include "node_i2c.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-    /**
-     * @brief i2c master initialization
-     * @return esp_err_t ESP_OK on success, error code on failure
-     */
-    esp_err_t i2c_bus_init(void)
-    {
-        esp_err_t ret;
-        i2c_config_t conf = {
-            .mode = I2C_MODE_MASTER,
-            .sda_io_num = I2C_MASTER_SDA_IO,
-            .sda_pullup_en = GPIO_PULLUP_ENABLE,
-            .scl_io_num = I2C_MASTER_SCL_IO,
-            .scl_pullup_en = GPIO_PULLUP_ENABLE,
-            .master.clk_speed = I2C_MASTER_FREQ_HZ,
-            // ESP-IDF 6.0: clk_flags is deprecated, use default clock source
-        };
+/* Global I2C Bus Handle */
+i2c_master_bus_handle_t i2c_bus_handle = NULL;
 
-        ret = i2c_param_config(I2C_MASTER_NUM, &conf);
-        if (ret != ESP_OK)
-        {
-            ESP_LOGE("I2C", "I2C config failed: %s", esp_err_to_name(ret));
-            return ret;
-        }
+/**
+ * @brief i2c master bus initialization using ESP-IDF 6.0 i2c_master driver
+ * @return esp_err_t ESP_OK on success, error code on failure
+ */
+esp_err_t i2c_bus_init(void)
+{
+    esp_err_t ret;
+    
+    /* Configure I2C master bus */
+    i2c_master_bus_config_t i2c_bus_config = {
+        .clk_source = I2C_CLK_SRC_DEFAULT,
+        .i2c_port = I2C_MASTER_NUM,
+        .scl_io_num = I2C_MASTER_SCL_IO,
+        .sda_io_num = I2C_MASTER_SDA_IO,
+        .glitch_ignore_cnt = 7,
+        .flags.enable_internal_pullup = true
+    };
 
-        ret = i2c_driver_install(I2C_MASTER_NUM, conf.mode, 0, 0, 0);
-        if (ret != ESP_OK)
-        {
-            ESP_LOGE("I2C", "I2C install failed: %s", esp_err_to_name(ret));
-            return ret;
-        }
-
-        ESP_LOGI("I2C", "I2C master initialized successfully");
-        return ESP_OK;
+    ret = i2c_new_master_bus(&i2c_bus_config, &i2c_bus_handle);
+    if (ret != ESP_OK) {
+        ESP_LOGE("I2C", "I2C bus creation failed: %s", esp_err_to_name(ret));
+        return ret;
     }
 
-    /**
-     * @brief i2c master deinitialization
-     * @return esp_err_t ESP_OK on success, error code on failure
-     */
-    esp_err_t i2c_bus_deinit(void)
-    {
-        esp_err_t ret = i2c_driver_delete(I2C_MASTER_NUM);
-        if (ret != ESP_OK)
-        {
-            ESP_LOGE("I2C", "I2C delete failed: %s", esp_err_to_name(ret));
+    ESP_LOGI("I2C", "I2C master bus initialized successfully");
+    return ESP_OK;
+}
+
+/**
+ * @brief i2c master bus deinitialization
+ * @return esp_err_t ESP_OK on success, error code on failure
+ */
+esp_err_t i2c_bus_deinit(void)
+{
+    esp_err_t ret = ESP_OK;
+    
+    if (i2c_bus_handle != NULL) {
+        ret = i2c_del_master_bus(i2c_bus_handle);
+        if (ret != ESP_OK) {
+            ESP_LOGE("I2C", "I2C bus deletion failed: %s", esp_err_to_name(ret));
             return ret;
         }
-
-        ESP_LOGI("I2C", "I2C master deinitialized successfully");
-        return ESP_OK;
+        i2c_bus_handle = NULL;
     }
+
+    ESP_LOGI("I2C", "I2C master bus deinitialized successfully");
+    return ESP_OK;
+}
+
+/**
+ * @brief add i2c device to bus
+ * @param device_addr I2C device address
+ * @param scl_speed_hz SCL clock speed in Hz
+ * @param dev_handle pointer to store device handle
+ * @return esp_err_t ESP_OK on success, error code on failure
+ */
+esp_err_t i2c_add_device(uint8_t device_addr, uint32_t scl_speed_hz, i2c_master_dev_handle_t *dev_handle)
+{
+    esp_err_t ret;
+    
+    if (i2c_bus_handle == NULL) {
+        ESP_LOGE("I2C", "I2C bus not initialized");
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    i2c_device_config_t dev_cfg = {
+        .dev_addr_length = I2C_ADDR_BIT_LEN_7,
+        .device_address = device_addr,
+        .scl_speed_hz = scl_speed_hz
+    };
+
+    ret = i2c_master_bus_add_device(i2c_bus_handle, &dev_cfg, dev_handle);
+    if (ret != ESP_OK) {
+        ESP_LOGE("I2C", "I2C device addition failed: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ESP_LOGI("I2C", "I2C device 0x%02X added successfully", device_addr);
+    return ESP_OK;
+}
+
+/**
+ * @brief remove i2c device from bus
+ * @param dev_handle device handle to remove
+ * @return esp_err_t ESP_OK on success, error code on failure
+ */
+esp_err_t i2c_remove_device(i2c_master_dev_handle_t dev_handle)
+{
+    esp_err_t ret = i2c_master_bus_rm_device(dev_handle);
+    if (ret != ESP_OK) {
+        ESP_LOGE("I2C", "I2C device removal failed: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ESP_LOGI("I2C", "I2C device removed successfully");
+    return ESP_OK;
+}
+
+/**
+ * @brief write data to i2c device
+ * @param dev_handle device handle
+ * @param data data to write
+ * @param data_len length of data
+ * @param timeout_ms timeout in milliseconds
+ * @return esp_err_t ESP_OK on success, error code on failure
+ */
+esp_err_t i2c_write_data(i2c_master_dev_handle_t dev_handle, const uint8_t *data, size_t data_len, int timeout_ms)
+{
+    esp_err_t ret = i2c_master_transmit(dev_handle, data, data_len, timeout_ms);
+    if (ret != ESP_OK) {
+        ESP_LOGE("I2C", "I2C write failed: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ESP_LOGD("I2C", "I2C write successful, %d bytes", data_len);
+    return ESP_OK;
+}
+
+/**
+ * @brief read data from i2c device
+ * @param dev_handle device handle
+ * @param data buffer to store read data
+ * @param data_len length of data to read
+ * @param timeout_ms timeout in milliseconds
+ * @return esp_err_t ESP_OK on success, error code on failure
+ */
+esp_err_t i2c_read_data(i2c_master_dev_handle_t dev_handle, uint8_t *data, size_t data_len, int timeout_ms)
+{
+    esp_err_t ret = i2c_master_receive(dev_handle, data, data_len, timeout_ms);
+    if (ret != ESP_OK) {
+        ESP_LOGE("I2C", "I2C read failed: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ESP_LOGD("I2C", "I2C read successful, %d bytes", data_len);
+    return ESP_OK;
+}
+
+/**
+ * @brief write then read data from i2c device (combined transaction)
+ * @param dev_handle device handle
+ * @param write_data data to write
+ * @param write_len length of write data
+ * @param read_data buffer to store read data
+ * @param read_len length of data to read
+ * @param timeout_ms timeout in milliseconds
+ * @return esp_err_t ESP_OK on success, error code on failure
+ */
+esp_err_t i2c_write_read_data(i2c_master_dev_handle_t dev_handle, 
+                              const uint8_t *write_data, size_t write_len,
+                              uint8_t *read_data, size_t read_len, 
+                              int timeout_ms)
+{
+    esp_err_t ret = i2c_master_transmit_receive(dev_handle, write_data, write_len, read_data, read_len, timeout_ms);
+    if (ret != ESP_OK) {
+        ESP_LOGE("I2C", "I2C write-read failed: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ESP_LOGD("I2C", "I2C write-read successful, wrote %d bytes, read %d bytes", write_len, read_len);
+    return ESP_OK;
+}
 
 #ifdef __cplusplus
 }
@@ -163,7 +331,81 @@ extern "C"
 ## main.c
 
 ```c
-Refer to the codes for i2c peripherals.
+#include "node_i2c.h"
+
+void app_main(void) {
+    // 1. initialize the i2c bus
+    esp_err_t ret = i2c_bus_init();
+    if (ret != ESP_OK) return;
+    
+    // 2. add i2c device to bus
+    i2c_master_dev_handle_t dev_handle;
+    ret = i2c_add_device(0x68, 400000, &dev_handle);
+    if (ret != ESP_OK) return;
+    
+    // 3. write data to i2c device
+    uint8_t data[] = {0x75};
+    i2c_write_data(dev_handle, data, 1, 1000);
+    
+    uint8_t response[1];
+    i2c_read_data(dev_handle, response, 1, 1000);
+    
+    // 4. clean up resources
+    i2c_remove_device(dev_handle);
+    i2c_bus_deinit();
+}
+```
+
+## main.cpp
+
+```cpp
+/**
+ * @file main.cpp
+ * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
+ * @brief I2C Test Application
+ * @version 1.0
+ * @date 2025-10-22
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
+#include "node_i2c.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * @brief Entry point of the program
+ * @param None
+ * @retval None
+ */
+void app_main(void) {
+    // 1. initialize the i2c bus
+    esp_err_t ret = i2c_bus_init();
+    if (ret != ESP_OK) return;
+    
+    // 2. add i2c device to bus
+    i2c_master_dev_handle_t dev_handle;
+    ret = i2c_add_device(0x68, 400000, &dev_handle);
+    if (ret != ESP_OK) return;
+    
+    // 3. write data to i2c device
+    uint8_t data[] = {0x75};
+    i2c_write_data(dev_handle, data, 1, 1000);
+    
+    uint8_t response[1];
+    i2c_read_data(dev_handle, response, 1, 1000);
+    
+    // 4. clean up resources
+    i2c_remove_device(dev_handle);
+    i2c_bus_deinit();
+}
+
+#ifdef __cplusplus
+}
+#endif
 ```
 
 !!! note

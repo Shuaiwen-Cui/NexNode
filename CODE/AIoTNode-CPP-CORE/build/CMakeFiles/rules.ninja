@@ -1954,6 +1954,25 @@ rule C_STATIC_LIBRARY_LINKER____idf_node_exit_
 #############################################
 # Rule for compiling C files.
 
+rule C_COMPILER____idf_node_i2c_
+  depfile = $DEP_FILE
+  deps = gcc
+  command = /home/cshwstem/esp/esp-idf/tools/tools/xtensa-esp-elf/esp-15.1.0_20250607/xtensa-esp-elf/bin/xtensa-esp32s3-elf-gcc $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  description = Building C object $out
+
+
+#############################################
+# Rule for linking C static library.
+
+rule C_STATIC_LIBRARY_LINKER____idf_node_i2c_
+  command = $PRE_LINK && /usr/bin/cmake -E rm -f $TARGET_FILE && /home/cshwstem/esp/esp-idf/tools/tools/xtensa-esp-elf/esp-15.1.0_20250607/xtensa-esp-elf/bin/xtensa-esp32s3-elf-ar qc $TARGET_FILE $LINK_FLAGS $in && /home/cshwstem/esp/esp-idf/tools/tools/xtensa-esp-elf/esp-15.1.0_20250607/xtensa-esp-elf/bin/xtensa-esp32s3-elf-ranlib $TARGET_FILE && $POST_BUILD
+  description = Linking C static library $TARGET_FILE
+  restat = $RESTAT
+
+
+#############################################
+# Rule for compiling C files.
+
 rule C_COMPILER____idf_node_spi_
   depfile = $DEP_FILE
   deps = gcc

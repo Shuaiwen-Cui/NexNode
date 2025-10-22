@@ -167,6 +167,7 @@
 /home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_led/libnode_led.a
 /home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_exit/libnode_exit.a
 /home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_led/libnode_led.a
+/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_i2c/libnode_i2c.a
 /home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_spi/libnode_spi.a
 /home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_lcd/libnode_lcd.a
 /home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_spi/libnode_spi.a

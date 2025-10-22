@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "AIoTNode",
-    "project_version":    "49b45440-dirty",
+    "project_version":    "a5f390b0-dirty",
     "project_path":       "/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-C-CORE",
     "idf_path":           "/home/cshwstem/esp/esp-idf",
     "build_dir":          "/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-C-CORE/build",
@@ -1330,7 +1330,7 @@
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-C-CORE/build/esp-idf/node_i2c/libnode_i2c.a",
-            "sources": [ "/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-C-CORE/driver/node_i2c/node_i2c.c" ],
+            "sources": [ "/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-C-CORE/driver/node_i2c/example_usage.c", "/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-C-CORE/driver/node_i2c/node_i2c.c" ],
             "include_dirs": [ "include" ]
         },
         "node_lcd": {

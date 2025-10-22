@@ -589,6 +589,11 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
+  include("/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_i2c/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
   include("/home/cshwstem/CSW/Development/NexNode/CODE/AIoTNode-CPP-CORE/build/esp-idf/node_spi/cmake_install.cmake")
 endif()
 

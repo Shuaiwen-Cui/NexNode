@@ -167,6 +167,7 @@ $<TARGET_FILE:idf::main>
 $<TARGET_FILE:idf::node_led>
 $<TARGET_FILE:idf::node_exit>
 $<TARGET_FILE:__idf_node_led>
+$<TARGET_FILE:idf::node_i2c>
 $<TARGET_FILE:idf::node_spi>
 $<TARGET_FILE:idf::node_lcd>
 $<TARGET_FILE:__idf_node_spi>
