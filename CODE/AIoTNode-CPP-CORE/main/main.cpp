@@ -9,18 +9,14 @@
  * 
  */
 
-/* Dependencies */
-// Basic
-#include "esp_system.h"
-#include "esp_chip_info.h"
-#include "esp_psram.h"
-#include "esp_flash.h"
-#include "nvs_flash.h"
-#include "esp_log.h"
-
-// RTOS
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+/* DEPENDENCIES */
+// ESP
+#include "esp_system.h" // ESP32 System
+#include "nvs_flash.h"  // ESP32 NVS
+#include "esp_chip_info.h" // ESP32 Chip Info
+#include "esp_psram.h" // ESP32 PSRAM
+#include "esp_flash.h" // ESP32 Flash
+#include "esp_log.h" // ESP32 Logging
 
 // BSP
 #include "node_led.h"
@@ -31,6 +27,7 @@
 #include "node_rtc.h"
 #include "node_sdcard.h"
 #include "node_wifi.h"
+#include "node_mqtt.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,6 +46,9 @@ void app_main(void)
     esp_err_t ret;
     uint32_t flash_size;
     esp_chip_info_t chip_info;
+
+    char mqtt_pub_buff[64];
+    int count = 0;
 
     // Initialize NVS
     ret = nvs_flash_init();
@@ -112,13 +112,27 @@ void app_main(void)
         ESP_LOGE(TAG_WIFI, "WiFi STA Init Failed");
     }
 
-    vTaskDelay(5000);
+    // only when the ip is obtained, start mqtt
+    EventBits_t ev = 0;
+    ev = xEventGroupWaitBits(wifi_event_group,CONNECTED_BIT,pdTRUE,pdFALSE,portMAX_DELAY);
+    if(ev & CONNECTED_BIT)
+    {
+        mqtt_app_start();
+    }
 
     while (1)
     {
+        if(s_is_mqtt_connected)
+        {
+            snprintf(mqtt_pub_buff,64,"{\"count\":\"%d\"}",count);
+            esp_mqtt_client_publish(s_mqtt_client, MQTT_PUBLISH_TOPIC,
+                            mqtt_pub_buff, strlen(mqtt_pub_buff),1, 0);
+            count++;
+        }
         led_toggle();
+
         ESP_LOGI(TAG, "Hello World!");
-        vTaskDelay(1000);
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
 }
 

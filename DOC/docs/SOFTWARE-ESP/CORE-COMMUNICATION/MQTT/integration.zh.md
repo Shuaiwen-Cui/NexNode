@@ -16,18 +16,18 @@
 get_idf 
 ```
 
-激活 ESP-IDF 环境。然后输入以下命令创建一个名为 `esp32_mqtt` 的新组件：
+激活 ESP-IDF 环境。然后输入以下命令创建一个名为 `node_mqtt` 的新组件：
 
 ```bash
-idf.py -C driver create-component esp32_mqtt
+idf.py -C driver create-component node_mqtt
 ```
 
 !!! danger
-    注意，esp-idf里有内置的mqtt模块，因此为了避免冲突，我们将这个模块命名为esp32_mqtt。
+    注意，esp-idf里有内置的mqtt模块，因此为了避免冲突，我们将这个模块命名为node_mqtt。
 
-上面的命令意味着在 `driver` 目录中创建一个名为 `esp32_mqtt` 的新组件。执行命令后，您将在 `driver` 目录中看到一个名为 `esp32_mqtt` 的新目录。命令将自动生成新组件的 `CMakeLists.txt` 文件，以及 `mqtt.h` 和 `mqtt.c` 文件。
+上面的命令意味着在 `driver` 目录中创建一个名为 `node_mqtt` 的新组件。执行命令后，您将在 `driver` 目录中看到一个名为 `node_mqtt` 的新目录。命令将自动生成新组件的 `CMakeLists.txt` 文件，以及 `mqtt.h` 和 `mqtt.c` 文件。
 
-或者，您可以在 `driver` 目录中手动创建 `esp32_mqtt` 目录，然后在 `esp32_mqtt` 目录中创建 `CMakeLists.txt`、`mqtt.h` 和 `mqtt.c` 文件。
+或者，您可以在 `driver` 目录中手动创建 `node_mqtt` 目录，然后在 `node_mqtt` 目录中创建 `CMakeLists.txt`、`mqtt.h` 和 `mqtt.c` 文件。
 
 ## 替换代码
 

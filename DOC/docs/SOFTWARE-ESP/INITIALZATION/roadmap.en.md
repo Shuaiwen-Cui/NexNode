@@ -81,24 +81,12 @@ Assuming you have completed the project initialization work, it is recommended t
 | Main Control        | Timer            | driver                           |   node_led                  |
 | Main Control        | Real-Time Clock  |                                  |                             |
 | Main Control        | Random Number Generator|                              |                             |
+| Main Control        | I2C              | driver                           |                             |
 | Main Control        | SPI              | driver                           |                             |
 | Actuation            | LCD              | driver                           | node_spi                    |
 | Actuation            | SD Card          | driver, fatfs, vfs, sdmmc     | node_spi                    |
 | Communication       | WIFI             | esp_wifi, wpa_supplicant    | node_led, node_lcd           |
-
-
-
-1. Execute > LED
-2. Main Control > External Interrupt
-3. Main Control > Timer
-4. Main Control > Real-Time Clock
-5. Main Control > Random Number Generator
-6. Main Control > SPI & Execute LCD
-7. Main Control > SPI & SD Card
-8. Communication > WIFI
-9. Communication > IOT
-10. Main Control > I2C
-11. Sensing > ADXL355
+| Communication       | IOT              | mqtt     |            |
 
 
 ## ADDITIONAL NOTES

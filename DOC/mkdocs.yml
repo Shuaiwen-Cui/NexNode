@@ -334,6 +334,10 @@ nav:
               - NOTE: "SOFTWARE-ESP/CORE-CONTROL/RNG/note.md"
               - CODE: "SOFTWARE-ESP/CORE-CONTROL/RNG/code.md"
               - INTEGRATION: "SOFTWARE-ESP/CORE-CONTROL/RNG/integration.md"
+          - I2C:
+              - NOTE: "SOFTWARE-ESP/CORE-CONTROL/I2C/note.md"
+              - CODE: "SOFTWARE-ESP/CORE-CONTROL/I2C/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/CORE-CONTROL/I2C/integration.md"
           - SPI:
               - NOTE: "SOFTWARE-ESP/CORE-CONTROL/SPI/note.md"
               - CODE: "SOFTWARE-ESP/CORE-CONTROL/SPI/code.md"

@@ -116,6 +116,8 @@ void app_main(void)
         mqtt_app_start();
     }
 
+    i2c_bus_init();
+
     while (1)
     {
         if(s_is_mqtt_connected)

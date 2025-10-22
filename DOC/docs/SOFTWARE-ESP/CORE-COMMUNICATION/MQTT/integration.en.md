@@ -15,18 +15,18 @@ Open the project in VSCode, open the integrated terminal, and type in
 ```bash
 get_idf 
 ```
-to actiate the ESP-IDF environment. Then type in the following command to create a new component named `esp32_mqtt`:
+to actiate the ESP-IDF environment. Then type in the following command to create a new component named `node_mqtt`:
 
 ```bash
-idf.py -C driver create-component esp32_mqtt
+idf.py -C driver create-component node_mqtt
 ```
 
 !!! danger
-    Note that there is a built-in MQTT module in esp-idf, so to avoid conflicts, we name this module esp32_mqtt.
+    Note that there is a built-in MQTT module in esp-idf, so to avoid conflicts, we name this module node_mqtt.
 
-The command above means to create a new component named `esp32_mqtt` in the `driver` directory. After executing the command, you will see a new directory named `esp32_mqtt` in the `driver` directory. And the command will automatically generate the `CMakeLists.txt` file for the new component, as well as the `mqtt.h` and `mqtt.c` files.
+The command above means to create a new component named `node_mqtt` in the `driver` directory. After executing the command, you will see a new directory named `node_mqtt` in the `driver` directory. And the command will automatically generate the `CMakeLists.txt` file for the new component, as well as the `mqtt.h` and `mqtt.c` files.
 
-Alternatively, you can mannually create the `esp32_mqtt` directory in the `driver` directory, and then create the `CMakeLists.txt`, `mqtt.h`, and `mqtt.c` files in the `esp32_mqtt` directory.
+Alternatively, you can mannually create the `node_mqtt` directory in the `driver` directory, and then create the `CMakeLists.txt`, `mqtt.h`, and `mqtt.c` files in the `node_mqtt` directory.
 
 
 ## Replace the Code

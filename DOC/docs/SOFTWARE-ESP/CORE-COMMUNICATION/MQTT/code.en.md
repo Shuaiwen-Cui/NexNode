@@ -4,17 +4,14 @@
 
 ```plaintext
 - driver
-    - esp32_mqtt
+    - node_mqtt
         - include
-            - mqtt.h
-        - mqtt.c
+            - node_mqtt.h
+        - node_mqtt.c
         - CMakeLists.txt
 ```
 
-!!! danger
-    Note that there is a built-in MQTT module in esp-idf, so to avoid conflicts, we name this module esp32_mqtt.
-
-## driver/esp32_mqtt/CMakeLists.txt
+## driver/node_mqtt/CMakeLists.txt
 
 ```cmake
 set(src_dirs
@@ -35,15 +32,16 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
 !!! note
     You can see that the dependency relationship here is very simple, only mqtt.
 
-## mqtt.h
+
+## node_mqtt.h
 
 ```c
 /**
- * @file mqtt.h
+ * @file node_mqtt.h
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
  * @brief This file contains the function prototypes for mqtt connection.
  * @version 1.0
- * @date 2025-03-17
+ * @date 2025-10-22
  *
  * @copyright Copyright (c) 2025
  *
@@ -62,14 +60,14 @@ extern "C"
 #include "mqtt_client.h"
 
 /* Macros */
-#define MQTT_ADDRESS "mqtt://8.222.194.160" // MQTT Broker URL
+#define MQTT_ADDRESS "<YOUR MQTT SERVER>" // MQTT Broker URL
 #define MQTT_PORT 1883                      // MQTT Broker Port
-#define MQTT_CLIENT "ESP32-S3-Node-001"     // Client ID (Unique for devices)
-#define MQTT_USERNAME "cshwstem"            // MQTT Username
-#define MQTT_PASSWORD "Cshw0918#"           // MQTT Password
+#define MQTT_CLIENT "<YOUR CLIENT ID>"     // Client ID (Unique for devices)
+#define MQTT_USERNAME "<YOUR MQTT USERNAME>"            // MQTT Username
+#define MQTT_PASSWORD "<YOUR MQTT PASSWORD>"           // MQTT Password
 
-#define MQTT_PUBLIC_TOPIC "/mqtt/node"      // publish topic
-#define MQTT_SUBSCRIBE_TOPIC "/mqtt/server" // subscribe topic
+#define MQTT_PUBLISH_TOPIC "<YOUR PUBLISH TOPIC>"      // publish topic
+#define MQTT_SUBSCRIBE_TOPIC "<YOUR SUBSCRIBE TOPIC>" // subscribe topic
 
     /* Variables */
     extern const char *TAG_MQTT; // tag for logging
@@ -88,15 +86,15 @@ extern "C"
 
 ```
 
-## mqtt.c
+## node_mqtt.c
 
 ```c
 /**
- * @file mqtt.c
+ * @file node_mqtt.c
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
  * @brief This file contains the function prototypes for mqtt connection.
  * @version 1.0
- * @date 2025-03-17
+ * @date 2025-10-22
  *
  * @copyright Copyright (c) 2025
  *
@@ -107,7 +105,7 @@ extern "C"
 {
 #endif
 
-#include "mqtt.h"
+#include "node_mqtt.h"
 
     /* Macros */
 
@@ -212,7 +210,6 @@ extern "C"
 }
 #endif
 
-
 ```
 
 ## main.c
@@ -223,7 +220,7 @@ extern "C"
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
  * @brief 
  * @version 1.0
- * @date 2024-11-20
+ * @date 2025-10-22
  * 
  * @copyright Copyright (c) 2024
  * 
@@ -239,18 +236,18 @@ extern "C"
 #include "esp_log.h" // ESP32 Logging
 
 // BSP
-#include "led.h"
-#include "exit.h"
-#include "spi.h"
-#include "lcd.h"
-#include "tim.h"
-#include "esp_rtc.h"
-#include "spi_sdcard.h"
-#include "wifi_wpa2_enterprise.h"
-#include "mqtt.h"
+#include "node_led.h"
+#include "node_exit.h"
+#include "node_spi.h"
+#include "node_lcd.h"
+#include "node_timer.h"
+#include "node_rtc.h"
+#include "node_sdcard.h"
+#include "node_wifi.h"
+#include "node_mqtt.h"
 
 /* Variables */
-const char *TAG = "NEXNODE";
+const char *TAG = "AIoTNode";
 
 /**
  * @brief Entry point of the program
@@ -316,7 +313,7 @@ void app_main(void)
     vTaskDelay(3000);
 
     lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test  ", RED);
-    
+
     ret = wifi_sta_wpa2_init();
     if(ret == ESP_OK)
     {
@@ -341,7 +338,149 @@ void app_main(void)
         if(s_is_mqtt_connected)
         {
             snprintf(mqtt_pub_buff,64,"{\"count\":\"%d\"}",count);
-            esp_mqtt_client_publish(s_mqtt_client, MQTT_PUBLIC_TOPIC,
+            esp_mqtt_client_publish(s_mqtt_client, MQTT_PUBLISH_TOPIC,
+                            mqtt_pub_buff, strlen(mqtt_pub_buff),1, 0);
+            count++;
+        }
+        led_toggle();
+
+        ESP_LOGI(TAG, "Hello World!");
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
+    }
+}
+```
+
+## main.cpp
+
+```cpp
+/**
+ * @file main.cpp
+ * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
+ * @brief 
+ * @version 1.0
+ * @date 2025-10-22
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
+/* DEPENDENCIES */
+// ESP
+#include "esp_system.h" // ESP32 System
+#include "nvs_flash.h"  // ESP32 NVS
+#include "esp_chip_info.h" // ESP32 Chip Info
+#include "esp_psram.h" // ESP32 PSRAM
+#include "esp_flash.h" // ESP32 Flash
+#include "esp_log.h" // ESP32 Logging
+
+// BSP
+#include "node_led.h"
+#include "node_exit.h"
+#include "node_spi.h"
+#include "node_lcd.h"
+#include "node_timer.h"
+#include "node_rtc.h"
+#include "node_sdcard.h"
+#include "node_wifi.h"
+#include "node_mqtt.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* Variables */
+const char *TAG = "AIoTNode";
+
+/**
+ * @brief Entry point of the program
+ * @param None
+ * @retval None
+ */
+void app_main(void)
+{
+    esp_err_t ret;
+    uint32_t flash_size;
+    esp_chip_info_t chip_info;
+
+    char mqtt_pub_buff[64];
+    int count = 0;
+
+    // Initialize NVS
+    ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
+    {
+        ESP_ERROR_CHECK(nvs_flash_erase()); // Erase if needed
+        ret = nvs_flash_init();
+    }
+
+    // Get FLASH size
+    esp_flash_get_size(NULL, &flash_size);
+    esp_chip_info(&chip_info);
+
+    // Display CPU core count
+    printf("CPU Cores: %d\n", chip_info.cores);
+
+    // Display FLASH size
+    printf("Flash size: %ld MB flash\n", flash_size / (1024 * 1024));
+
+    // Display PSRAM size
+    printf("PSRAM size: %d bytes\n", esp_psram_get_size());
+
+    // BSP Initialization
+    led_init();
+    exit_init();
+    spi2_init();
+    lcd_init();
+
+    // spiffs_test();                                                  /* Run SPIFFS test */
+    while (sd_card_init())                               /* SD card not detected */
+    {
+        lcd_show_string(0, 0, 200, 16, 16, (char*)"SD Card Error!", RED);
+        vTaskDelay(500);
+        lcd_show_string(0, 20, 200, 16, 16, (char*)"Please Check!", RED);
+        vTaskDelay(500);
+    }
+
+    // clean the screen
+    lcd_clear(WHITE);
+
+    lcd_show_string(0, 0, 200, 16, 16, (char*)"SD Initialized!", RED);
+
+    sd_card_test_filesystem();                                        /* Run SD card test */
+
+    lcd_show_string(0, 0, 200, 16, 16, (char*)"SD Tested CSW! ", RED);
+
+    // sd_card_unmount();
+
+    vTaskDelay(3000);
+
+    lcd_show_string(0, 0, lcd_self.width, 16, 16, (char*)"WiFi STA Test  ", RED);
+
+    ret = wifi_sta_wpa2_init();
+    if(ret == ESP_OK)
+    {
+        ESP_LOGI(TAG_WIFI, "WiFi STA Init OK");
+        lcd_show_string(0, 0, lcd_self.width, 16, 16, (char*)"WiFi STA Test OK", RED);
+    }
+    else
+    {
+        ESP_LOGE(TAG_WIFI, "WiFi STA Init Failed");
+    }
+
+    // only when the ip is obtained, start mqtt
+    EventBits_t ev = 0;
+    ev = xEventGroupWaitBits(wifi_event_group,CONNECTED_BIT,pdTRUE,pdFALSE,portMAX_DELAY);
+    if(ev & CONNECTED_BIT)
+    {
+        mqtt_app_start();
+    }
+
+    while (1)
+    {
+        if(s_is_mqtt_connected)
+        {
+            snprintf(mqtt_pub_buff,64,"{\"count\":\"%d\"}",count);
+            esp_mqtt_client_publish(s_mqtt_client, MQTT_PUBLISH_TOPIC,
                             mqtt_pub_buff, strlen(mqtt_pub_buff),1, 0);
             count++;
         }
@@ -352,5 +491,8 @@ void app_main(void)
     }
 }
 
-```
+#ifdef __cplusplus
+}
+#endif
 
+```

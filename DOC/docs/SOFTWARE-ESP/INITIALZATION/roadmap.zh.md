@@ -80,23 +80,12 @@
 | 控制                 | 定时器            | driver                     |   node_led                  |
 | 控制                 | 实时时钟          |                     |                     |
 | 控制                 | 随机数发生器      |                      |                     |
+| 通信                 | I2C              | driver                     |                     |
 | 控制                 | SPI              | driver                     |                     |
 | 执行                 | LCD              | driver                     | node_spi                     |
 | 执行                 | SD 卡            | driver, fatfs, vfs, sdmmc   | node_spi                     |
 | 通信                 | WIFI             | esp_wifi, wpa_supplicant    | node_led, node_lcd           |
-
-
-1. 执行>LED
-2. 主控>外部中断
-3. 主控>定时器
-4. 主控>实时时钟
-5. 主控>随机数发生器
-6. 主控>SPI & 执行 LCD
-7. 主控>SPI & SD 卡
-8. 通信>WIFI
-9. 通信>IOT
-10. 主控>I2C
-11. 感知>ADXL355
+| 通信                 | IOT              | mqtt     |            |
 
 ## 额外说明
 
