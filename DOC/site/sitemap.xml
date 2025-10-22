@@ -1002,6 +1002,27 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-CONTROL/EXIT/note/"/>
     </url>
     <url>
+        <loc>https://localhost:8000/SOFTWARE-ESP/CORE-CONTROL/I2C/code/</loc>
+        <lastmod>2025-10-22</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/CORE-CONTROL/I2C/code/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-CONTROL/I2C/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/SOFTWARE-ESP/CORE-CONTROL/I2C/integration/</loc>
+        <lastmod>2025-10-22</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/CORE-CONTROL/I2C/integration/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-CONTROL/I2C/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/SOFTWARE-ESP/CORE-CONTROL/I2C/note/</loc>
+        <lastmod>2025-10-22</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/CORE-CONTROL/I2C/note/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-CONTROL/I2C/note/"/>
+    </url>
+    <url>
         <loc>https://localhost:8000/SOFTWARE-ESP/CORE-CONTROL/RNG/code/</loc>
         <lastmod>2025-10-22</lastmod>
         <changefreq>daily</changefreq>
@@ -2169,6 +2190,27 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-CONTROL/EXIT/note/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/CORE-CONTROL/EXIT/note/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/SOFTWARE-ESP/CORE-CONTROL/I2C/code/</loc>
+        <lastmod>2025-10-22</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-CONTROL/I2C/code/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/CORE-CONTROL/I2C/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/SOFTWARE-ESP/CORE-CONTROL/I2C/integration/</loc>
+        <lastmod>2025-10-22</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-CONTROL/I2C/integration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/CORE-CONTROL/I2C/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/SOFTWARE-ESP/CORE-CONTROL/I2C/note/</loc>
+        <lastmod>2025-10-22</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-CONTROL/I2C/note/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/CORE-CONTROL/I2C/note/"/>
     </url>
     <url>
         <loc>https://localhost:8000/zh/SOFTWARE-ESP/CORE-CONTROL/RNG/code/</loc>
