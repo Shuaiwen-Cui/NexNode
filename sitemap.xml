@@ -1198,6 +1198,69 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE/more/"/>
     </url>
     <url>
+        <loc>https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/code/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/code/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/integration/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/integration/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/note/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/note/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/note/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/code/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/code/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/integration/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/integration/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/note/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/note/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/note/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/code/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/code/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/integration/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/integration/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/note/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/note/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/note/"/>
+    </url>
+    <url>
         <loc>https://localhost:8000/blog/</loc>
         <lastmod>2025-10-23</lastmod>
         <changefreq>daily</changefreq>
@@ -2400,6 +2463,69 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE/more/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE/more/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/code/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/code/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/integration/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/integration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/note/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/note/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/note/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/code/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/code/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/integration/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/integration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/note/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/note/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/note/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/code/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/code/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/integration/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/integration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/note/</loc>
+        <lastmod>2025-10-23</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/note/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DS3231/note/"/>
     </url>
     <url>
         <loc>https://localhost:8000/zh/blog/</loc>
