@@ -44,11 +44,4 @@ idf.py -C driver create-component node_th_dht11
 idf.py build flash monitor
 ```
 
-然后您将在串行监视器中看到反馈。或者，您可以检查 SD 卡以进行验证。
-
-```bash
-idf.py build flash monitor
-```
-
 然后您将在串行监视器中看到反馈。
-
