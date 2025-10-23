@@ -60,9 +60,12 @@ idf_component_register(
 !!! note "说明"
     本项目的核心目标是打造传感器节点，即硬件设计和基础的驱动实现，其实并不会过多涉及中间件和应用层的开发内容。但是为了让项目结构更加完整和规范，并为后续项目提供基础，这里我们依然创建了这中间件和应用层的文件夹。
 
-## 版本说明
+## 分支说明
 
 通过同时对AIOT-C-ZERO和AIOT-CPP-ZERO版本进行以上改造，我们可以得到版本AIOT-C-CORE和AIOT-CPP-CORE的项目框架，后续会基于这两个版本进行核心功能的开发。
+
+- AIOT-C-ZERO -> AIOT-C-CORE
+- AIOT-CPP-ZERO -> AIOT-CPP-CORE
 
 ## 组件与模块
 

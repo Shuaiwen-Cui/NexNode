@@ -61,7 +61,7 @@ idf_component_register(
     The core goal of this project is to create a sensor node, focusing on hardware design and basic driver implementation, without much involvement in middleware and application layer development. However, to make the project
     structure more complete and standardized, and to provide a foundation for future projects, we have still created these middleware and application layer folders.
 
-## VERSION DESCRIPTION
+## BRANCH DESCRIPTION
 
 By applying the above modifications to both the AIOT-C-ZERO and AIOT-CPP-ZERO versions, we can obtain the AIOT-C-CORE and AIOT-CPP-CORE project frameworks, which will serve as the basis for core functionality development in subsequent projects.
 
