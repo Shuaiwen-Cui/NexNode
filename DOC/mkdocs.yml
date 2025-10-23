@@ -376,6 +376,11 @@ nav:
               - INTEGRATION: "SOFTWARE-ESP/CORE-ACTUATION/SD-CARD/integration.md"
       - MORE:
           - "SOFTWARE-ESP/MORE/more.md"
+      - MORE-CONTROL:
+          - DS3231:
+              - NOTE: "SOFTWARE-ESP/MORE-CONTROL/DS3231/note.md"
+              - CODE: "SOFTWARE-ESP/MORE-CONTROL/DS3231/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/MORE-CONTROL/DS3231/integration.md"
       - MORE-PERCEPTION:
           - DHT11:
               - NOTE: "SOFTWARE-ESP/MORE-PERCEPTION/DHT11/note.md" 
@@ -385,10 +390,7 @@ nav:
               - NOTE: "SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/note.md"
               - CODE: "SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/code.md"
               - INTEGRATION: "SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/integration.md"
-          - DS3231:
-              - NOTE: "SOFTWARE-ESP/MORE-PERCEPTION/DS3231/note.md"
-              - CODE: "SOFTWARE-ESP/MORE-PERCEPTION/DS3231/code.md"
-              - INTEGRATION: "SOFTWARE-ESP/MORE-PERCEPTION/DS3231/integration.md"
+
 
   - RELEASE:
       - "RELEASE/v1.md"

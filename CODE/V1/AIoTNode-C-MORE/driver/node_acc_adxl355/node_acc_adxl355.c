@@ -1,0 +1,1163 @@
+/**
+ * @file adxl355.c
+ * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
+ * @brief ADXL355 3-axis accelerometer driver implementation
+ * @version 1.0
+ * @date 2025-08-23
+ * @copyright Copyright (c) 2025
+ *
+ */
+
+#include "node_acc_adxl355.h"
+#include "node_spi.h"
+#include "esp_log.h"
+#include "esp_check.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
+//==============================================================================
+
+static const char *TAG = "ADXL355";
+
+//==============================================================================
+
+/* Private function declarations */
+static esp_err_t adxl355_configure_spi_device(spi_device_handle_t *device_handle);
+static esp_err_t adxl355_read_register(adxl355_handle_t *handle, uint8_t reg, uint8_t *value);
+static esp_err_t adxl355_read_registers(adxl355_handle_t *handle, uint8_t reg, uint8_t *data, uint8_t len);
+static esp_err_t adxl355_write_register(adxl355_handle_t *handle, uint8_t reg, uint8_t value);
+static esp_err_t adxl355_write_registers(adxl355_handle_t *handle, uint8_t reg, const uint8_t *data, uint8_t len);
+static const char *adxl355_get_range_string(adxl355_range_t range);
+static const char *adxl355_get_odr_string(adxl355_output_data_rate_t odr);
+
+//==============================================================================
+
+esp_err_t adxl355_init(adxl355_handle_t *handle, adxl355_range_t range, adxl355_output_data_rate_t odr)
+{
+    esp_err_t ret;
+
+    ESP_LOGI(TAG, "=== ADXL355 INITIALIZATION START ===");
+    ESP_LOGI(TAG, "Initialization parameters: range=%s, ODR=%s",
+             adxl355_get_range_string(range), adxl355_get_odr_string(odr));
+
+    if (handle == NULL)
+    {
+        ESP_LOGE(TAG, "Invalid argument: handle=%p", (void *)handle);
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Step 1: Configure SPI device for ADXL355 */
+    ESP_LOGI(TAG, "Configuring SPI device for ADXL355...");
+    ret = adxl355_configure_spi_device(&handle->spi_handle);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to configure SPI device: %s", esp_err_to_name(ret));
+        return ret;
+    }
+    ESP_LOGI(TAG, "SPI device configured successfully");
+
+    /* Initialize handle */
+    handle->range = range;
+    handle->odr = odr;
+
+    /* Set initial scale factor based on range */
+    ESP_LOGI(TAG, "Setting scale factor for range %s...", adxl355_get_range_string(range));
+    switch (range)
+    {
+    case ADXL355_RANGE_2G:
+        handle->scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_2G;
+        ESP_LOGI(TAG, "Range %s selected, scale factor: %.2e g/LSB",
+                 adxl355_get_range_string(range), handle->scale_factor);
+        break;
+    case ADXL355_RANGE_4G:
+        handle->scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_4G;
+        ESP_LOGI(TAG, "Range %s selected, scale factor: %.2e g/LSB",
+                 adxl355_get_range_string(range), handle->scale_factor);
+        break;
+    case ADXL355_RANGE_8G:
+        handle->scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_8G;
+        ESP_LOGI(TAG, "Range %s selected, scale factor: %.2e g/LSB",
+                 adxl355_get_range_string(range), handle->scale_factor);
+        break;
+    default:
+        ESP_LOGE(TAG, "Invalid range setting: %d", range);
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Reset device */
+    ESP_LOGI(TAG, "Resetting ADXL355 device...");
+    ret = adxl355_reset(handle);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to reset device: %s", esp_err_to_name(ret));
+        return ret;
+    }
+    ESP_LOGI(TAG, "Device reset completed");
+
+    /* Wait for reset to complete */
+    vTaskDelay(pdMS_TO_TICKS(100));
+
+    /* Read device info to verify communication */
+    ESP_LOGI(TAG, "Reading device information...");
+    adxl355_device_info_t device_info;
+    ret = adxl355_read_device_info(handle, &device_info);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to read device info: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ESP_LOGI(TAG, "Device ID: 0x%02X, Vendor ID: 0x%02X", device_info.device_id, device_info.vendor_id);
+
+    /* Set range and ODR */
+    ESP_LOGI(TAG, "Setting range to %s...", adxl355_get_range_string(range));
+    ret = adxl355_set_range(handle, range);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to set range: %s", esp_err_to_name(ret));
+        return ret;
+    }
+    ESP_LOGI(TAG, "Range set successfully");
+
+    ESP_LOGI(TAG, "Setting ODR to %s...", adxl355_get_odr_string(odr));
+    ret = adxl355_set_odr(handle, odr);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to set ODR: %s", esp_err_to_name(ret));
+        return ret;
+    }
+    ESP_LOGI(TAG, "ODR set successfully");
+
+    /* Enable measurement mode */
+    ESP_LOGI(TAG, "Enabling measurement mode...");
+    ret = adxl355_enable_measurement(handle);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to enable measurement: %s", esp_err_to_name(ret));
+        return ret;
+    }
+    ESP_LOGI(TAG, "Measurement mode enabled");
+
+    /* Enable temperature processing */
+    ESP_LOGI(TAG, "Enabling temperature processing...");
+    ret = adxl355_enable_temperature(handle);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to enable temperature: %s", esp_err_to_name(ret));
+        return ret;
+    }
+    ESP_LOGI(TAG, "Temperature processing enabled");
+
+    ESP_LOGI(TAG, "=== ADXL355 INITIALIZATION COMPLETED SUCCESSFULLY ===");
+    ESP_LOGI(TAG, "Final configuration: range=%s, ODR=%s, scale_factor=%.2e g/LSB",
+             adxl355_get_range_string(handle->range), adxl355_get_odr_string(handle->odr), handle->scale_factor);
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_deinit(adxl355_handle_t *handle)
+{
+    if (handle == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Disable measurement mode */
+    esp_err_t ret = adxl355_disable_measurement(handle);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGW(TAG, "Failed to disable measurement during deinit");
+    }
+
+    /* Clear handle */
+    handle->spi_handle = NULL;
+    handle->range = 0;
+    handle->odr = 0;
+    handle->scale_factor = 0.0f;
+
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_reset(adxl355_handle_t *handle)
+{
+    if (handle == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Send reset command */
+    esp_err_t ret = adxl355_write_register(handle, ADXL355_REG_RESET, ADXL355_REG_RESET_RESET_CODE);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to send reset command");
+        return ret;
+    }
+
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_read_device_info(adxl355_handle_t *handle, adxl355_device_info_t *device_info)
+{
+    esp_err_t ret;
+    uint8_t data[4];
+
+    if (handle == NULL || device_info == NULL)
+    {
+        ESP_LOGE(TAG, "Invalid arguments: handle=%p, device_info=%p", (void *)handle, (void *)device_info);
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Read 4 bytes starting from DEVID_AD register */
+    ret = adxl355_read_registers(handle, ADXL355_REG_DEVID_AD, data, 4);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to read device info registers: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    /* Extract device information (exactly like plasmapper) */
+    device_info->vendor_id = data[0];
+    device_info->family_id = data[1];
+    device_info->device_id = data[2];
+    device_info->revision_id = data[3];
+
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_read_status(adxl355_handle_t *handle, adxl355_status_t *status)
+{
+    if (handle == NULL || status == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    uint8_t status_reg;
+    esp_err_t ret = adxl355_read_register(handle, ADXL355_REG_STATUS, &status_reg);
+    if (ret != ESP_OK)
+    {
+        return ret;
+    }
+
+    *status = (adxl355_status_t)status_reg;
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_read_raw_accelerations(adxl355_handle_t *handle, adxl355_raw_accelerations_t *raw_accel)
+{
+    esp_err_t ret;
+    uint8_t data[9];
+
+    if (handle == NULL || raw_accel == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Read 9 bytes starting from XDATA3 register */
+    ret = adxl355_read_registers(handle, ADXL355_REG_XDATA3, data, 9);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to read acceleration data");
+        return ret;
+    }
+
+    /* Initialize to 0 (exactly like plasmapper) */
+    raw_accel->x = 0;
+    raw_accel->y = 0;
+    raw_accel->z = 0;
+
+    /* Reconstruct 20-bit values (exactly like plasmapper) */
+    /* X-axis: data[2], data[1], data[0] */
+    ((uint8_t *)&raw_accel->x)[1] = data[2];
+    ((uint8_t *)&raw_accel->x)[2] = data[1];
+    ((uint8_t *)&raw_accel->x)[3] = data[0];
+
+    /* Y-axis: data[5], data[4], data[3] */
+    ((uint8_t *)&raw_accel->y)[1] = data[5];
+    ((uint8_t *)&raw_accel->y)[2] = data[4];
+    ((uint8_t *)&raw_accel->y)[3] = data[3];
+
+    /* Z-axis: data[8], data[7], data[6] */
+    ((uint8_t *)&raw_accel->z)[1] = data[8];
+    ((uint8_t *)&raw_accel->z)[2] = data[7];
+    ((uint8_t *)&raw_accel->z)[3] = data[6];
+
+    /* Convert to 20-bit signed values (divide by 4096) */
+    raw_accel->x /= 4096;
+    raw_accel->y /= 4096;
+    raw_accel->z /= 4096;
+
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_read_accelerations(adxl355_handle_t *handle, adxl355_accelerations_t *accel)
+{
+    esp_err_t ret;
+    adxl355_raw_accelerations_t raw_accel;
+    float scale_factor;
+
+    if (handle == NULL || accel == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Read raw accelerations */
+    ret = adxl355_read_raw_accelerations(handle, &raw_accel);
+    if (ret != ESP_OK)
+    {
+        return ret;
+    }
+
+    /* Get current scale factor */
+    ret = adxl355_read_acceleration_scale_factor(handle, &scale_factor);
+    if (ret != ESP_OK)
+    {
+        return ret;
+    }
+
+    /* Convert to g units */
+    accel->x = raw_accel.x * scale_factor;
+    accel->y = raw_accel.y * scale_factor;
+    accel->z = raw_accel.z * scale_factor;
+
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_read_raw_temperature(adxl355_handle_t *handle, uint16_t *raw_temp)
+{
+    esp_err_t ret;
+    uint8_t data[2];
+
+    if (handle == NULL || raw_temp == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Read 2 bytes starting from TEMP2 register */
+    ret = adxl355_read_registers(handle, ADXL355_REG_TEMP2, data, 2);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to read temperature data");
+        return ret;
+    }
+
+    /* Reconstruct 16-bit value (exactly like plasmapper) */
+    ((uint8_t *)raw_temp)[0] = data[1];
+    ((uint8_t *)raw_temp)[1] = data[0];
+
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_read_temperature(adxl355_handle_t *handle, float *temp)
+{
+    esp_err_t ret;
+    uint16_t raw_temp;
+
+    if (handle == NULL || temp == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Read raw temperature */
+    ret = adxl355_read_raw_temperature(handle, &raw_temp);
+    if (ret != ESP_OK)
+    {
+        return ret;
+    }
+
+    /* Convert to °C using plasmapper's formula */
+    *temp = (((int16_t)raw_temp) - ((int16_t)ADXL355_TEMPERATURE_INTERCEPT_LSB)) /
+                ADXL355_TEMPERATURE_SLOPE +
+            ADXL355_TEMPERATURE_INTERCEPT_DEG_C;
+
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_set_range(adxl355_handle_t *handle, adxl355_range_t range)
+{
+    esp_err_t ret;
+    uint8_t range_register;
+
+    if (handle == NULL)
+    {
+        ESP_LOGE(TAG, "Invalid handle: NULL");
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    ESP_LOGI(TAG, "Setting ADXL355 range to %s...", adxl355_get_range_string(range));
+
+    /* Read current range register value like plasmapper */
+    ret = adxl355_read_register(handle, ADXL355_REG_RANGE, &range_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to read range register: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    /* Clear range bits (bits 0-1) like plasmapper */
+    range_register &= ~ADXL355_REG_RANGE_RANGE_MASK;
+
+    /* Set new range value */
+    uint8_t new_range_value = range & ADXL355_REG_RANGE_RANGE_MASK;
+    range_register |= new_range_value;
+
+    /* Write updated register value */
+    ret = adxl355_write_register(handle, ADXL355_REG_RANGE, range_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to write range register: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    /* Verify the write by reading back */
+    uint8_t verify_register;
+    ret = adxl355_read_register(handle, ADXL355_REG_RANGE, &verify_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to verify range register: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    if (verify_register != range_register)
+    {
+        ESP_LOGE(TAG, "Range register verification failed! Expected: 0x%02X, Got: 0x%02X",
+                 range_register, verify_register);
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    /* Update scale factor */
+    float old_scale_factor = handle->scale_factor;
+    switch (range)
+    {
+    case ADXL355_RANGE_2G:
+        handle->scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_2G;
+        break;
+    case ADXL355_RANGE_4G:
+        handle->scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_4G;
+        break;
+    case ADXL355_RANGE_8G:
+        handle->scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_8G;
+        break;
+    default:
+        ESP_LOGE(TAG, "Invalid range value: %d", range);
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    handle->range = range;
+    ESP_LOGI(TAG, "Range changed from %.2e to %s, scale factor: %.2e g/LSB",
+             old_scale_factor, adxl355_get_range_string(range), handle->scale_factor);
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_read_range(adxl355_handle_t *handle, adxl355_range_t *range)
+{
+    esp_err_t ret;
+    uint8_t range_register;
+
+    if (handle == NULL || range == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    ret = adxl355_read_register(handle, ADXL355_REG_RANGE, &range_register);
+    if (ret != ESP_OK)
+    {
+        return ret;
+    }
+
+    *range = (adxl355_range_t)(range_register & ADXL355_REG_RANGE_RANGE_MASK);
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_set_odr(adxl355_handle_t *handle, adxl355_output_data_rate_t odr)
+{
+    esp_err_t ret;
+    uint8_t filter_reg;
+
+    if (handle == NULL)
+    {
+        ESP_LOGE(TAG, "Invalid handle: NULL");
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    ESP_LOGI(TAG, "Setting ADXL355 ODR to %s...", adxl355_get_odr_string(odr));
+
+    /* Read current filter register value */
+    ret = adxl355_read_register(handle, ADXL355_REG_FILTER, &filter_reg);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to read filter register: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    /* Clear ODR bits and set new value (like plasmapper) */
+    uint8_t old_odr = filter_reg & ADXL355_REG_FILTER_ODR_MASK;
+    filter_reg &= ~ADXL355_REG_FILTER_ODR_MASK;
+
+    uint8_t new_odr_value = odr & ADXL355_REG_FILTER_ODR_MASK;
+    filter_reg |= new_odr_value;
+
+    /* Write updated register value */
+    ret = adxl355_write_register(handle, ADXL355_REG_FILTER, filter_reg);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to write filter register: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    /* Verify the write by reading back */
+    uint8_t verify_register;
+    ret = adxl355_read_register(handle, ADXL355_REG_FILTER, &verify_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to verify filter register: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    if (verify_register != filter_reg)
+    {
+        ESP_LOGE(TAG, "Filter register verification failed! Expected: 0x%02X, Got: 0x%02X",
+                 filter_reg, verify_register);
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    handle->odr = odr;
+    ESP_LOGI(TAG, "ODR changed from %s to %s",
+             adxl355_get_odr_string(old_odr), adxl355_get_odr_string(odr));
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_read_odr(adxl355_handle_t *handle, adxl355_output_data_rate_t *odr)
+{
+    esp_err_t ret;
+    uint8_t filter_reg;
+
+    if (handle == NULL || odr == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    ret = adxl355_read_register(handle, ADXL355_REG_FILTER, &filter_reg);
+    if (ret != ESP_OK)
+    {
+        return ret;
+    }
+
+    *odr = (adxl355_output_data_rate_t)(filter_reg & ADXL355_REG_FILTER_ODR_MASK);
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_enable_measurement(adxl355_handle_t *handle)
+{
+    esp_err_t ret;
+    uint8_t power_ctl_register;
+
+    if (handle == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Read current power control register value */
+    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to read power control register");
+        return ret;
+    }
+
+    /* Clear standby bit to enable measurement */
+    power_ctl_register &= ~ADXL355_REG_POWER_CTL_STANDBY;
+
+    /* Write updated register value */
+    ret = adxl355_write_register(handle, ADXL355_REG_POWER_CTL, power_ctl_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to enable measurement");
+        return ret;
+    }
+
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_disable_measurement(adxl355_handle_t *handle)
+{
+    esp_err_t ret;
+    uint8_t power_ctl_register;
+
+    if (handle == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Read current power control register value */
+    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to read power control register");
+        return ret;
+    }
+
+    /* Set standby bit to disable measurement */
+    power_ctl_register |= ADXL355_REG_POWER_CTL_STANDBY;
+
+    /* Write updated register value */
+    ret = adxl355_write_register(handle, ADXL355_REG_POWER_CTL, power_ctl_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to disable measurement");
+        return ret;
+    }
+
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_is_measurement_enabled(adxl355_handle_t *handle, bool *is_enabled)
+{
+    esp_err_t ret;
+    uint8_t power_ctl_register;
+
+    if (handle == NULL || is_enabled == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
+    if (ret != ESP_OK)
+    {
+        return ret;
+    }
+
+    *is_enabled = !(power_ctl_register & ADXL355_REG_POWER_CTL_STANDBY);
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_enable_temperature(adxl355_handle_t *handle)
+{
+    esp_err_t ret;
+    uint8_t power_ctl_register;
+
+    if (handle == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Read current power control register value */
+    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to read power control register");
+        return ret;
+    }
+
+    /* Clear temperature off bit to enable temperature processing */
+    power_ctl_register &= ~ADXL355_REG_POWER_CTL_TEMP_OFF;
+
+    /* Write updated register value */
+    ret = adxl355_write_register(handle, ADXL355_REG_POWER_CTL, power_ctl_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to enable temperature");
+        return ret;
+    }
+
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_disable_temperature(adxl355_handle_t *handle)
+{
+    esp_err_t ret;
+    uint8_t power_ctl_register;
+
+    if (handle == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Read current power control register value */
+    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to read power control register");
+        return ret;
+    }
+
+    /* Set temperature off bit to disable temperature processing */
+    power_ctl_register |= ADXL355_REG_POWER_CTL_TEMP_OFF;
+
+    /* Write updated register value */
+    ret = adxl355_write_register(handle, ADXL355_REG_POWER_CTL, power_ctl_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to disable temperature");
+        return ret;
+    }
+
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_is_temperature_enabled(adxl355_handle_t *handle, bool *is_enabled)
+{
+    esp_err_t ret;
+    uint8_t power_ctl_register;
+
+    if (handle == NULL || is_enabled == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
+    if (ret != ESP_OK)
+    {
+        return ret;
+    }
+
+    *is_enabled = !(power_ctl_register & ADXL355_REG_POWER_CTL_TEMP_OFF);
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_enable_data_ready(adxl355_handle_t *handle)
+{
+    esp_err_t ret;
+    uint8_t power_ctl_register;
+
+    if (handle == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Read current power control register value */
+    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to read power control register");
+        return ret;
+    }
+
+    /* Clear data ready off bit to enable data ready output */
+    power_ctl_register &= ~ADXL355_REG_POWER_CTL_DRDY_OFF;
+
+    /* Write updated register value */
+    ret = adxl355_write_register(handle, ADXL355_REG_POWER_CTL, power_ctl_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to enable data ready");
+        return ret;
+    }
+
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_disable_data_ready(adxl355_handle_t *handle)
+{
+    esp_err_t ret;
+    uint8_t power_ctl_register;
+
+    if (handle == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Read current power control register value */
+    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to read power control register");
+        return ret;
+    }
+
+    /* Set data ready off bit to disable data ready output */
+    power_ctl_register |= ADXL355_REG_POWER_CTL_DRDY_OFF;
+
+    /* Write updated register value */
+    ret = adxl355_write_register(handle, ADXL355_REG_POWER_CTL, power_ctl_register);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to disable data ready");
+        return ret;
+    }
+
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_is_data_ready_enabled(adxl355_handle_t *handle, bool *is_enabled)
+{
+    esp_err_t ret;
+    uint8_t power_ctl_register;
+
+    if (handle == NULL || is_enabled == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
+    if (ret != ESP_OK)
+    {
+        return ret;
+    }
+
+    *is_enabled = !(power_ctl_register & ADXL355_REG_POWER_CTL_DRDY_OFF);
+    return ESP_OK;
+}
+
+//==============================================================================
+
+esp_err_t adxl355_read_acceleration_scale_factor(adxl355_handle_t *handle, float *scale_factor)
+{
+    esp_err_t ret;
+    adxl355_range_t range;
+
+    if (handle == NULL || scale_factor == NULL)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    ret = adxl355_read_range(handle, &range);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to read range");
+        return ret;
+    }
+
+    switch (range)
+    {
+    case ADXL355_RANGE_2G:
+        *scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_2G;
+        break;
+    case ADXL355_RANGE_4G:
+        *scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_4G;
+        break;
+    case ADXL355_RANGE_8G:
+        *scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_8G;
+        break;
+    default:
+        *scale_factor = 1.0f;
+        break;
+    }
+
+    return ESP_OK;
+}
+
+//==============================================================================
+// Private Functions
+//==============================================================================
+
+/**
+ * @brief Configure and add ADXL355 SPI device to SPI3 bus
+ * @param device_handle Output parameter, returns SPI device handle
+ * @return ESP_OK on success, error code on failure
+ */
+static esp_err_t adxl355_configure_spi_device(spi_device_handle_t *device_handle)
+{
+    esp_err_t ret;
+    spi_device_interface_config_t dev_config = {0};
+
+    /* Configure ADXL355-specific SPI device parameters */
+    dev_config.clock_speed_hz = 10000000;          // 10 MHz (ADXL355 maximum supported)
+    dev_config.mode = 0;                           // SPI Mode 0 (CPOL=0, CPHA=0)
+    dev_config.spics_io_num = ADXL355_CS_GPIO_PIN; // CS pin
+    dev_config.queue_size = 1;                     // Single transaction queue
+    dev_config.command_bits = 0;                   // No command bits
+    dev_config.address_bits = 8;                   // 8-bit address
+    dev_config.input_delay_ns = 30;                // 30ns delay
+    dev_config.flags = 0;                          // Default flags (full-duplex)
+
+    /* Add SPI device to bus */
+    ret = spi_bus_add_device(SPI3_HOST, &dev_config, device_handle);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to add ADXL355 device to SPI3 bus: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ESP_LOGI(TAG, "ADXL355 SPI device configured successfully");
+    return ESP_OK;
+}
+
+//==============================================================================
+
+/**
+ * @brief Read single register
+ * @param handle ADXL355 handle
+ * @param reg Register address
+ * @param value Output value
+ * @return ESP_OK on success, error code on failure
+ */
+static esp_err_t adxl355_read_register(adxl355_handle_t *handle, uint8_t reg, uint8_t *value)
+{
+    ESP_LOGD(TAG, "READ_REG: reg=0x%02X, handle=%p, value_ptr=%p", reg, (void *)handle, (void *)value);
+
+    if (handle == NULL || value == NULL)
+    {
+        ESP_LOGE(TAG, "READ_REG: Invalid arguments - handle=%p, value=%p", (void *)handle, (void *)value);
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Left shift address by 1 and set LSB to 1 for read (exactly like plasmapper) */
+    uint8_t read_cmd = (reg << 1) | 0x01;
+    ESP_LOGD(TAG, "READ_REG: reg=0x%02X, shifted=0x%02X, read_cmd=0x%02X", reg, reg << 1, read_cmd);
+
+    /* Use SPI transaction: write command then read data */
+    spi_transaction_t t = {0};
+    t.cmd = 0;           /* No command bits */
+    t.addr = read_cmd;   /* Address with read bit set */
+    t.length = 8;        /* 1 byte = 8 bits */
+    t.tx_buffer = NULL;  /* No write data */
+    t.rx_buffer = value; /* Read data buffer */
+    t.flags = 0;         /* Use default flags */
+
+    ESP_LOGD(TAG, "READ_REG: SPI transaction - addr=0x%02X, length=%d bits", t.addr, t.length);
+
+    esp_err_t ret = spi_device_polling_transmit(handle->spi_handle, &t);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "READ_REG: SPI read transaction failed: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ESP_LOGD(TAG, "READ_REG: Success - reg=0x%02X, value=0x%02X", reg, *value);
+    return ESP_OK;
+}
+
+//==============================================================================
+
+/**
+ * @brief Read multiple registers
+ * @param handle ADXL355 handle
+ * @param reg Starting register address
+ * @param data Output data buffer
+ * @param len Number of bytes to read
+ * @return ESP_OK on success, error code on failure
+ */
+static esp_err_t adxl355_read_registers(adxl355_handle_t *handle, uint8_t reg, uint8_t *data, uint8_t len)
+{
+    if (handle == NULL || data == NULL || len == 0)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Left shift address by 1 and set LSB to 1 for read (exactly like plasmapper) */
+    uint8_t read_cmd = (reg << 1) | 0x01;
+
+    /* Use the new ADXL355-specific SPI read function */
+    return adxl355_spi_read(handle, read_cmd, data, len);
+}
+
+//==============================================================================
+
+/**
+ * @brief Write single register
+ * @param handle ADXL355 handle
+ * @param reg Register address
+ * @param value Value to write
+ * @return ESP_OK on success, error code on failure
+ */
+static esp_err_t adxl355_write_register(adxl355_handle_t *handle, uint8_t reg, uint8_t value)
+{
+    ESP_LOGD(TAG, "WRITE_REG: reg=0x%02X, value=0x%02X, handle=%p", reg, value, (void *)handle);
+
+    if (handle == NULL)
+    {
+        ESP_LOGE(TAG, "WRITE_REG: Invalid handle - NULL");
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Left shift address by 1 (exactly like plasmapper) */
+    uint8_t write_cmd = reg << 1;
+    ESP_LOGD(TAG, "WRITE_REG: reg=0x%02X, shifted=0x%02X, write_cmd=0x%02X", reg, reg << 1, write_cmd);
+
+    /* Use SPI transaction: write command and data */
+    spi_transaction_t t = {0};
+    t.cmd = 0;            /* No command bits */
+    t.addr = write_cmd;   /* Address with write bit clear */
+    t.length = 8;         /* 1 byte = 8 bits */
+    t.tx_buffer = &value; /* Write data */
+    t.rx_buffer = NULL;   /* No read data */
+    t.flags = 0;          /* Use default flags */
+
+    ESP_LOGD(TAG, "WRITE_REG: SPI transaction - addr=0x%02X, length=%d bits, data=0x%02X",
+             t.addr, t.length, value);
+
+    esp_err_t ret = spi_device_polling_transmit(handle->spi_handle, &t);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "WRITE_REG: SPI write transaction failed: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ESP_LOGD(TAG, "WRITE_REG: Success - reg=0x%02X, value=0x%02X", reg, value);
+    return ESP_OK;
+}
+
+//==============================================================================
+
+/**
+ * @brief Write multiple registers
+ * @param handle ADXL355 handle
+ * @param reg Starting register address
+ * @param data Data to write
+ * @param len Number of bytes to write
+ * @return ESP_OK on success, error code on failure
+ */
+static esp_err_t adxl355_write_registers(adxl355_handle_t *handle, uint8_t reg, const uint8_t *data, uint8_t len)
+{
+    if (handle == NULL || data == NULL || len == 0)
+    {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Left shift address by 1 (exactly like plasmapper) */
+    uint8_t write_cmd = reg << 1;
+
+    /* Use SPI transaction: write command and data */
+    spi_transaction_t t = {0};
+    t.cmd = 0;          /* No command bits */
+    t.addr = write_cmd; /* Address with write bit clear */
+    t.length = len * 8; /* Data size in bits */
+    t.tx_buffer = data; /* Write data */
+    t.rx_buffer = NULL; /* No read data */
+    t.flags = 0;        /* Use default flags */
+
+    esp_err_t ret = spi_device_polling_transmit(handle->spi_handle, &t);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "SPI write registers transaction failed: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    return ESP_OK;
+}
+
+//==============================================================================
+
+/**
+ * @brief ADXL355 specific: Write command then read data
+ * @param handle SPI handle
+ * @param cmd Command byte to send
+ * @param data Buffer to store received data
+ * @param len Length of data to read
+ * @return ESP_OK on success, error code on failure
+ */
+esp_err_t adxl355_spi_read(adxl355_handle_t *handle, uint8_t cmd, uint8_t *data, int len)
+{
+    if (handle == NULL || data == NULL || len <= 0)
+    {
+        ESP_LOGE(TAG, "Invalid arguments for ADXL355 SPI read");
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    /* Configure transaction exactly like plasmapper */
+    /* command = 0, address = cmd, writeData = NULL, readData = data, dataSize = len * 8 */
+    spi_transaction_t t = {0};
+    t.cmd = 0;          /* No command bits */
+    t.addr = cmd;       /* Address (already formatted) */
+    t.length = len * 8; /* Data size in bits */
+    t.tx_buffer = NULL; /* No write data */
+    t.rx_buffer = data; /* Read data buffer */
+    t.flags = 0;        /* Use default flags */
+
+    /* Use polling transmit like plasmapper */
+    esp_err_t ret = spi_device_polling_transmit(handle->spi_handle, &t);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "ADXL355 SPI read failed: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    return ESP_OK;
+}
+
+/**
+ * @brief Get string representation of range setting
+ * @param range Range setting
+ * @return String representation
+ */
+static const char *adxl355_get_range_string(adxl355_range_t range)
+{
+    switch (range)
+    {
+    case ADXL355_RANGE_2G:
+        return "±2G";
+    case ADXL355_RANGE_4G:
+        return "±4G";
+    case ADXL355_RANGE_8G:
+        return "±8G";
+    default:
+        return "Unknown";
+    }
+}
+
+/**
+ * @brief Get string representation of ODR setting
+ * @param odr ODR setting
+ * @return String representation
+ */
+static const char *adxl355_get_odr_string(adxl355_output_data_rate_t odr)
+{
+    switch (odr)
+    {
+    case ADXL355_ODR_4000:
+        return "4000 Hz";
+    case ADXL355_ODR_2000:
+        return "2000 Hz";
+    case ADXL355_ODR_1000:
+        return "1000 Hz";
+    case ADXL355_ODR_500:
+        return "500 Hz";
+    case ADXL355_ODR_250:
+        return "250 Hz";
+    case ADXL355_ODR_125:
+        return "125 Hz";
+    case ADXL355_ODR_62_5:
+        return "62.5 Hz";
+    case ADXL355_ODR_31_25:
+        return "31.25 Hz";
+    case ADXL355_ODR_15_625:
+        return "15.625 Hz";
+    case ADXL355_ODR_7_813:
+        return "7.813 Hz";
+    case ADXL355_ODR_3_906:
+        return "3.906 Hz";
+    default:
+        return "Unknown";
+    }
+}

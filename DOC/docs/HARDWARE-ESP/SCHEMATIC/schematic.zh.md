@@ -11,3 +11,11 @@
     [:octicons-arrow-right-24: <a href="https://docs.espressif.com/projects/esp-hardware-design-guidelines/zh_CN/latest/esp32s3/index.html" target="_blank">  硬件设计指南 </a>](#)
 
 </div>
+
+## 核心板 正点原子 DNESP32S3M
+
+![](ATK-DNESP32S3M_F.jpg){width=100%}
+![](ATK-DNESP32S3M_B.jpg){width=100%}
+
+![](ATK-DNESP32S3M_CORE_CORE.jpg){width=100%}
+![](ATK-DNESP32S3M_CORE_PERIPHERAL.jpg){width=100%}

@@ -1,160 +1,164 @@
 /**
- * @file main.cpp
+ * @file example_usage.c
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
- * @brief
+ * @brief Example usage of node_rtc_ds3231 module
  * @version 1.0
- * @date 2024-11-17
+ * @date 2025-01-27
  *
- * @copyright Copyright (c) 2024
+ * @copyright Copyright (c) 2025
  *
  */
 
-/* DEPENDENCIES */
-// ESP
-#include "esp_system.h"    // ESP32 System
-#include "nvs_flash.h"     // ESP32 NVS
-#include "esp_chip_info.h" // ESP32 Chip Info
-#include "esp_psram.h"     // ESP32 PSRAM
-#include "esp_flash.h"     // ESP32 Flash
-#include "esp_log.h"       // ESP32 Logging
-
-// BSP
-#include "node_led.h"
-#include "node_exit.h"
-#include "node_spi.h"
-#include "node_lcd.h"
-#include "node_timer.h"
-#include "node_rtc.h"
-#include "node_sdcard.h"
-#include "node_wifi.h"
-#include "node_mqtt.h"
-#include "node_th_dht11.h"
-
-/* Variables */
-const char *TAG = "AIoTNode";
-
 extern "C"
 {
+#include "node_rtc_ds3231.h"
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+}
 
-    /**
-     * @brief Entry point of the program
-     * @param None
-     * @retval None
-     */
-    void app_main(void)
+static const char *TAG = "rtc_example";
+
+void rtc_example_task(void *pvParameters)
+{
+    // Initialize DS3231 RTC module
+    rtc_handle_t rtc_handle = node_rtc_ds3231_init(200000); // 200kHz I2C speed
+    if (rtc_handle == NULL)
     {
-        esp_err_t ret;
-        uint32_t flash_size;
-        esp_chip_info_t chip_info;
-
-        char mqtt_pub_buff[64];
-        int count = 0;
-
-        // DHT SENSOR
-        dht_sensor_type_t sensor_type;
-        sensor_type = DHT_TYPE_DHT11;
-        gpio_num_t gpio_num = (gpio_num_t)14;
-
-        // Initialize NVS
-        ret = nvs_flash_init();
-        if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
-        {
-            ESP_ERROR_CHECK(nvs_flash_erase()); // Erase if needed
-            ret = nvs_flash_init();
-        }
-
-        // Get FLASH size
-        esp_flash_get_size(NULL, &flash_size);
-        esp_chip_info(&chip_info);
-
-        // Display CPU core count
-        printf("CPU Cores: %d\n", chip_info.cores);
-
-        // Display FLASH size
-        printf("Flash size: %ld MB flash\n", flash_size / (1024 * 1024));
-
-        // Display PSRAM size
-        printf("PSRAM size: %d bytes\n", esp_psram_get_size());
-
-        // BSP Initialization
-        led_init();
-        exit_init();
-        spi2_init();
-        lcd_init();
-
-        // spiffs_test();                                                  /* Run SPIFFS test */
-        while (sd_card_init()) /* SD card not detected */
-        {
-            lcd_show_string(0, 0, 200, 16, 16, (char *)"SD Card Error!", RED);
-            vTaskDelay(500);
-            lcd_show_string(0, 20, 200, 16, 16, (char *)"Please Check!", RED);
-            vTaskDelay(500);
-        }
-
-        // clean the screen
-        lcd_clear(WHITE);
-
-        lcd_show_string(0, 0, 200, 16, 16, (char *)"SD Initialized!", RED);
-
-        sd_card_test_filesystem(); /* Run SD card test */
-
-        lcd_show_string(0, 0, 200, 16, 16, (char *)"SD Tested CSW! ", RED);
-
-        // sd_card_unmount();
-
-        vTaskDelay(3000);
-
-        lcd_show_string(0, 0, lcd_self.width, 16, 16, (char *)"WiFi STA Test  ", RED);
-
-        ret = wifi_sta_wpa2_init();
-        if (ret == ESP_OK)
-        {
-            ESP_LOGI(TAG_WIFI, "WiFi STA Init OK");
-            lcd_show_string(0, 0, lcd_self.width, 16, 16, (char *)"WiFi STA Test OK", RED);
-        }
-        else
-        {
-            ESP_LOGE(TAG_WIFI, "WiFi STA Init Failed");
-        }
-
-        // only when the ip is obtained, start mqtt
-        EventBits_t ev = 0;
-        ev = xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT, pdTRUE, pdFALSE, portMAX_DELAY);
-        if (ev & CONNECTED_BIT)
-        {
-            mqtt_app_start();
-        }
-
-        // DHT - Configure GPIO with pull-up
-        gpio_config_t io_conf = {};
-        io_conf.intr_type = GPIO_INTR_DISABLE;
-        io_conf.mode = GPIO_MODE_INPUT_OUTPUT_OD;
-        io_conf.pin_bit_mask = (1ULL << gpio_num);
-        io_conf.pull_down_en = (gpio_pulldown_t)0;
-        io_conf.pull_up_en = (gpio_pullup_t)1;
-        gpio_config(&io_conf);
-
-        while (1)
-        {
-            float humidity = 0, temperature = 0;
-            esp_err_t result = dht_read_float_data(sensor_type, gpio_num, &humidity, &temperature);
-            if (result == ESP_OK)
-            {
-                ESP_LOGI(TAG, "Humidity: %.1f%% Temperature: %.1f°C", humidity, temperature);
-                char mqtt_msg[128];
-                snprintf(mqtt_msg, sizeof(mqtt_msg), "{\"temperature\":%.1f,\"humidity\":%.1f}", temperature, humidity);
-                if (s_is_mqtt_connected)
-                {
-                    esp_mqtt_client_publish(s_mqtt_client, MQTT_PUBLISH_TOPIC, mqtt_msg, strlen(mqtt_msg), 1, 0);
-                }
-            }
-            else
-            {
-                ESP_LOGE(TAG, "Failed to read sensor data: %s", esp_err_to_name(result));
-            }
-            vTaskDelay(pdMS_TO_TICKS(2000)); // Delay for 2 seconds
-        }
-
+        ESP_LOGE(TAG, "Failed to initialize DS3231 RTC module");
+        vTaskDelete(NULL);
+        return;
     }
 
-} // extern "C"
+    ESP_LOGI(TAG, "DS3231 RTC module initialized successfully");
+
+    // Print debug information
+    node_rtc_ds3231_debug_print_data(rtc_handle);
+
+    // Get current time
+    struct tm *current_time = node_rtc_ds3231_time_get(rtc_handle);
+    if (current_time != NULL)
+    {
+        char time_str[64];
+        strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", current_time);
+        ESP_LOGI(TAG, "Current RTC time: %s", time_str);
+        free(current_time);
+    }
+
+    // Get temperature
+    float temperature = node_rtc_ds3231_temperature_get(rtc_handle);
+    ESP_LOGI(TAG, "RTC temperature: %.2f°C", temperature);
+
+    // Set a new time (example: 2025-01-27 12:00:00)
+    struct tm new_time = {};
+    new_time.tm_year = 125; // 2025 - 1900
+    new_time.tm_mon = 0;     // January (0-based)
+    new_time.tm_mday = 27;   // 27th
+    new_time.tm_hour = 12;   // 12:00
+    new_time.tm_min = 0;     // 00 minutes
+    new_time.tm_sec = 0;     // 00 seconds
+    new_time.tm_wday = 1;    // Monday
+    new_time.tm_yday = 0;    // Day of year
+    new_time.tm_isdst = 0;   // No daylight saving
+
+    esp_err_t ret = node_rtc_ds3231_time_set(rtc_handle, new_time);
+    if (ret == ESP_OK)
+    {
+        ESP_LOGI(TAG, "Time set successfully");
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Failed to set time: %s", esp_err_to_name(ret));
+    }
+
+    // Set alarm 1 for every day at 8:00 AM
+    ret = node_rtc_ds3231_alarm1_day_of_week_set(rtc_handle, RTC_MONDAY, 8, 0, 0);
+    if (ret == ESP_OK)
+    {
+        ESP_LOGI(TAG, "Alarm 1 set for Monday 8:00 AM");
+    }
+
+    // Enable alarm 1
+    ret = node_rtc_ds3231_alarm1_enable(rtc_handle, true);
+    if (ret == ESP_OK)
+    {
+        ESP_LOGI(TAG, "Alarm 1 enabled");
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Failed to enable alarm 1: %s", esp_err_to_name(ret));
+    }
+
+    // Set square wave output to 1Hz
+    ret = node_rtc_ds3231_square_wave_freq_set(rtc_handle, RTC_SQUARE_WAVE_FREQ_1000HZ);
+    if (ret == ESP_OK)
+    {
+        ESP_LOGI(TAG, "Square wave frequency set to 1Hz");
+    }
+
+    // Set interrupt mode (alarms will trigger interrupts)
+    ret = node_rtc_ds3231_interrupt_square_wave_control_set(rtc_handle, interrupts);
+    if (ret == ESP_OK)
+    {
+        ESP_LOGI(TAG, "Interrupt mode enabled");
+    }
+
+    // Main loop - check for alarms
+    while (1)
+    {
+        // Check if alarm 1 has fired
+        if (node_rtc_ds3231_alarm1_fired(rtc_handle))
+        {
+            ESP_LOGI(TAG, "Alarm 1 fired!");
+
+            // Get current time when alarm fired
+            struct tm *alarm_time = node_rtc_ds3231_time_get(rtc_handle);
+            if (alarm_time != NULL)
+            {
+                char time_str[64];
+                strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", alarm_time);
+                ESP_LOGI(TAG, "Alarm fired at: %s", time_str);
+                free(alarm_time);
+            }
+
+            // Reset alarm flag
+            node_rtc_ds3231_alarm1_fired_reset(rtc_handle);
+        }
+
+        // Check if alarm 2 has fired
+        if (node_rtc_ds3231_alarm2_fired(rtc_handle))
+        {
+            ESP_LOGI(TAG, "Alarm 2 fired!");
+            node_rtc_ds3231_alarm2_fired_reset(rtc_handle);
+        }
+
+        // Print current time every 10 seconds
+        static int counter = 0;
+        if (++counter >= 10)
+        {
+            struct tm *current_time = node_rtc_ds3231_time_get(rtc_handle);
+            if (current_time != NULL)
+            {
+                char time_str[64];
+                strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", current_time);
+                ESP_LOGI(TAG, "Current time: %s", time_str);
+                free(current_time);
+            }
+            counter = 0;
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(1000)); // Wait 1 second
+    }
+
+    // Cleanup (this will never be reached in this example)
+    node_rtc_ds3231_deinit(rtc_handle);
+    vTaskDelete(NULL);
+}
+
+void app_main(void)
+{
+    ESP_LOGI(TAG, "Starting DS3231 RTC example");
+
+    // Create task for RTC operations
+    xTaskCreate(rtc_example_task, "rtc_example", 4096, NULL, 5, NULL);
+}

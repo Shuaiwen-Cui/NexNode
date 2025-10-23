@@ -12,3 +12,10 @@ Official Reference
 
 </div>
 
+## CORE BOARD ATK DNESP32S3M
+
+![](ATK-DNESP32S3M_F.jpg){width=100%}
+![](ATK-DNESP32S3M_B.jpg){width=100%}
+
+![](ATK-DNESP32S3M_CORE_CORE.jpg){width=100%}
+![](ATK-DNESP32S3M_CORE_PERIPHERAL.jpg){width=100%}

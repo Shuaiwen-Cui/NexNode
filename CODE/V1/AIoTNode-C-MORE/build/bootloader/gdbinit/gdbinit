@@ -1,0 +1,2 @@
+source /home/cshwstem/CSW/Development/NexNode/CODE/V1/AIoTNode-C-MORE/build/bootloader/gdbinit/symbols
+source /home/cshwstem/CSW/Development/NexNode/CODE/V1/AIoTNode-C-MORE/build/bootloader/gdbinit/connect
