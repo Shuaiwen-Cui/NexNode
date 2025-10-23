@@ -3,7 +3,7 @@
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
  * @brief 
  * @version 1.0
- * @date 2025-10-22
+ * @date 2024-11-17
  * 
  * @copyright Copyright (c) 2024
  * 
@@ -28,6 +28,7 @@
 #include "node_sdcard.h"
 #include "node_wifi.h"
 #include "node_mqtt.h"
+#include "node_th_dht11.h"
 
 /* Variables */
 const char *TAG = "AIoTNode";
@@ -45,6 +46,11 @@ void app_main(void)
 
     char mqtt_pub_buff[64];
     int count = 0;
+
+    // DHT SENSOR
+    dht_sensor_type_t sensor_type;
+    sensor_type = DHT_TYPE_DHT11;
+    gpio_num_t gpio_num = (gpio_num_t)14;
 
     // Initialize NVS
     ret = nvs_flash_init();
@@ -96,7 +102,7 @@ void app_main(void)
     vTaskDelay(3000);
 
     lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test  ", RED);
-
+    
     ret = wifi_sta_wpa2_init();
     if(ret == ESP_OK)
     {
@@ -116,18 +122,34 @@ void app_main(void)
         mqtt_app_start();
     }
 
+    // DHT - Configure GPIO with pull-up
+    gpio_config_t io_conf = {};
+    io_conf.intr_type = GPIO_INTR_DISABLE;
+    io_conf.mode = GPIO_MODE_INPUT_OUTPUT_OD;
+    io_conf.pin_bit_mask = (1ULL << gpio_num);
+    io_conf.pull_down_en = 0;
+    io_conf.pull_up_en = 1;
+    gpio_config(&io_conf);
+
     while (1)
     {
-        if(s_is_mqtt_connected)
+        float humidity = 0, temperature = 0;
+        esp_err_t result = dht_read_float_data(sensor_type, gpio_num, &humidity, &temperature);
+        if (result == ESP_OK)
         {
-            snprintf(mqtt_pub_buff,64,"{\"count\":\"%d\"}",count);
-            esp_mqtt_client_publish(s_mqtt_client, MQTT_PUBLISH_TOPIC,
-                            mqtt_pub_buff, strlen(mqtt_pub_buff),1, 0);
-            count++;
+            ESP_LOGI(TAG, "Humidity: %.1f%% Temperature: %.1f°C", humidity, temperature);
+            char mqtt_msg[128];
+            snprintf(mqtt_msg, sizeof(mqtt_msg), "{\"temperature\":%.1f,\"humidity\":%.1f}", temperature, humidity);
+            if (s_is_mqtt_connected)
+            {
+                esp_mqtt_client_publish(s_mqtt_client, MQTT_PUBLISH_TOPIC, mqtt_msg, strlen(mqtt_msg), 1, 0);
+            }
         }
-        led_toggle();
-
-        ESP_LOGI(TAG, "Hello World!");
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
+        else
+        {
+            ESP_LOGE(TAG, "Failed to read sensor data: %s", esp_err_to_name(result));
+        }
+        vTaskDelay(pdMS_TO_TICKS(2000)); // Delay for 2 seconds
     }
+
 }
