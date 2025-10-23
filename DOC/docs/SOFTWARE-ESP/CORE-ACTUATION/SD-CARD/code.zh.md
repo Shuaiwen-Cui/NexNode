@@ -4,14 +4,14 @@
 
 ```plaintext
 - driver
-    - spi_sdcard
+    - node_sdcard
         - include
-            - spi_sdcard.h
-        - spi_sdcard.c
+            - node_sdcard.h
+        - node_sdcard.c
         - CMakeLists.txt
 ```
 
-## driver/spi_sdcard/CMakeLists.txt
+## driver/node_sdcard/CMakeLists.txt
 
 ```cmake
 set(src_dirs
@@ -34,16 +34,16 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
 ```
 
 
-## spi_sdcard.h
+## node_sdcard.h
     
 ```c
 /**
- * @file spi_sdcard.h
+ * @file node_sdcard.h
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
  * @brief This file is for SD card initialization and related functions
  * ！Here, we use SPI2, which is already initialized previously for LCD. For a same SPI, there can be many devices using different CS (Chip Select) pins.
  * @version 1.0
- * @date 2024-11-19
+ * @date 2025-10-22
  * @copyright Copyright (c) 2024
  *
  */
@@ -96,22 +96,22 @@ extern "C"
 #endif
 ```
 
-## spi_sdcard.c
+## node_sdcard.c
 
 ```c
 /**
- * @file spi_sdcard.c
+ * @file node_sdcard.c
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
  * @brief This file is for SD card initialization and related functions
  * ！Here, we use SPI2, which is already initialized previously for LCD. For a same SPI, there can be many devices using different CS (Chip Select) pins.
  * @version 1.0
- * @date 2024-11-19
+ * @date 2025-10-22
  * @copyright Copyright (c) 2024
  *
  */
 
 /* DEPENDENCIES */
-#include "spi_sdcard.h"
+#include "node_sdcard.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -144,7 +144,7 @@ extern "C"
 #ifdef CONFIG_FORMAT_IF_MOUNT_FAILED
             .format_if_mount_failed = true, // Format the card if mounting fails
 #else
-            .format_if_mount_failed = false, // Do not format the card if mounting fails
+        .format_if_mount_failed = false, // Do not format the card if mounting fails
 #endif                                        // FORMAT_IF_MOUNT_FAILED
             .max_files = 5,                   // Maximum number of files that can be open at the same time
             .allocation_unit_size = 16 * 1024 // FAT allocation unit size
@@ -320,13 +320,13 @@ extern "C"
 #include "freertos/task.h"
 
 // BSP
-#include "led.h"
-#include "exit.h"
-#include "spi.h"
-#include "lcd.h"
-#include "tim.h"
-#include "esp_rtc.h"
-#include "spi_sdcard.h"
+#include "node_led.h"
+#include "node_exit.h"
+#include "node_spi.h"
+#include "node_lcd.h"
+#include "node_timer.h"
+#include "node_rtc.h"
+#include "node_sdcard.h"
 
 /**
  * @brief Entry point of the program

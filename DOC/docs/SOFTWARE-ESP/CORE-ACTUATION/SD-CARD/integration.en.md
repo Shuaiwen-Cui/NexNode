@@ -3,7 +3,7 @@
 ## Introduction
 
 !!! note
-    In this section, we introduce how to integrate the spi_sdcarder driver into the project.
+    In this section, we introduce how to integrate the node_sdcard driver into the project.
 
 ## Create a New Component
 
@@ -15,25 +15,25 @@ Open the project in VSCode, open the integrated terminal, and type in
 ```bash
 get_idf 
 ```
-to actiate the ESP-IDF environment. Then type in the following command to create a new component named `spi_sdcard`:
+to actiate the ESP-IDF environment. Then type in the following command to create a new component named `node_sdcard`:
 
 ```bash
-idf.py -C driver create-component spi_sdcard
+idf.py -C driver create-component node_sdcard
 ```
 
-The command above means to create a new component named `spi_sdcard` in the `driver` directory. After executing the command, you will see a new directory named `spi_sdcard` in the `driver` directory. And the command will automatically generate the `CMakeLists.txt` file for the new component, as well as the `spi_sdcard.h` and `spi_sdcard.c` files.
+The command above means to create a new component named `node_sdcard` in the `driver` directory. After executing the command, you will see a new directory named `node_sdcard` in the `driver` directory. And the command will automatically generate the `CMakeLists.txt` file for the new component, as well as the `node_sdcard.h` and `node_sdcard.c` files.
 
-Alternatively, you can mannually create the `spi_sdcard` directory in the `driver` directory, and then create the `CMakeLists.txt`, `spi_sdcard.h`, and `spi_sdcard.c` files in the `spi_sdcard` directory.
+Alternatively, you can mannually create the `node_sdcard` directory in the `driver` directory, and then create the `CMakeLists.txt`, `node_sdcard.h`, and `node_sdcard.c` files in the `node_sdcard` directory.
 
 ## Replace the Code
 
 > Component Level
 
-Replace the code in this section into the `CMakelists.txt`, `spi_sdcard.h`, and `spi_sdcard.c` files under the component.
+Replace the code in this section into the `CMakelists.txt`, `node_sdcard.h`, and `node_sdcard.c` files under the component.
 
 > Project Level
 
-Replace the code in `main.c` with the corresponding code. No need to change the `CMakeLists.txt` file at the project level.
+Replace the code in `main.c/cpp` with the corresponding code. No need to change the `CMakeLists.txt` file at the project level.
 
 ## Compile and Flash the Project
 

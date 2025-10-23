@@ -16,29 +16,35 @@
 get_idf 
 ```
 
-激活 ESP-IDF 环境。然后输入以下命令创建一个名为 `spi_sdcard` 的新组件：
+激活 ESP-IDF 环境。然后输入以下命令创建一个名为 `node_sdcard` 的新组件：
 
 ```bash
-idf.py -C driver create-component spi_sdcard
+idf.py -C driver create-component node_sdcard
 ```
 
-上面的命令意味着在 `driver` 目录中创建一个名为 `spi_sdcard` 的新组件。执行命令后，您将在 `driver` 目录中看到一个名为 `spi_sdcard` 的新目录。命令将自动生成新组件的 `CMakeLists.txt` 文件，以及 `spi_sdcard.h` 和 `spi_sdcard.c` 文件。
+上面的命令意味着在 `driver` 目录中创建一个名为 `node_sdcard` 的新组件。执行命令后，您将在 `driver` 目录中看到一个名为 `node_sdcard` 的新目录。命令将自动生成新组件的 `CMakeLists.txt` 文件，以及 `node_sdcard.h` 和 `node_sdcard.c` 文件。
 
-或者，您可以在 `driver` 目录中手动创建 `spi_sdcard` 目录，然后在 `spi_sdcard` 目录中创建 `CMakeLists.txt`、`spi_sdcard.h` 和 `spi_sdcard.c` 文件。
+或者，您可以在 `driver` 目录中手动创建 `node_sdcard` 目录，然后在 `node_sdcard` 目录中创建 `CMakeLists.txt`、`node_sdcard.h` 和 `node_sdcard.c` 文件。
 
 ## 替换代码
 
 > 组件层面
 
-将本节中代码分别替换到组件下的`CMakelists.txt`、`spi_sdcard.h`和`spi_sdcard.c`文件中。
+将本节中代码分别替换到组件下的`CMakelists.txt`、`node_sdcard.h`和`node_sdcard.c`文件中。
 
 > 项目层面
 
-将`main.c`中的代码替换为相应的代码。项目层面的`CMakeLists.txt`文件无需更改。
+将`main.c/cpp`中的代码替换为相应的代码。项目层面的`CMakeLists.txt`文件无需更改。
 
 ## 编译烧录
 
 在 VSCode 中打开项目，打开集成终端，输入
+
+```bash
+idf.py build flash monitor
+```
+
+然后您将在串行监视器中看到反馈。或者，您可以检查 SD 卡以进行验证。
 
 ```bash
 idf.py build flash monitor

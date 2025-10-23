@@ -150,6 +150,10 @@ plugins:
             LCD: 液晶显示屏
             SD-CARD: SD卡
             MORE: 外围功能
+            MORE-PERCEPTION: 扩展功能-感知
+            DHT11: 数字温湿度传感器-DHT11
+            DS3231: 实时时钟模块-DS3231
+            ADXL355: 三轴加速度传感器-ADXL355
             STM32: STM32
             DNESP32S3M: DNESP32S3M
             PROJECT-CONSTRUCTION: 项目构建
@@ -372,6 +376,19 @@ nav:
               - INTEGRATION: "SOFTWARE-ESP/CORE-ACTUATION/SD-CARD/integration.md"
       - MORE:
           - "SOFTWARE-ESP/MORE/more.md"
+      - MORE-PERCEPTION:
+          - DHT11:
+              - NOTE: "SOFTWARE-ESP/MORE-PERCEPTION/DHT11/note.md" 
+              - CODE: "SOFTWARE-ESP/MORE-PERCEPTION/DHT11/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/MORE-PERCEPTION/DHT11/integration.md"
+          - DS3231:
+              - NOTE: "SOFTWARE-ESP/MORE-PERCEPTION/DS3231/note.md"
+              - CODE: "SOFTWARE-ESP/MORE-PERCEPTION/DS3231/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/MORE-PERCEPTION/DS3231/integration.md"
+          - ADXL355:
+              - NOTE: "SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/note.md"
+              - CODE: "SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/integration.md"
   - RELEASE:
       - "RELEASE/v1.md"
   # - KICK-START:
