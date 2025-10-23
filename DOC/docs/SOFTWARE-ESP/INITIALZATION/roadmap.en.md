@@ -85,9 +85,9 @@ Assuming you have completed the project initialization work, it is recommended t
 | Main Control        | SPI              | driver                           |                             |
 | Actuation            | LCD              | driver                           | node_spi                    |
 | Actuation            | SD Card          | driver, fatfs, vfs, sdmmc     | node_spi                    |
-| Communication       | WIFI             | esp_wifi, wpa_supplicant    | node_led, node_lcd           |
+| Communication       | WIFI             | esp_wifi, wpa_supplicant    | node_led, node_lcd(optional)           |
 | Communication       | IOT              | mqtt     |            |
-
+| Other                |                  |                             |                              |
 
 ## ADDITIONAL NOTES
 

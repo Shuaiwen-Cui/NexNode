@@ -132,6 +132,8 @@ plugins:
             HANDS-ON: 实践
             TEMPLATE: 模板
             CORE: 核心功能
+            CORE DEV: 核心功能-开发
+            MODULE LIST: 核心功能-模块列表
             CORE-CONTROL: 核心功能-控制
             CORE-COMMUNICATION: 核心功能-通信
             CORE-PERCEPTION: 核心功能-感知
@@ -315,7 +317,8 @@ nav:
           - INITIALIZATION: "SOFTWARE-ESP/INITIALZATION/initialization.md"
           - ROADMAP: "SOFTWARE-ESP/INITIALZATION/roadmap.md"
       - CORE:
-          - "SOFTWARE-ESP/CORE/core.md"
+          - CORE DEV: "SOFTWARE-ESP/CORE/core.md"
+          - MODULE LIST: "SOFTWARE-ESP/CORE/list.md"
       - CORE-CONTROL:
           # - "SOFTWARE-ESP/CORE-CONTROL/core-control.md"
           - EXIT:
@@ -342,10 +345,6 @@ nav:
               - NOTE: "SOFTWARE-ESP/CORE-CONTROL/SPI/note.md"
               - CODE: "SOFTWARE-ESP/CORE-CONTROL/SPI/code.md"
               - INTEGRATION: "SOFTWARE-ESP/CORE-CONTROL/SPI/integration.md"
-          - SD-CARD:
-              - NOTE: "SOFTWARE-ESP/CORE-CONTROL/SD-CARD/note.md"
-              - CODE: "SOFTWARE-ESP/CORE-CONTROL/SD-CARD/code.md"
-              - INTEGRATION: "SOFTWARE-ESP/CORE-CONTROL/SD-CARD/integration.md"
       - CORE-COMMUNICATION:
           - WIFI:
               - NOTE: "SOFTWARE-ESP/CORE-COMMUNICATION/WIFI/note.md"
@@ -355,8 +354,8 @@ nav:
               - NOTE: "SOFTWARE-ESP/CORE-COMMUNICATION/MQTT/note.md"
               - CODE: "SOFTWARE-ESP/CORE-COMMUNICATION/MQTT/code.md"
               - INTEGRATION: "SOFTWARE-ESP/CORE-COMMUNICATION/MQTT/integration.md"
-      - CORE-PERCEPTION:
-          - "SOFTWARE-ESP/CORE-PERCEPTION/core-perception.md"
+      # - CORE-PERCEPTION:
+      #     - "SOFTWARE-ESP/CORE-PERCEPTION/core-perception.md"
       - CORE-ACTUATION:
           # - "SOFTWARE-ESP/CORE-ACTUATION/core-actuation.md"
           - LED: 
@@ -367,8 +366,14 @@ nav:
               - NOTE: "SOFTWARE-ESP/CORE-ACTUATION/LCD/note.md"
               - CODE: "SOFTWARE-ESP/CORE-ACTUATION/LCD/code.md"
               - INTEGRATION: "SOFTWARE-ESP/CORE-ACTUATION/LCD/integration.md"
+          - SD-CARD:
+              - NOTE: "SOFTWARE-ESP/CORE-ACTUATION/SD-CARD/note.md"
+              - CODE: "SOFTWARE-ESP/CORE-ACTUATION/SD-CARD/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/CORE-ACTUATION/SD-CARD/integration.md"
       - MORE:
           - "SOFTWARE-ESP/MORE/more.md"
+  - RELEASE:
+      - "RELEASE/v1.md"
   # - KICK-START:
   #     - ESP32:
   #         - HARDWARE: "./KICK_START/ESP32/HARDWARE/hardware.md"
@@ -377,79 +382,78 @@ nav:
   #         - TEMPLATE: "./KICK_START/ESP32/TEMPLATE/template.md"
   #     - STM32:
   #         - "KICK_START/STM32/stm32.md"
-  - DNESP32S3M:
-      - ROADMAP: "DNESP32S3M/dnesp32s3m.md"
-      - PROJECT-CONSTRUCTION: "DNESP32S3M/PROJECT/project.md"
-      - MAIN-CONTROL: 
-          - EXIT:
-              - NOTE: "DNESP32S3M/ACTUATION/KEY(EXIT)/note.md"
-              - CODE: "DNESP32S3M/ACTUATION/KEY(EXIT)/code.md"
-              - INTEGRATION: "DNESP32S3M/ACTUATION/KEY(EXIT)/integration.md"
-          - TIMER: 
-              - NOTE: "DNESP32S3M/MAIN-CONTROL/TIMER/note.md"
-              - CODE: "DNESP32S3M/MAIN-CONTROL/TIMER/code.md"
-              - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/TIMER/integration.md"
-          - RTC:
-              - NOTE: "DNESP32S3M/MAIN-CONTROL/RTC/note.md"
-              - CODE: "DNESP32S3M/MAIN-CONTROL/RTC/code.md"
-              - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/RTC/integration.md"
-          - RNG:
-              - NOTE: "DNESP32S3M/MAIN-CONTROL/RNG/note.md"
-              - CODE: "DNESP32S3M/MAIN-CONTROL/RNG/code.md"
-              - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/RNG/integration.md"
-          - SPI:
-              - NOTE: "DNESP32S3M/MAIN-CONTROL/SPI/note.md"
-              - CODE: "DNESP32S3M/MAIN-CONTROL/SPI/code.md"
-              - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/SPI/integration.md"
-          - I2C:
-              - NOTE: "DNESP32S3M/MAIN-CONTROL/I2C/note.md"
-              - CODE: "DNESP32S3M/MAIN-CONTROL/I2C/code.md"
-              - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/I2C/integration.md"
-          - SD-CARD:
-              - NOTE: "DNESP32S3M/MAIN-CONTROL/SD-CARD/note.md"
-              - CODE: "DNESP32S3M/MAIN-CONTROL/SD-CARD/code.md"
-              - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/SD-CARD/integration.md"
-          # - TF-CARD:
-          #     - NOTE: "DNESP32S3M/MAIN-CONTROL/TF-CARD/note.md"
-          #     - CODE: "DNESP32S3M/MAIN-CONTROL/TF-CARD/code.md"
-          #     - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/TF-CARD/integration.md"
-          # - FILE-SYSTEM:
-          #     - NOTE: "DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/note.md"
-          #     - CODE: "DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/code.md"
-          #     - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/integration.md"
-      - PERCEPTION: 
-          - IMU-MPU6050:
-              - NOTE: "DNESP32S3M/PERCEPTION/IMU-MPU6050/note.md"
-              - CODE: "DNESP32S3M/PERCEPTION/IMU-MPU6050/code.md"
-              - INTEGRATION: "DNESP32S3M/PERCEPTION/IMU-MPU6050/integration.md"
-      - COMMUNICATION: 
-          - WIFI: 
-              - NOTE: "DNESP32S3M/COMMUNICATION/WIFI/note.md"
-              - CODE: "DNESP32S3M/COMMUNICATION/WIFI/code.md"
-              - INTEGRATION: "DNESP32S3M/COMMUNICATION/WIFI/integration.md"
-          - MQTT:
-              - NOTE: "DNESP32S3M/COMMUNICATION/MQTT/note.md"
-              - CODE: "DNESP32S3M/COMMUNICATION/MQTT/code.md"
-              - INTEGRATION: "DNESP32S3M/COMMUNICATION/MQTT/integration.md"
-      - ACTUATION: 
-          - LED: 
-              - NOTE: "DNESP32S3M/ACTUATION/LED/note.md"
-              - CODE: "DNESP32S3M/ACTUATION/LED/code.md"
-              - INTEGRATION: "DNESP32S3M/ACTUATION/LED/integration.md"
-          - LCD:
-              - NOTE: "DNESP32S3M/ACTUATION/LCD/note.md"
-              - CODE: "DNESP32S3M/ACTUATION/LCD/code.md"
-              - INTEGRATION: "DNESP32S3M/ACTUATION/LCD/integration.md"
-      - MIDDLEWARE: 
-          # - MIDDLEWARE: "DNESP32S3M/MIDDLEWARE/middleware.md"
-          - ESP-DSP: "DNESP32S3M/MIDDLEWARE/ESP-DSP/esp-dsp.md"
-          - ESP-DL: "DNESP32S3M/MIDDLEWARE/ESP-DL/esp-dl.md"
+  # - DNESP32S3M:
+  #     - ROADMAP: "DNESP32S3M/dnesp32s3m.md"
+  #     - PROJECT-CONSTRUCTION: "DNESP32S3M/PROJECT/project.md"
+  #     - MAIN-CONTROL: 
+  #         - EXIT:
+  #             - NOTE: "DNESP32S3M/ACTUATION/KEY(EXIT)/note.md"
+  #             - CODE: "DNESP32S3M/ACTUATION/KEY(EXIT)/code.md"
+  #             - INTEGRATION: "DNESP32S3M/ACTUATION/KEY(EXIT)/integration.md"
+  #         - TIMER: 
+  #             - NOTE: "DNESP32S3M/MAIN-CONTROL/TIMER/note.md"
+  #             - CODE: "DNESP32S3M/MAIN-CONTROL/TIMER/code.md"
+  #             - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/TIMER/integration.md"
+  #         - RTC:
+  #             - NOTE: "DNESP32S3M/MAIN-CONTROL/RTC/note.md"
+  #             - CODE: "DNESP32S3M/MAIN-CONTROL/RTC/code.md"
+  #             - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/RTC/integration.md"
+  #         - RNG:
+  #             - NOTE: "DNESP32S3M/MAIN-CONTROL/RNG/note.md"
+  #             - CODE: "DNESP32S3M/MAIN-CONTROL/RNG/code.md"
+  #             - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/RNG/integration.md"
+  #         - SPI:
+  #             - NOTE: "DNESP32S3M/MAIN-CONTROL/SPI/note.md"
+  #             - CODE: "DNESP32S3M/MAIN-CONTROL/SPI/code.md"
+  #             - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/SPI/integration.md"
+  #         - I2C:
+  #             - NOTE: "DNESP32S3M/MAIN-CONTROL/I2C/note.md"
+  #             - CODE: "DNESP32S3M/MAIN-CONTROL/I2C/code.md"
+  #             - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/I2C/integration.md"
+  #         - SD-CARD:
+  #             - NOTE: "DNESP32S3M/MAIN-CONTROL/SD-CARD/note.md"
+  #             - CODE: "DNESP32S3M/MAIN-CONTROL/SD-CARD/code.md"
+  #             - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/SD-CARD/integration.md"
+  #         # - TF-CARD:
+  #         #     - NOTE: "DNESP32S3M/MAIN-CONTROL/TF-CARD/note.md"
+  #         #     - CODE: "DNESP32S3M/MAIN-CONTROL/TF-CARD/code.md"
+  #         #     - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/TF-CARD/integration.md"
+  #         # - FILE-SYSTEM:
+  #         #     - NOTE: "DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/note.md"
+  #         #     - CODE: "DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/code.md"
+  #         #     - INTEGRATION: "DNESP32S3M/MAIN-CONTROL/FILE-SYSTEM/integration.md"
+  #     - PERCEPTION: 
+  #         - IMU-MPU6050:
+  #             - NOTE: "DNESP32S3M/PERCEPTION/IMU-MPU6050/note.md"
+  #             - CODE: "DNESP32S3M/PERCEPTION/IMU-MPU6050/code.md"
+  #             - INTEGRATION: "DNESP32S3M/PERCEPTION/IMU-MPU6050/integration.md"
+  #     - COMMUNICATION: 
+  #         - WIFI: 
+  #             - NOTE: "DNESP32S3M/COMMUNICATION/WIFI/note.md"
+  #             - CODE: "DNESP32S3M/COMMUNICATION/WIFI/code.md"
+  #             - INTEGRATION: "DNESP32S3M/COMMUNICATION/WIFI/integration.md"
+  #         - MQTT:
+  #             - NOTE: "DNESP32S3M/COMMUNICATION/MQTT/note.md"
+  #             - CODE: "DNESP32S3M/COMMUNICATION/MQTT/code.md"
+  #             - INTEGRATION: "DNESP32S3M/COMMUNICATION/MQTT/integration.md"
+  #     - ACTUATION: 
+  #         - LED: 
+  #             - NOTE: "DNESP32S3M/ACTUATION/LED/note.md"
+  #             - CODE: "DNESP32S3M/ACTUATION/LED/code.md"
+  #             - INTEGRATION: "DNESP32S3M/ACTUATION/LED/integration.md"
+  #         - LCD:
+  #             - NOTE: "DNESP32S3M/ACTUATION/LCD/note.md"
+  #             - CODE: "DNESP32S3M/ACTUATION/LCD/code.md"
+  #             - INTEGRATION: "DNESP32S3M/ACTUATION/LCD/integration.md"
+  #     - MIDDLEWARE: 
+  #         # - MIDDLEWARE: "DNESP32S3M/MIDDLEWARE/middleware.md"
+  #         - ESP-DSP: "DNESP32S3M/MIDDLEWARE/ESP-DSP/esp-dsp.md"
+  #         - ESP-DL: "DNESP32S3M/MIDDLEWARE/ESP-DL/esp-dl.md"
   # - DNESP32S3:
   #     - ROADMAP: "DNESP32S3/dnesp32s3.md"
   # - FKH743M2-IIT6:
   #     - ROADMAP: "FKH743M2-IIT6/fkh743m2-iit6.md"
-  # - RELEASE:
-  #     - "RELEASE/release.md"
+
 
 # if there are sub nodes under a node, then there should not be a link right after the node. All the stuff should be placed under the node.
 
