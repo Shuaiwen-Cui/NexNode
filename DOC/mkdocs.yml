@@ -121,8 +121,9 @@ plugins:
             COMPONENTS: 元器件选择
             SCHEMATIC: 原理图
             LAYOUT: PCB布局
-            KICK-START: 快速上手
             SOFTWARE-ESP: 软件-ESP32
+            ESP32_TUTORIAL: ESP32教程
+            TUTORIAL: 教程
             INITIALIZATION: 初始化
             IOT-CORE: 物联网节点-核心
             IOT-MORE: 物联网节点-扩展
@@ -154,6 +155,9 @@ plugins:
             DHT11: 数字温湿度传感器-DHT11
             ADXL355: 三轴加速度传感器-ADXL355
             DS3231: 实时时钟模块-DS3231
+            WSN-ESP: 无线传感器网络-ESP32
+            WSN-COMMUNICATION: 无线传感器网络-通信
+            ESP-NOW: ESP-NOW通信
             STM32: STM32
             DNESP32S3M: DNESP32S3M
             PROJECT-CONSTRUCTION: 项目构建
@@ -312,11 +316,12 @@ nav:
       - LAYOUT:
           - "HARDWARE-ESP/LAYOUT/layout.md"
   - SOFTWARE-ESP:
-      - KICK-START:
-          - HARDWARE: "./SOFTWARE-ESP/KICK_START/HARDWARE/hardware.md"
-          - ENVIRONMENT: "./SOFTWARE-ESP/KICK_START/ENVIRONMENT/environment.md"
-          - HANDS-ON: "./SOFTWARE-ESP/KICK_START/HANDS-ON/hands-on.md"
-          - TEMPLATE: "./SOFTWARE-ESP/KICK_START/TEMPLATE/template.md"
+      - ESP32_TUTORIAL:
+          - TUTORIAL:
+              - HARDWARE: "SOFTWARE-ESP/ESP32_TUTORIAL/TUTORIAL/HARDWARE/hardware.md"
+              - ENVIRONMENT: "SOFTWARE-ESP/ESP32_TUTORIAL/TUTORIAL/ENVIRONMENT/environment.md"
+              - HANDS-ON: "SOFTWARE-ESP/ESP32_TUTORIAL/TUTORIAL/HANDS-ON/hands-on.md"
+              - TEMPLATE: "SOFTWARE-ESP/ESP32_TUTORIAL/TUTORIAL/TEMPLATE/template.md"
       - INITIALZATION:
           - INITIALIZATION: "SOFTWARE-ESP/INITIALZATION/initialization.md"
           - ROADMAP: "SOFTWARE-ESP/INITIALZATION/roadmap.md"
@@ -390,8 +395,12 @@ nav:
               - NOTE: "SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/note.md"
               - CODE: "SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/code.md"
               - INTEGRATION: "SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/integration.md"
-
-
+  - WSN-ESP:
+      - COMMUNICATION:
+          - ESP-NOW:
+              - NOTE: "WSN-ESP/COMMUNICATION/ESP-NOW/note.md"
+              - CODE: "WSN-ESP/COMMUNICATION/ESP-NOW/code.md"
+              - INTEGRATION: "WSN-ESP/COMMUNICATION/ESP-NOW/integration.md"
   - RELEASE:
       - "RELEASE/v1.md"
   # - KICK-START:

@@ -1,5 +1,8 @@
 # SYSTEM
 
+!!! warning "Note"
+    The hardware section is still under design and development. All content is for reference only and may be adjusted in the future based on actual conditions.
+
 ## CONTROL SYSTEM
 
 - MCU Chip or Module - ESP32-based
