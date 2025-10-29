@@ -151,6 +151,7 @@ plugins:
             LCD: 液晶显示屏
             SD-CARD: SD卡
             MORE: 外围功能
+            MORE-CONTROL: 扩展功能-控制
             MORE-PERCEPTION: 扩展功能-感知
             DHT11: 数字温湿度传感器-DHT11
             ADXL355: 三轴加速度传感器-ADXL355
@@ -304,8 +305,8 @@ markdown_extensions:
 nav:
   - ABOUT: 
       - "index.md"
-  - ROADMAP:
-      - "ROADMAP/roadmap.md"
+  # - ROADMAP:
+  #     - "ROADMAP/roadmap.md"
   - HARDWARE-ESP:
       - SYSTEM:
           - "HARDWARE-ESP/SYSTEM/system.md"
