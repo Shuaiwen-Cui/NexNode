@@ -1261,25 +1261,11 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/note/"/>
     </url>
     <url>
-        <loc>https://localhost:8000/WSN-ESP/COMMUNICATION/ESP-NOW/code/</loc>
+        <loc>https://localhost:8000/WSN-ESP/COMMUNICATION/ESP-NOW/abc/</loc>
         <lastmod>2025-10-29</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/WSN-ESP/COMMUNICATION/ESP-NOW/code/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/WSN-ESP/COMMUNICATION/ESP-NOW/code/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/WSN-ESP/COMMUNICATION/ESP-NOW/integration/</loc>
-        <lastmod>2025-10-29</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/WSN-ESP/COMMUNICATION/ESP-NOW/integration/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/WSN-ESP/COMMUNICATION/ESP-NOW/integration/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/WSN-ESP/COMMUNICATION/ESP-NOW/note/</loc>
-        <lastmod>2025-10-29</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/WSN-ESP/COMMUNICATION/ESP-NOW/note/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/WSN-ESP/COMMUNICATION/ESP-NOW/note/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/WSN-ESP/COMMUNICATION/ESP-NOW/abc/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/WSN-ESP/COMMUNICATION/ESP-NOW/abc/"/>
     </url>
     <url>
         <loc>https://localhost:8000/blog/</loc>
@@ -2549,25 +2535,11 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/MORE-PERCEPTION/DHT11/note/"/>
     </url>
     <url>
-        <loc>https://localhost:8000/zh/WSN-ESP/COMMUNICATION/ESP-NOW/code/</loc>
+        <loc>https://localhost:8000/zh/WSN-ESP/COMMUNICATION/ESP-NOW/abc/</loc>
         <lastmod>2025-10-29</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/WSN-ESP/COMMUNICATION/ESP-NOW/code/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/WSN-ESP/COMMUNICATION/ESP-NOW/code/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/zh/WSN-ESP/COMMUNICATION/ESP-NOW/integration/</loc>
-        <lastmod>2025-10-29</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/WSN-ESP/COMMUNICATION/ESP-NOW/integration/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/WSN-ESP/COMMUNICATION/ESP-NOW/integration/"/>
-    </url>
-    <url>
-        <loc>https://localhost:8000/zh/WSN-ESP/COMMUNICATION/ESP-NOW/note/</loc>
-        <lastmod>2025-10-29</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/WSN-ESP/COMMUNICATION/ESP-NOW/note/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/WSN-ESP/COMMUNICATION/ESP-NOW/note/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/WSN-ESP/COMMUNICATION/ESP-NOW/abc/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/WSN-ESP/COMMUNICATION/ESP-NOW/abc/"/>
     </url>
     <url>
         <loc>https://localhost:8000/zh/blog/</loc>
