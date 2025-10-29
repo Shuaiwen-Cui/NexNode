@@ -1,6 +1,6 @@
-# NexNode
+# NEXNODE
 
-## Introduction
+## INTRODUCTION
 
 This project dedicates to the development of an EdgeAI-powered MCU level IoT node for future-oriented applications.
 
@@ -8,9 +8,9 @@ This project dedicates to the development of an EdgeAI-powered MCU level IoT nod
 
 ![cover](cover.jpg)
 
-## Roadmap
+## ROADMAP
 
-### HARDWARE ARCHITECTURE
+### Hardware Architecture
 
 From an architectural perspective, an AIoT node can be divided into the following main subsystems:
 
@@ -20,7 +20,7 @@ From an architectural perspective, an AIoT node can be divided into the followin
 - Execution Module: Responsible for executing specific tasks and operations
 - Power Module: Responsible for providing stable power supply to each module
 
-### SOFTWARE ARCHITECTURE
+### Software Architecture
 
 From a software architecture perspective, an AIoT node can be divided into the following main layers:
 
