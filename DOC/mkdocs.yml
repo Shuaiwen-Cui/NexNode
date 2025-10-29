@@ -159,6 +159,7 @@ plugins:
             WSN-ESP: 无线传感器网络-ESP32
             WSN-COMMUNICATION: 无线传感器网络-通信
             ESP-NOW: ESP-NOW通信
+            ABC: 基础
             STM32: STM32
             DNESP32S3M: DNESP32S3M
             PROJECT-CONSTRUCTION: 项目构建
@@ -399,9 +400,7 @@ nav:
   - WSN-ESP:
       - COMMUNICATION:
           - ESP-NOW:
-              - NOTE: "WSN-ESP/COMMUNICATION/ESP-NOW/note.md"
-              - CODE: "WSN-ESP/COMMUNICATION/ESP-NOW/code.md"
-              - INTEGRATION: "WSN-ESP/COMMUNICATION/ESP-NOW/integration.md"
+              - ABC: "WSN-ESP/COMMUNICATION/ESP-NOW/abc.md"
   - RELEASE:
       - "RELEASE/v1.md"
   # - KICK-START:
