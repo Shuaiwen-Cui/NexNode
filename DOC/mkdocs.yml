@@ -116,12 +116,12 @@ plugins:
           nav_translations: # note that all titles and subtitles in the navigation bar that need to be translated can be put here, but with no indentation
             ABOUT: 关于
             ROADMAP: 路线图
-            HARDWARE-ESP: 硬件-ESP32
+            HARDWARE-ESP32: 硬件-ESP32
             SYSTEM: 系统设计
             COMPONENTS: 元器件选择
             SCHEMATIC: 原理图
             LAYOUT: PCB布局
-            SOFTWARE-ESP: 软件-ESP32
+            SOFTWARE-ESP32: 软件-ESP32
             ESP32_TUTORIAL: ESP32教程
             TUTORIAL: 教程
             INITIALIZATION: 初始化
@@ -179,6 +179,9 @@ plugins:
             DNESP32S3: DNESP32S3
             FKH743M2-IIT6: FKH743M2-IIT6
             RELEASE: 发布
+            HARDWARE-STM32: 硬件-STM32
+            CORE-BOARD: 核心板
+            SOFTWARE-ESP32: 软件-ESP32
 
 # # Hooks
 # hooks:
@@ -308,7 +311,7 @@ nav:
       - "index.md"
   # - ROADMAP:
   #     - "ROADMAP/roadmap.md"
-  - HARDWARE-ESP:
+  - HARDWARE-ESP32:
       - SYSTEM:
           - "HARDWARE-ESP/SYSTEM/system.md"
       - COMPONENTS:
@@ -317,7 +320,7 @@ nav:
           - "HARDWARE-ESP/SCHEMATIC/schematic.md"
       - LAYOUT:
           - "HARDWARE-ESP/LAYOUT/layout.md"
-  - SOFTWARE-ESP:
+  - SOFTWARE-ESP32:
       - ESP32_TUTORIAL:
           - TUTORIAL:
               - HARDWARE: "SOFTWARE-ESP/ESP32_TUTORIAL/TUTORIAL/HARDWARE/hardware.md"
@@ -401,8 +404,11 @@ nav:
       - COMMUNICATION:
           - ESP-NOW:
               - ABC: "WSN-ESP/COMMUNICATION/ESP-NOW/abc.md"
+  - HARDWARE-STM32:
+      - CORE-BOARD: "HARDWARE-STM/CORE-BOARD/core-board.md"
   - RELEASE:
-      - "RELEASE/v1.md"
+      - ESP32:
+          - V1: "RELEASE/esp-v1.md"
   # - KICK-START:
   #     - ESP32:
   #         - HARDWARE: "./KICK_START/ESP32/HARDWARE/hardware.md"
