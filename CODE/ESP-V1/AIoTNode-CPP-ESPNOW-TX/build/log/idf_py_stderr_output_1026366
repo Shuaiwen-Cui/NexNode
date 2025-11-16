@@ -1,0 +1,1 @@
+Command: cmake -G Ninja -DPYTHON_DEPS_CHECKED=1 -DPYTHON=/home/cshwstem/esp/esp-idf/tools/python_env/idf6.0_py3.10_env/bin/python -DESP_PLATFORM=1 -DSDKCONFIG='/home/cshwstem/CSW/Development/NexNode/CODE/ESP-V1/AIoTNode-CPP-ESPNOW-TX/sdkconfig' -DCCACHE_ENABLE=0 /home/cshwstem/CSW/Development/NexNode/CODE/ESP-V1/AIoTNode-CPP-ESPNOW-TX

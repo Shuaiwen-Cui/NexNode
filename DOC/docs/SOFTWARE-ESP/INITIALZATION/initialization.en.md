@@ -75,6 +75,12 @@ More details will be provided later.
 
 ![](CONFIG-CPU.png){width="800"}
 
+### MAIN TASK STACK SIZE Configuration
+
+`Main Task Stack Size` configuration. Type `main task stack` in the search bar and press Enter. Change the stack size to 8192.
+
+![](CONFIG-STACK.png){width="800"}
+
 ### FREERTOS Configuration
 
 `FREERTOS` configuration. Type `freertos` in the search bar and press Enter. Change the `Tick Rate (Hz)` to `1000`.

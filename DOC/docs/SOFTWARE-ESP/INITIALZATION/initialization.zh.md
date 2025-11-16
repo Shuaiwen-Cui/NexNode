@@ -79,6 +79,12 @@
 
 ![](CONFIG-FREERTOS.png){width="800"}
 
+### 主任务栈大小配置
+
+修改主任务栈大小。在搜索栏中输入 main task stack 并按 Enter。将栈大小修改为 8192。
+
+![](CONFIG-STACK.png){width="800"}
+
 ### 分区表修改
 
 分区表修改可以通过两种方式完成：
