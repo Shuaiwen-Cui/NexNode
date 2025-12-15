@@ -5,18 +5,18 @@ cmake_minimum_required(VERSION 3.5)
 
 file(MAKE_DIRECTORY
   "/home/cshwstem/esp/esp-idf6/esp-idf/components/bootloader/subproject"
-  "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-Copy/build/bootloader"
-  "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-Copy/build/bootloader-prefix"
-  "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-Copy/build/bootloader-prefix/tmp"
-  "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-Copy/build/bootloader-prefix/src/bootloader-stamp"
-  "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-Copy/build/bootloader-prefix/src"
-  "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-Copy/build/bootloader-prefix/src/bootloader-stamp"
+  "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-HomeWifi/build/bootloader"
+  "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-HomeWifi/build/bootloader-prefix"
+  "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-HomeWifi/build/bootloader-prefix/tmp"
+  "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-HomeWifi/build/bootloader-prefix/src/bootloader-stamp"
+  "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-HomeWifi/build/bootloader-prefix/src"
+  "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-HomeWifi/build/bootloader-prefix/src/bootloader-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-Copy/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
+    file(MAKE_DIRECTORY "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-HomeWifi/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-Copy/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "/home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-HomeWifi/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
 endif()

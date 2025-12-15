@@ -1,4 +1,4 @@
-# Install script for directory: /home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-Copy/driver/node_rtc
+# Install script for directory: /home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-HomeWifi/driver/node_rtc
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

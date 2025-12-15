@@ -1,4 +1,4 @@
-/* * Data converted from /home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-Copy/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from /home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-HomeWifi/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 #if !defined (__APPLE__) && !defined (__linux__)

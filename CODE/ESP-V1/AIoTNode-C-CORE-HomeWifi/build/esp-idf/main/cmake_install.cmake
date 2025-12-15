@@ -1,4 +1,4 @@
-# Install script for directory: /home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-Copy/main
+# Install script for directory: /home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-HomeWifi/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

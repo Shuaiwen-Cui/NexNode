@@ -17,4 +17,4 @@ set confirm off
 set confirm on
 
 # Load application symbols
-file /home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-Copy/build/bootloader/bootloader.elf
+file /home/cshwstem/CSW/NexNode/CODE/ESP-V1/AIoTNode-C-CORE-HomeWifi/build/bootloader/bootloader.elf
