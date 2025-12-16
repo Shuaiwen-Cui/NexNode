@@ -24,6 +24,7 @@ set(include_dirs
 
 set(requires
     driver
+    esp_driver_gpio
     node_led
 )
 
