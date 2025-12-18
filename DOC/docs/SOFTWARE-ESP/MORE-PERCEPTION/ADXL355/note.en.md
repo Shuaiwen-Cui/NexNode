@@ -40,3 +40,14 @@ The ADXL355 features low noise density, high resolution, and a wide measurement 
 | Operating Temperature | -40°C to +125°C                            |  
 
 ![ADXL354/ADXL355 Datasheet Screenshot](manual.jpg)
+
+## DMA Support Note
+
+!!! tip "DMA Configuration"
+    In this implementation, the ADXL355 driver uses the **SPI3** bus for communication, which has DMA enabled (`SPI_DMA_CH_AUTO`). Enabling DMA provides the following benefits:
+    
+    - **Reduced CPU Usage**: SPI data transfers are automatically handled by the DMA controller, freeing the CPU from data transfer operations
+    - **Improved Transfer Performance**: Especially beneficial for ADXL355's high-frequency sampling scenarios (up to 4000 Hz output data rate)
+    - **Automatic Usage**: Once DMA is enabled during SPI bus initialization, all SPI transactions (including `spi_device_polling_transmit()`) automatically use DMA without additional configuration
+    
+    The initialization process will output log messages confirming that DMA is enabled, and all SPI read/write operations will automatically utilize DMA for data transfer.

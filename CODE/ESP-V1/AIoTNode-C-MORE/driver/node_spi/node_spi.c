@@ -158,6 +158,7 @@ extern "C"
      * @brief       Initialize SPI3
      * @param       None
      * @retval      None
+     * @note        DMA is enabled for improved performance and reduced CPU usage
      */
     void spi3_init(void)
     {
@@ -172,9 +173,12 @@ extern "C"
         spi_bus_conf.quadhd_io_num = -1;               /* SPI hold signal pin, not enabled */
         spi_bus_conf.max_transfer_sz = 1024;           /* Configure maximum transfer size in bytes */
 
-        /* Initialize SPI bus */
-        ret = spi_bus_initialize(SPI3_HOST, &spi_bus_conf, SPI_DMA_DISABLED); /* SPI bus initialization */
+        /* Initialize SPI bus with DMA enabled for ADXL355 sensor */
+        /* DMA reduces CPU usage and improves performance for high-frequency sampling */
+        ret = spi_bus_initialize(SPI3_HOST, &spi_bus_conf, SPI_DMA_CH_AUTO); /* SPI bus initialization with DMA */
         ESP_ERROR_CHECK(ret);                                                /* Check parameter values */
+        
+        ESP_LOGI("SPI3", "SPI3 initialized with DMA enabled (SPI_DMA_CH_AUTO)");
     }
 
     /**

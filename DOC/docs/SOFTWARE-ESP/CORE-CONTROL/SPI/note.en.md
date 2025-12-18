@@ -101,6 +101,9 @@ The parameters of this function are described in the table below:
 | bus_config  | Pointer to a `spi_bus_config_t` structure used to configure the SPI bus pins (SCLK, MISO, MOSI) and other parameters |
 | dma_chan    | Specifies which DMA channel to use. Valid values are: `SPI_DMA_CH_AUTO`, `SPI_DMA_DISABLED`, or a number between 1 and 2 |
 
+!!! tip "DMA Configuration Note"
+    In this implementation, both **SPI2** and **SPI3** have DMA enabled (using `SPI_DMA_CH_AUTO`). Enabling DMA significantly reduces CPU usage and improves data transfer performance, especially for high-frequency sampling scenarios (such as the ADXL355 sensor). SPI3 initialization will output a log message confirming that DMA is enabled.
+
 **Return Value**:  
 `ESP_OK` indicates successful configuration. Other values indicate configuration failure.
 

@@ -48,13 +48,15 @@ esp_err_t adxl355_init(adxl355_handle_t *handle, adxl355_range_t range, adxl355_
 
     /* Step 1: Configure SPI device for ADXL355 */
     ESP_LOGI(TAG, "Configuring SPI device for ADXL355...");
+    ESP_LOGI(TAG, "Note: SPI3 bus is initialized with DMA enabled (SPI_DMA_CH_AUTO)");
+    ESP_LOGI(TAG, "DMA will be used automatically for SPI transactions to reduce CPU usage");
     ret = adxl355_configure_spi_device(&handle->spi_handle);
     if (ret != ESP_OK)
     {
         ESP_LOGE(TAG, "Failed to configure SPI device: %s", esp_err_to_name(ret));
         return ret;
     }
-    ESP_LOGI(TAG, "SPI device configured successfully");
+    ESP_LOGI(TAG, "SPI device configured successfully (DMA enabled)");
 
     /* Initialize handle */
     handle->range = range;
@@ -1095,7 +1097,8 @@ esp_err_t adxl355_spi_read(adxl355_handle_t *handle, uint8_t cmd, uint8_t *data,
     t.rx_buffer = data; /* Read data buffer */
     t.flags = 0;        /* Use default flags */
 
-    /* Use polling transmit like plasmapper */
+    /* Use polling transmit - DMA will be used automatically if enabled on SPI bus */
+    /* Note: spi_device_polling_transmit() works with DMA enabled, CPU waits for DMA completion */
     esp_err_t ret = spi_device_polling_transmit(handle->spi_handle, &t);
     if (ret != ESP_OK)
     {

@@ -102,6 +102,9 @@ esp_err_t spi_bus_initialize(spi_host_device_t host_id,
 |bus_config | 指向 spi_bus_config_t 结构体的指针，用于配置 SPI 总线的SCLK、MISO、MOSI 等引脚以及其他参数 |
 |dma_chan | 指定使用哪个 DMA 通道。有效值为：SPI_DMA_CH_AUTO，SPI_DMA_DISABLED 或 1 至 2 之间的数字 |
 
+!!! tip "DMA 配置说明"
+    在本实现中，**SPI2** 和 **SPI3** 均启用了 DMA（使用 `SPI_DMA_CH_AUTO`）。DMA 的启用可以显著降低 CPU 占用率，提高数据传输性能，特别适用于高频采样场景（如 ADXL355 传感器）。SPI3 初始化时会输出日志信息确认 DMA 已启用。
+
 返回值：ESP_OK 配置成功。其他配置失败。
 
 该函数使用 spi_bus_config_t 类型的结构体变量传入，笔者此处列举了我们需要用到的结构体，该结构体的定义如下所示：
