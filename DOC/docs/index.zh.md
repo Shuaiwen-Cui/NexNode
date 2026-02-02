@@ -6,7 +6,9 @@
 
 "Nex" 源自 "Next" 和 "Nexus"，意味着下一代IoT设备和物理世界与数字世界之间的连接。
 
-![封面](cover.jpg)
+![cover](Extension-Board.png)
+
+![cover](Base-Board.png)
 
 ## 路线图
 
