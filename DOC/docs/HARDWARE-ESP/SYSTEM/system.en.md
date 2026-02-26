@@ -1,33 +1,50 @@
 # SYSTEM
 
 !!! warning "Note"
-    The hardware section is still under design and development. All content is for reference only and may be adjusted in the future based on actual conditions.
+	The current version is 1.0. Its primary goal is to support scientific research and algorithm validation. There is still a significant gap before real-world field deployment and commercial use. The system will be adjusted and optimized later based on practical requirements and constraints.
 
-## CONTROL SYSTEM
+## Physical Structure
 
-- MCU Chip or Module - ESP32-based
+We use a three-layer board design:
 
-## PERCEPTION SYSTEM
+- Top Layer - Expansion Board: Provides various interfaces and expansion features, supporting connections to multiple sensors and actuators.
+- Middle Layer - Main Control Board: Equipped with an ESP32S3 chip for core processing and control, and also provides common baseline functions such as storage and basic status feedback.
+- Bottom Layer - Power Board: Provides stable power for the entire system, supports both battery power and wired power, and includes power management to optimize energy consumption and extend battery life. (This board is currently sourced directly from Waveshare's power management products, and may be customized later based on actual needs.)
 
-- Temperature and Humidity
+## System Architecture
+
+The system architecture is divided into the following parts:
+
+### Main Control System
+
+- Microcontroller chip or module - based on ESP32S3
+
+### Sensing System
+
+- Temperature and humidity
 - Acceleration
-- Sound
-- Image
+- Sound (optional)
+- Image (optional)
 
-## COMMUNICATION SYSTEM
+### Communication System
 
 - Wi-Fi
-- Bluetooth - Low Energy
-- 2.4G Wireless Communication
-- Cellular Network - Low Power (Cat-M1/NB-IoT)
+- Bluetooth - low power
+- 2.4G wireless communication
+- Cellular network - low power (Cat-M1/NB-IoT) (optional)
 
-## ACTUATION SYSTEM
+### Actuation System
 
-- LED/RGBLED
-- Buzzer
-- Display
+- LED/RGB LED
+- Buzzer (optional)
+- Display (optional)
 
-## POWER SYSTEM
+### Power System
 
-- Battery Power Management
-- Power Management
+- Battery/wired power supply
+- Power management
+
+### Enclosure System
+
+- Enclosure
+- Mounting system design
