@@ -12,10 +12,62 @@ Official Reference
 
 </div>
 
-## CORE BOARD ATK DNESP32S3M
+## BASE BOARD
 
-![](ATK-DNESP32S3M_F.jpg){width=100%}
-![](ATK-DNESP32S3M_B.jpg){width=100%}
+### Main Controller
 
-![](ATK-DNESP32S3M_CORE_CORE.jpg){width=100%}
-![](ATK-DNESP32S3M_CORE_PERIPHERAL.jpg){width=100%}
+![](MCU.png){width=100%}
+
+### Connector
+
+![](HEADER-BASE.png){width=100%}
+
+### Linear Regulator
+
+![](LDO.png){width=100%}
+
+### LED Indicator
+
+![](LED.png){width=100%}
+
+### TF Card Slot
+
+![](TF-CARD.png){width=100%}
+
+### Button
+
+![](KEY.png){width=100%}
+
+### USB Type-C Interface - Power
+
+![](USB-POWER.png){width=100%}
+
+### USB Type-C Interface - UART
+
+![](USB-USART.png){width=100%}
+
+### Voltage Measurement Circuit
+
+![](VOLTAGE-MEASUREMENT.png){width=100%}
+
+### Auto Download Circuit
+
+![](AUTO-PROGRAM.png){width=100%}
+
+## EXTENSION BOARD
+
+### Connector
+
+![](HEADER-EXTENSION.png){width=100%}
+
+### Sentinel Sensor
+
+![](SENTRY-ADXL367.png){width=100%}
+
+### Primary Sensor
+
+![](WORKING-ADXL355.png){width=100%}
+
+### RGB LED Indicator
+
+![](RGB-LED.png){width=100%}

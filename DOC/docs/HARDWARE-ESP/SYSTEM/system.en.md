@@ -1,15 +1,18 @@
 # SYSTEM
 
+!!! TIP "Note"
+    Note that currently the hardware and software design are being developed separately and simultaneously, and the software part is currently being developed based on existing ESP32 development boards on the market, which will be adapted to our designed hardware platform in the future.
+
 !!! warning "Note"
 	The current version is 1.0. Its primary goal is to support scientific research and algorithm validation. There is still a significant gap before real-world field deployment and commercial use. The system will be adjusted and optimized later based on practical requirements and constraints.
 
 ## Physical Structure
 
-We use a three-layer board design:
+We use a three-board design, which are:
 
-- Top Layer - Expansion Board: Provides various interfaces and expansion features, supporting connections to multiple sensors and actuators.
-- Middle Layer - Main Control Board: Equipped with an ESP32S3 chip for core processing and control, and also provides common baseline functions such as storage and basic status feedback.
-- Bottom Layer - Power Board: Provides stable power for the entire system, supports both battery power and wired power, and includes power management to optimize energy consumption and extend battery life. (This board is currently sourced directly from Waveshare's power management products, and may be customized later based on actual needs.)
+- Extension Board: Provides various interfaces and expansion functions, supporting the connection of multiple sensors and actuators.
+- Main Control Board: Equipped with the ESP32S3 chip, responsible for the core processing and control of the system, while also providing common basic functions such as storage and basic status feedback.
+- Power Board: Responsible for providing stable power supply to the entire system, supporting both battery and wired power supply, and equipped with power management functions to optimize energy consumption and extend battery life. (This board directly purchases the power management board from Waveshare Electronics, and may be custom-designed later based on actual needs.)
 
 ## System Architecture
 
@@ -21,7 +24,7 @@ The system architecture is divided into the following parts:
 
 ### Sensing System
 
-- Temperature and humidity
+- Temperature
 - Acceleration
 - Sound (optional)
 - Image (optional)

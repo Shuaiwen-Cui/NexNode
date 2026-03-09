@@ -30,3 +30,28 @@ From a software architecture perspective, an AIoT node can be divided into the f
 - Driver Layer: Hardware drivers
 - Middleware: Provides common functions and services
 - Application Layer: Specific applications and services
+
+## PROJECT CONTENT
+
+### Hardware Design
+
+The hardware part includes:
+
+- System design
+- Component selection
+- Schematic design
+- PCB design
+- Mechanical design (enclosure, structural parts, etc.)
+
+### Software Design
+
+The software part includes:
+
+- ESP32 simple tutorial
+- Initialization
+- Core functions
+- Peripheral functions, etc.
+
+### Wireless Sensor Network Functionality
+
+Development of wireless sensor network functionality

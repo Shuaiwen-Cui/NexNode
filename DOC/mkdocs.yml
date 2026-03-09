@@ -119,8 +119,11 @@ plugins:
             HARDWARE-ESP32: 硬件-ESP32
             SYSTEM: 系统设计
             COMPONENTS: 元器件选择
+            MCU: 微控制器
+            SENSOR: 传感器
             SCHEMATIC: 原理图
             LAYOUT: PCB布局
+            MECHANICAL: 机械设计
             SOFTWARE-ESP32: 软件-ESP32
             ESP32_TUTORIAL: ESP32教程
             TUTORIAL: 教程
@@ -315,11 +318,14 @@ nav:
       - SYSTEM:
           - "HARDWARE-ESP/SYSTEM/system.md"
       - COMPONENTS:
-          - "HARDWARE-ESP/COMPONENTS/components.md"
+          - MCU: "HARDWARE-ESP/COMPONENTS/mcu.md"
+          - SENSOR: "HARDWARE-ESP/COMPONENTS/sensor.md"
       - SCHEMATIC:
           - "HARDWARE-ESP/SCHEMATIC/schematic.md"
       - LAYOUT:
           - "HARDWARE-ESP/LAYOUT/layout.md"
+      - MECHANICAL:
+          - "HARDWARE-ESP/MECHANICAL/mechanical.md"
   - SOFTWARE-ESP32:
       - ESP32_TUTORIAL:
           - TUTORIAL:

@@ -12,10 +12,62 @@
 
 </div>
 
-## 核心板 正点原子 DNESP32S3M
+## 基座板
 
-![](ATK-DNESP32S3M_F.jpg){width=100%}
-![](ATK-DNESP32S3M_B.jpg){width=100%}
+### 主控 
 
-![](ATK-DNESP32S3M_CORE_CORE.jpg){width=100%}
-![](ATK-DNESP32S3M_CORE_PERIPHERAL.jpg){width=100%}
+![](MCU.png){width=100%}
+
+### 连接器
+
+![](HEADER-BASE.png){width=100%}
+
+### 线性稳压器
+
+![](LDO.png){width=100%}
+
+### LED指示灯
+
+![](LED.png){width=100%}
+
+### TF卡座
+
+![](TF-CARD.png){width=100%}
+
+### 按键
+
+![](KEY.png){width=100%}
+
+### USB-TypeC接口 - 电源
+
+![](USB-POWER.png){width=100%}
+
+### USB-TypeC接口 - 串口
+
+![](USB-USART.png){width=100%}
+
+### 电压测量电路
+
+![](VOLTAGE-MEASUREMENT.png){width=100%}
+
+### 自动下载电路
+
+![](AUTO-PROGRAM.png){width=100%}
+
+## 扩展板
+
+### 连接器
+
+![](HEADER-EXTENSION.png){width=100%}
+
+### 哨兵传感器
+
+![](SENTRY-ADXL367.png){width=100%}
+
+### 主力传感器
+
+![](WORKING-ADXL355.png){width=100%}
+
+### RGB LED指示灯
+
+![](RGB-LED.png){width=100%}
