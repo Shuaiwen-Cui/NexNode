@@ -17,6 +17,7 @@ copyright: Copyright &copy; 2025 ~ now | 🚀 Shuaiwen Cui (Shaun)
 # Configuration
 theme:
   name: material
+  custom_dir: material/overrides
   language: en
   logo: static/images/mainboard.png
   features:
@@ -256,7 +257,6 @@ extra_javascript:
   # - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
   # - javascripts/mathjax.js
   # For <model-viewer> web component (3D models)
-  - https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   # - javascripts/embed-pdf.js

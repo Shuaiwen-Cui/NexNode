@@ -1,0 +1,10 @@
+{#-
+  Inject global scripts (stable, theme-level).
+-#}
+{% extends "base.html" %}
+
+{% block scripts %}
+  {{ super() }}
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+{% endblock %}
+

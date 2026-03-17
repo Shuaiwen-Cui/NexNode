@@ -1,7 +1,7 @@
 # BATTERY MANAGEMENT SYSTEM
 
 <model-viewer
-    src="../bms.glb"
+    src="../../../static/models/bms.glb"
     alt="BMS 3D model"
     camera-controls
     auto-rotate
@@ -11,10 +11,10 @@
     shadow-intensity="0.6"
     exposure="0.5"
     environment-image="legacy"
-    orientation="0deg 0deg 60deg"
+    orientation="0deg 0deg 30deg"
     ar
     ar-modes="webxr scene-viewer quick-look"
-    style="width: 100%; height: 600px;">
+    style="display: block; width: 100%; height: 600px;">
 </model-viewer>
 
 <div class="grid cards" markdown>
