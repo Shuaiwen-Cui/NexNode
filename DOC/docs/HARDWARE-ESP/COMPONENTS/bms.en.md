@@ -1,0 +1,28 @@
+# BATTERY MANAGEMENT SYSTEM
+
+<model-viewer
+    src="../bms.glb"
+    alt="BMS 3D model"
+    camera-controls
+    auto-rotate
+    auto-rotate-delay="3000"
+    rotation-per-second="1deg"
+    interaction-prompt="none"
+    shadow-intensity="0.6"
+    exposure="0.5"
+    environment-image="legacy"
+    orientation="0deg 0deg 60deg"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    style="width: 100%; height: 600px;">
+</model-viewer>
+
+<div class="grid cards" markdown>
+
+-   :material-file:{ .lg .middle } __BMS Product Information__
+
+    ---
+
+    [:octicons-arrow-right-24: <a href="https://seengreat.com/wiki/161/" target="_blank"> Product Information </a>](#)
+
+</div>

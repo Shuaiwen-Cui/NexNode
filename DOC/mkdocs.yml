@@ -121,6 +121,7 @@ plugins:
             COMPONENTS: 元器件选择
             MCU: 微控制器
             SENSOR: 传感器
+            BMS: 电池管理系统
             SCHEMATIC: 原理图
             LAYOUT: PCB布局
             MECHANICAL: 机械设计
@@ -254,6 +255,8 @@ extra_javascript:
   # - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js  
   # - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
   # - javascripts/mathjax.js
+  # For <model-viewer> web component (3D models)
+  - https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   # - javascripts/embed-pdf.js
@@ -320,6 +323,7 @@ nav:
       - COMPONENTS:
           - MCU: "HARDWARE-ESP/COMPONENTS/mcu.md"
           - SENSOR: "HARDWARE-ESP/COMPONENTS/sensor.md"
+          - BMS: "HARDWARE-ESP/COMPONENTS/bms.md"
       - SCHEMATIC:
           - "HARDWARE-ESP/SCHEMATIC/schematic.md"
       - LAYOUT:

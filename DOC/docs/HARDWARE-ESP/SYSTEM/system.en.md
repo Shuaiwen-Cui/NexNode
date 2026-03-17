@@ -12,7 +12,7 @@ We use a three-board design, which are:
 
 - Extension Board: Provides various interfaces and expansion functions, supporting the connection of multiple sensors and actuators.
 - Main Control Board: Equipped with the ESP32S3 chip, responsible for the core processing and control of the system, while also providing common basic functions such as storage and basic status feedback.
-- Power Board: Responsible for providing stable power supply to the entire system, supporting both battery and wired power supply, and equipped with power management functions to optimize energy consumption and extend battery life. (This board directly purchases the power management board from Waveshare Electronics, and may be custom-designed later based on actual needs.)
+- Power Board: Responsible for providing stable power supply to the entire system, supporting both battery and wired power supply, and equipped with power management functions to optimize energy consumption and extend battery life. (This board directly purchases third-party power management board from Waveshare Electronics, and may be custom-designed later based on actual needs.)
 
 ## System Architecture
 
@@ -26,21 +26,21 @@ The system architecture is divided into the following parts:
 
 - Temperature
 - Acceleration
-- Sound (optional)
-- Image (optional)
+<!-- - Sound (optional)
+- Image (optional) -->
 
 ### Communication System
 
 - Wi-Fi
 - Bluetooth - low power
 - 2.4G wireless communication
-- Cellular network - low power (Cat-M1/NB-IoT) (optional)
+<!-- - Cellular network - low power (Cat-M1/NB-IoT) (optional) -->
 
 ### Actuation System
 
 - LED/RGB LED
-- Buzzer (optional)
-- Display (optional)
+<!-- - Buzzer (optional)
+- Display (optional) -->
 
 ### Power System
 

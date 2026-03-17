@@ -14,6 +14,22 @@
 
 *图 3. ADXL367 封装与引脚信息*
 
+<div class="grid cards" markdown>
+
+-   :material-file:{ .lg .middle } __ADXL367产品详情__
+
+    ---
+
+    [:octicons-arrow-right-24: <a href="https://www.analog.com/en/products/adxl367.html" target="_blank"> 产品详情 </a>](#)
+
+-   :material-file:{ .lg .middle } __ADXL367说明书__
+
+    ---
+
+    [:octicons-arrow-right-24: <a href="https://www.analog.com/media/en/technical-documentation/data-sheets/adxl367.pdf" target="_blank"> 说明书 </a>](#)
+
+</div>
+
 ## 加速度计 - ADXL355
 
 ![](ADXL355.png){width="400px"}
@@ -27,6 +43,22 @@
 ![](ADXL355-INFO.png){width="800px"}
 
 *图 6. ADXL355 封装与引脚信息*
+
+<div class="grid cards" markdown>
+
+-   :material-file:{ .lg .middle } __ADXL355产品详情__
+
+    ---
+
+    [:octicons-arrow-right-24: <a href="https://www.analog.com/en/products/adxl355.html" target="_blank"> 产品详情 </a>](#)
+
+-   :material-file:{ .lg .middle } __ADXL355说明书__
+
+    ---
+
+    [:octicons-arrow-right-24: <a href="https://www.analog.com/media/en/technical-documentation/data-sheets/adxl354_adxl355.pdf" target="_blank"> 说明书 </a>](#)
+
+</div>
 
 ## ADXL367 / ADXL355 关键参数对比
 

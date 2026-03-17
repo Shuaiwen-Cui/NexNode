@@ -14,6 +14,22 @@
 
 *Figure 3. ADXL367 package and pin information*
 
+<div class="grid cards" markdown>
+
+-   :material-file:{ .lg .middle } __ADXL367 Product Information__
+
+    ---
+
+    [:octicons-arrow-right-24: <a href="https://www.analog.com/en/products/adxl367.html" target="_blank"> Product Information </a>](#)
+
+-   :material-file:{ .lg .middle } __ADXL367 Data Sheet__
+
+    ---
+
+    [:octicons-arrow-right-24: <a href="https://www.analog.com/media/en/technical-documentation/data-sheets/adxl367.pdf" target="_blank"> Data Sheet </a>](#)
+
+</div>
+
 ## Accelerometer - ADXL355
 
 ![](ADXL355.png){width="400px"}
@@ -27,6 +43,22 @@
 ![](ADXL355-INFO.png){width="800px"}
 
 *Figure 6. ADXL355 package and pin information*
+
+<div class="grid cards" markdown>
+
+-   :material-file:{ .lg .middle } __ADXL355 Product Information__
+
+    ---
+
+    [:octicons-arrow-right-24: <a href="https://www.analog.com/en/products/adxl355.html" target="_blank"> Product Information </a>](#)
+
+-   :material-file:{ .lg .middle } __ADXL355 Data Sheet__
+
+    ---
+
+    [:octicons-arrow-right-24: <a href="https://www.analog.com/media/en/technical-documentation/data-sheets/adxl354_adxl355.pdf" target="_blank"> Data Sheet </a>](#)
+
+</div>
 
 ## ADXL367 / ADXL355 Key Parameter Comparison
 
