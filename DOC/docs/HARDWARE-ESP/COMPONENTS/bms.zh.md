@@ -4,6 +4,8 @@
     src="../../../../static/models/bms.glb"
     alt="BMS 3D model"
     camera-controls
+    loading="lazy"
+    reveal="interaction"
     auto-rotate
     auto-rotate-delay="3000"
     rotation-per-second="1deg"
