@@ -50,3 +50,11 @@ The Solar Energy Manager A is a solar power management module supporting chargin
     [:octicons-arrow-right-24: <a href="https://seengreat.com/wiki/161/" target="_blank"> View </a>](#)
 
 </div>
+
+## Mounting Design
+
+- **PCB Holes** As shown in the image above, the PCB has mounting holes with a diameter of 3mm for M2.5 screw installation.
+
+- **Screws** The screws used are M2.5x5, with an outer diameter of 2.5mm and a length of 5mm, designed to be used with heat-set inserts.
+
+- **Heat-Set Inserts** The heat-set inserts are embedded in the 3D printed parts. During installation, the insert is heated and pressed into the pre-designed hole to ensure a secure fit. The specifications for the heat-set insert are M2.5x4x4, with an inner diameter of 2.5mm, a height of 4mm, and an outer diameter of 4mm.

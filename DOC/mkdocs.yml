@@ -123,6 +123,7 @@ plugins:
             MCU: 微控制器
             SENSOR: 传感器
             BMS: 电池管理系统
+            BATTERY: 电池
             SCHEMATIC: 原理图
             LAYOUT: PCB布局
             MECHANICAL: 机械设计
@@ -324,6 +325,7 @@ nav:
           - MCU: "HARDWARE-ESP/COMPONENTS/mcu.md"
           - SENSOR: "HARDWARE-ESP/COMPONENTS/sensor.md"
           - BMS: "HARDWARE-ESP/COMPONENTS/bms.md"
+          - BATTERY: "HARDWARE-ESP/COMPONENTS/battery.md"
       - SCHEMATIC:
           - "HARDWARE-ESP/SCHEMATIC/schematic.md"
       - LAYOUT:
