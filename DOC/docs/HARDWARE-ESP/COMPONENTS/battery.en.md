@@ -4,22 +4,7 @@ The battery is an essential component for the SHM node. It provides power to the
 
 ## Battery Model
 
-Currently, we have selected the 18650 lithium-ion battery as the power source for the SHM node. This type of battery has a high energy density and a long lifespan, making it suitable for our application needs.
+Currently, we have selected lithium-ion batteries as the power source for the SHM node. These batteries have a high energy density and a long lifespan, making them suitable for our application needs. The selected model takes into account the size, capacity, and safety of the battery to meet the operational requirements of the node.
 
-![18650](18650.png){width=100%}
+![](battert-picture.png){width=100}
 
-## Battery Holder
-
-For design considerations, we have chosen a freely splicable battery holder for design assembly. The design of the battery holder allows us to increase or decrease the number of batteries as needed to meet different capacity requirements. At the same time, the battery holder also provides good protection to ensure that the batteries are safe and reliable during use.
-
-![Battery Holder](look.png){width=100%}
-
-*Battery Holder Appearance*
-
-![Battery Holder Dimensions](dim_box.png){width=100%}
-
-*Battery Holder Dimensions*
-
-![Battery Holder Lid Dimensions](dim_lid.png){width=100%}
-
-*Battery Holder Lid Dimensions*
