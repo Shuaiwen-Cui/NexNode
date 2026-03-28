@@ -1,20 +1,29 @@
 # PCB LAYOUT
 
-!!! INFO 
-    This section is still under design and adjustment. The following images are preliminary versions of the PCB layout diagrams, which will be updated and improved as the design progresses.
+## MAIN BOARD
 
-## Base Board
+![](MAIN BOARD.png){width=100%}
 
-![](BASE-PERSPECTIVE.png){width="800px"}
-*Figure 1. Base Board 3D View*
+*Main board*
 
-![](BASE-TOP.png){width="800px"}
-*Figure 2. Base Board Top Layout*
+![](MAIN BOARD - TOP.png){width=100%}
 
-## Extension Board
+*Main board (top view)*
 
-![](EXTENSION-PERSPECTIVE.png){width="800px"}
-*Figure 3. Extension Board 3D View*
+![](MAIN BOARD - BOTTOM.png){width=100%}
 
-![](EXTENSION-TOP.png){width="800px"}
-*Figure 4. Extension Board Top Layout*
+*Main board (bottom view)*
+
+## EXTENSION BOARD
+
+![](EXTENSION BOARD.png){width=100%}
+
+*Extension board*
+
+![](EXTENSION BOARD - TOP.png){width=100%}
+
+*Extension board (top view)*
+
+![](EXTENSION BOARD - BOTTOM.png){width=100%}
+
+*Extension board (bottom view)*

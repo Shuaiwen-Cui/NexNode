@@ -10,9 +10,16 @@
 
 We use a three-board design, which are:
 
-- Extension Board: Provides various interfaces and expansion functions, supporting the connection of multiple sensors and actuators.
-- Main Control Board: Equipped with the ESP32S3 chip, responsible for the core processing and control of the system, while also providing common basic functions such as storage and basic status feedback.
-- Power Board: Responsible for providing stable power supply to the entire system, supporting both battery and wired power supply, and equipped with power management functions to optimize energy consumption and extend battery life. (This board directly purchases third-party power management board from Waveshare Electronics, and may be custom-designed later based on actual needs.)
+### Power Board
+Responsible for providing stable power supply to the entire system, supporting both battery and wired power supply, and featuring power management functions to optimize energy consumption and extend battery life. (This board is directly purchased from a third-party power management board, and may be custom-designed later based on actual needs)
+
+### Main Control Board
+
+Equipped with the ESP32S3 chip, responsible for the core processing and control of the system, while also providing common basic functions such as storage and basic status feedback. The communication functions are also provided by the main control board, supporting common communication methods such as Wi-Fi and Bluetooth.
+
+### Expansion Board
+
+Provides various interfaces and expansion functions, supporting the connection of various sensors and actuators. The expansion board can be redesigned according to task needs to accommodate different sensors and actuators.
 
 ## System Architecture
 
