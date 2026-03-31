@@ -12,7 +12,14 @@
 
 </div>
 
-## 基座板
+本项目原理图下载：
+
+<a href="http://www.cuishuaiwen.com:9100/HARDWARE-ESP/SCHEMATIC/SCH_Main%20Board_2026-03-28.pdf" target="_blank">📜 主控板 </a>
+
+
+<a href="http://www.cuishuaiwen.com:9100/HARDWARE-ESP/SCHEMATIC/SCH_Extension%20Board_2026-03-28.pdf" target="_blank">📜 扩展板 </a>
+
+## 主控板
 
 ### 主控制器
 
@@ -102,7 +109,7 @@
 
 ### 电压测量电路
 
-![](VOLTAGE-MEASURE.png){width=100%}
+![](VOLTAGE-MEASUREMENT.png){width=100%}
 
 *电压测量电路*
 

@@ -12,7 +12,14 @@ Official Reference
 
 </div>
 
-## BASE BOARD
+Schematics downloading links:
+
+<a href="http://www.cuishuaiwen.com:9100/HARDWARE-ESP/SCHEMATIC/SCH_Main%20Board_2026-03-28.pdf" target="_blank">📜 Main Board </a>
+
+
+<a href="http://www.cuishuaiwen.com:9100/HARDWARE-ESP/SCHEMATIC/SCH_Extension%20Board_2026-03-28.pdf" target="_blank">📜 Extension Board </a>
+
+## MAIN BOARD
 
 ### Main Controller
 
@@ -102,7 +109,7 @@ As shown in the figure, we designed a power input terminal and its supporting ci
 
 ### Voltage Measurement Circuit
 
-![](VOLTAGE-MEASURE.png){width=100%}
+![](VOLTAGE-MEASUREMENT.png){width=100%}
 
 *Voltage measurement circuit*
 

@@ -416,8 +416,8 @@ nav:
       - COMMUNICATION:
           - ESP-NOW:
               - ABC: "WSN-ESP/COMMUNICATION/ESP-NOW/abc.md"
-  - HARDWARE-STM32:
-      - CORE-BOARD: "HARDWARE-STM/CORE-BOARD/core-board.md"
+  # - HARDWARE-STM32:
+  #     - CORE-BOARD: "HARDWARE-STM/CORE-BOARD/core-board.md"
   - RELEASE:
       - ESP32:
           - V1: "RELEASE/esp-v1.md"

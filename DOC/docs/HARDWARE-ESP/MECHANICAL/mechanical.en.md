@@ -4,19 +4,19 @@ Mechanical design largely determines the flexibility and suitability of the node
 
 ![](Overview.png){width=100%}
 
-*Mechanical design overview*
+*Mechanical design overview: (a) overall dimension diagram; (b) key component annotation diagram*
 
 The figure above shows the overall mechanical design of the node. We use a robust and durable enclosure to protect internal components, while reserving sufficient space for various interfaces and functional modules. The enclosure adopts a modular design to make maintenance and upgrades easier. The figure also shows node dimensions and the positions of key components. During design, we carefully considered space utilization to ensure enough room between components for heat dissipation and maintenance. At the same time, the node size was optimized to fit different installation environments and application scenarios.
 
 ![](Orthogonal.png){width=100%}
 
-*Orthogonal views*
+*Orthogonal views: (a) left view; (b) front view; (c) right view; (d) top view*
 
 The figure above presents orthogonal views of the node, showing its structure and component layout from different angles. With these views, users can more clearly understand internal structure and component positions, which helps with installation, maintenance, and upgrades. The orthogonal views also show the interface layout, including power interfaces, communication interfaces, and other functional interfaces, making connection and use more convenient.
 
 ![](3VIEW.png){width=100%}
 
-*Three-view drawing*
+*Three-view drawing: (a) front view; (b) side view; (c) top view*
 
 The figure above shows the three-view drawing of the node, including front, side, and top views. These views provide detailed dimensions and component positions, helping users better understand the node's structure and design. Through the three-view drawing, users can clearly see the node's form factor, interface arrangement, and internal component locations, which supports installation, maintenance, and upgrades.
 
