@@ -180,8 +180,8 @@ void app_main(void)
 
 然后，确保串口正确，板子设置正确，然后编译并烧录程序。然后，你应该会看到串口输出显示开发板信息和 `Hello-ESP32` 消息。
 
-!!! note "AIoTNode-C-ZERO"
-    这个版本我们命名为AIoTNode-C-ZERO，是因为它是一个非常基础的模板程序，适合初学者入门和理解ESP32的基本功能。
+<!-- !!! note "AIoTNode-C-ZERO"
+    这个版本我们命名为AIoTNode-C-ZERO，是因为它是一个非常基础的模板程序，适合初学者入门和理解ESP32的基本功能。 -->
 
 ## 模板程序 - C++
 
@@ -241,8 +241,10 @@ extern "C" void app_main(void)
 }
 
 ```
-
 然后，确保串口正确，板子设置正确，然后编译并烧录程序。然后，你应该会看到串口输出显示开发板信息和 `Hello-ESP32` 消息。
 
-!!! note "AIoTNode-CPP-ZERO"
-    这个版本我们命名为AIoTNode-CPP-ZERO，其功能与AIoTNode-C-ZERO相同，但使用C++编写，适合喜欢使用C++的开发者。
+<!-- !!! note "AIoTNode-CPP-ZERO"
+    这个版本我们命名为AIoTNode-CPP-ZERO，其功能与AIoTNode-C-ZERO相同，但使用C++编写，适合喜欢使用C++的开发者。 -->
+
+!!! note "AIoTNode-ZERO"
+    这个版本我们命名为AIoTNode-ZERO，代表这是一个非常基础的模板程序，适合初学者入门和理解ESP32的基本功能。无论是使用C还是C++，这个模板程序都可以帮助你快速上手ESP32开发。

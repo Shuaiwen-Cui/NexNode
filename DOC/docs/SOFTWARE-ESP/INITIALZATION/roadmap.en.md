@@ -67,6 +67,25 @@
     - `driver` directory is for driver code
     - `main` directory is for main function code
 
+Ontop of the ZERO template, we have added `application`, `middleware`, and `driver` directories to better organize the code structure. Based on different functionalities, we categorize the code into application layer, middleware layer, and driver layer to improve code maintainability and scalability.
+
+Correspondingly, we need to modify the entire project's `CMakeLists.txt` file to correctly include the code in these directories. Specifically, we need to overwrite the `CMakeLists.txt` with the following content to ensure that the newly added directories can be correctly compiled:
+
+```cmake
+# The following five lines of boilerplate have to be in your project's
+# CMakeLists in this exact order for cmake to work correctly
+cmake_minimum_required(VERSION 3.22)
+
+# Extra components (e.g. driver/node_led): one subfolder with CMakeLists.txt = one component.
+# With no REQUIRES in main/CMakeLists.txt, `main` depends on all built components automatically.
+set(EXTRA_COMPONENT_DIRS "${CMAKE_SOURCE_DIR}/driver" "${CMAKE_SOURCE_DIR}/middleware" "${CMAKE_SOURCE_DIR}/application")
+
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+project(AIoTNode)
+```
+
+In case git does not synchronize empty folders, we have placed an empty `readme.txt` file in each directory. Users can delete this file and add their own code in the corresponding directory.
+
 ## DEVELOPMENT SEQUENCE
 
 !!! tip

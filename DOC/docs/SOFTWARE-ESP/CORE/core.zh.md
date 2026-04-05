@@ -17,12 +17,13 @@
 ```cmake
 # The following five lines of boilerplate have to be in your project's
 # CMakeLists in this exact order for cmake to work correctly
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.22)
+
+# Extra components (e.g. driver/node_led): one subfolder with CMakeLists.txt = one component.
+# With no REQUIRES in main/CMakeLists.txt, `main` depends on all built components automatically.
+set(EXTRA_COMPONENT_DIRS "${CMAKE_SOURCE_DIR}/driver" "${CMAKE_SOURCE_DIR}/middleware" "${CMAKE_SOURCE_DIR}/application")
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-
-set(EXTRA_COMPONENT_DIRS "./driver" "./middleware" "./application")
-
 project(AIoTNode)
 ```
 
@@ -42,30 +43,34 @@ set(include_dirs
     .
 )
 
-# Define required components
-set(requires
-)
+# No REQUIRES: ESP-IDF links `main` against all components in the project (see root CMakeLists.txt).
+# New components under EXTRA_COMPONENT_DIRS do not need to be listed here.
 
 # Register the component
 idf_component_register(
     SRC_DIRS ${src_dirs}
     INCLUDE_DIRS ${include_dirs}
-    REQUIRES ${requires}
 )
 
 # Add compilation options
 # component_compile_options(-ffast-math -O3 -Wno-error=format -Wno-format)
+
 ```
+
+!!! warning "注意"
+    在main文件夹中的makefile最好不要显性写依赖什么关系，如果不写那么默认回滚到整个项目的搜索路径，也就是上面我们设置的`EXTRA_COMPONENT_DIRS`变量中所包含的路径，这样就不需要我们在这里显性地写出依赖关系了，能够让代码结构更加清晰和简洁。
 
 !!! note "说明"
     本项目的核心目标是打造传感器节点，即硬件设计和基础的驱动实现，其实并不会过多涉及中间件和应用层的开发内容。但是为了让项目结构更加完整和规范，并为后续项目提供基础，这里我们依然创建了这中间件和应用层的文件夹。
 
 ## 分支说明
 
-通过同时对AIOT-C-ZERO和AIOT-CPP-ZERO版本进行以上改造，我们可以得到版本AIOT-C-CORE和AIOT-CPP-CORE的项目框架，后续会基于这两个版本进行核心功能的开发。
+<!-- 通过同时对AIOT-C-ZERO和AIOT-CPP-ZERO版本进行以上改造，我们可以得到版本AIOT-C-CORE和AIOT-CPP-CORE的项目框架，后续会基于这两个版本进行核心功能的开发。
 
 - AIOT-C-ZERO -> AIOT-C-CORE
-- AIOT-CPP-ZERO -> AIOT-CPP-CORE
+- AIOT-CPP-ZERO -> AIOT-CPP-CORE -->
+
+至此我们把版本命名为AIoTNode-CORE-BLANK, 因为已经初步具有框架但是还没有填充内容。
 
 ## 组件与模块
 

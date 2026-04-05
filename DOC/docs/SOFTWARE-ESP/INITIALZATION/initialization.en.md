@@ -181,8 +181,8 @@ void app_main(void)
 
 Then, ensure the serial port number is corrrect, the target board is selected, then click the "fire flame" icon to build, flash and monitor the program. Then, you should be able to see the printouts on the serial monitor. 
 
-!!! note "AIoTNode-C-ZERO"
-    This version is named AIoTNode-C-ZERO because it is a very basic template program suitable for beginners to get started and understand the basic functions of the ESP32.
+<!-- !!! note "AIoTNode-C-ZERO"
+    This version is named AIoTNode-C-ZERO because it is a very basic template program suitable for beginners to get started and understand the basic functions of the ESP32. -->
 
 ## TEMPLATE PROGRAM - C++
 
@@ -240,5 +240,8 @@ extern "C" void app_main(void)
 
 Then, ensure the serial port number is correct, the target board is selected, then click the "fire flame" icon to build, flash and monitor the program. Then, you should be able to see the printouts on the serial monitor.
 
-!!! note "AIoTNode-CPP-ZERO"
-    This version is named AIoTNode-CPP-ZERO because it is a very basic template program suitable for beginners to get started and understand the basic functions of the ESP32 using C++.
+<!-- !!! note "AIoTNode-CPP-ZERO"
+    This version is named AIoTNode-CPP-ZERO because it is a very basic template program suitable for beginners to get started and understand the basic functions of the ESP32 using C++. -->
+
+!!! note "AIoTNode-ZERO"
+    This version is named AIoTNode-ZERO, representing a very basic template program suitable for beginners to get started and understand the basic functions of the ESP32. Whether you are using C or C++, this template program can help you quickly get started with ESP32 development.

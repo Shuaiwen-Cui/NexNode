@@ -1,7 +1,7 @@
 # ESP32 开发环境设置
 
 !!! tip
-    在继续之前，强烈建议您阅读官方指南以设置开发环境。官方指南可以在[这里](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/index.html)找到。
+    在继续之前，强烈建议您阅读官方指南以设置开发环境。官方指南可以在[这里](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/index.html)找到。注意，本文档撰写时间通常早于最新官方文档，一切以官方文档为准。
 
 !!! note
     如需在 ESP32 上使用 ESP-IDF，请安装以下软件：

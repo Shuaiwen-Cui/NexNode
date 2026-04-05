@@ -1,7 +1,7 @@
 # ESP32 DEVELOPMENT ENVIRONMENT SETUP
 
 !!! tip
-    You are strongly recommended to read the official guide for setting up the development environment before proceeding. The official guide can be found [here](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/index.html). 
+    You are strongly recommended to read the official guide for setting up the development environment before proceeding. The official guide can be found [here](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/index.html).  Note that the documentation here is usually written before the latest official documentation, so everything is subject to the official documentation.
 
 !!! note
     To start using ESP-IDF on ESP32, install the following software:

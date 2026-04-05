@@ -66,6 +66,25 @@
     - `driver` 目录下放置驱动代码
     - `main` 目录下放置主函数代码
 
+我们在ZERO模板基础上，添加了 `application`、`middleware` 和 `driver` 目录，以更好地组织代码结构。根据功能的不同，我们将代码分为应用层、中间件和驱动层，以提高代码的可维护性和可扩展性。
+
+对应的，需要修改整个项目的 `CMakeLists.txt` 文件，以正确地包含这些目录中的代码。具体来说，需要在 `CMakeLists.txt` 中用以下内容进行覆盖，从而保证上面新添加的目录能够被正确编译：
+
+```cmake
+# The following five lines of boilerplate have to be in your project's
+# CMakeLists in this exact order for cmake to work correctly
+cmake_minimum_required(VERSION 3.22)
+
+# Extra components (e.g. driver/node_led): one subfolder with CMakeLists.txt = one component.
+# With no REQUIRES in main/CMakeLists.txt, `main` depends on all built components automatically.
+set(EXTRA_COMPONENT_DIRS "${CMAKE_SOURCE_DIR}/driver" "${CMAKE_SOURCE_DIR}/middleware" "${CMAKE_SOURCE_DIR}/application")
+
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+project(AIoTNode)
+``` 
+
+友情提示，为了防止git不同步空文件夹，我们在每个目录下都放置了一个 `readme.txt` 的空文件，用户可以删除这个文件并在对应目录下添加自己的代码。
+
 ## 本项目开发顺序
 
 !!! tip

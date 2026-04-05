@@ -463,7 +463,6 @@ extern "C"
 }
 #endif
 ```
-
 ## lcd.h
     
 ```c
@@ -592,7 +591,7 @@ extern "C"
     void lcd_fill(uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, uint16_t color);                                    /* Fill a specific area with a single color */
     void lcd_show_num(uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint8_t size, uint16_t color);                   /* Display a number with len digits */
     void lcd_show_xnum(uint16_t x, uint16_t y, uint32_t num, uint8_t len, uint8_t size, uint8_t mode, uint16_t color);    /* Display an extended number with len digits */
-    void lcd_show_string(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t size, char *p, uint16_t color); /* Display a string */
+    void lcd_show_string(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t size, const char *p, uint16_t color); /* Display a string */
     void lcd_draw_rectangle(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color);                          /* Draw a rectangle */
     void lcd_draw_hline(uint16_t x, uint16_t y, uint16_t len, uint16_t color);                                            /* Draw a horizontal line */
     void lcd_draw_line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);                               /* Draw a straight or slanted line */
@@ -1286,7 +1285,7 @@ extern "C"
      * @param       color        : Color of the string
      * @retval      None
      */
-    void lcd_show_string(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t size, char *p, uint16_t color)
+    void lcd_show_string(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint8_t size, const char *p, uint16_t color)
     {
         uint8_t x0 = x; // Save the initial x-coordinate
         width += x;     // Calculate the maximum x-boundary
@@ -1428,7 +1427,6 @@ extern "C"
 }
 #endif
 ```
-
 
 ## main.c
 

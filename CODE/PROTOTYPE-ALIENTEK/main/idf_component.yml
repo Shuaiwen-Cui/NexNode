@@ -1,4 +1,0 @@
-## ESP-IDF v6+: MQTT is no longer a core component; pull it from the registry.
-## https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/protocols/mqtt.html
-dependencies:
-  espressif/mqtt: "^1.0.0"

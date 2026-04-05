@@ -17,12 +17,13 @@ After completing the above operations, we also need to modify the `CMakeLists.tx
 ```cmake
 # The following five lines of boilerplate have to be in your project's
 # CMakeLists in this exact order for cmake to work correctly
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.22)
+
+# Extra components (e.g. driver/node_led): one subfolder with CMakeLists.txt = one component.
+# With no REQUIRES in main/CMakeLists.txt, `main` depends on all built components automatically.
+set(EXTRA_COMPONENT_DIRS "${CMAKE_SOURCE_DIR}/driver" "${CMAKE_SOURCE_DIR}/middleware" "${CMAKE_SOURCE_DIR}/application")
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-
-set(EXTRA_COMPONENT_DIRS "./driver" "./middleware" "./application")
-
 project(AIoTNode)
 ```
 
@@ -42,20 +43,22 @@ set(include_dirs
     .
 )
 
-# Define required components
-set(requires
-)
+# No REQUIRES: ESP-IDF links `main` against all components in the project (see root CMakeLists.txt).
+# New components under EXTRA_COMPONENT_DIRS do not need to be listed here.
 
 # Register the component
 idf_component_register(
     SRC_DIRS ${src_dirs}
     INCLUDE_DIRS ${include_dirs}
-    REQUIRES ${requires}
 )
 
 # Add compilation options
 # component_compile_options(-ffast-math -O3 -Wno-error=format -Wno-format)
+
 ```
+
+!!! warning "Note"
+    It is best not to explicitly write dependency relationships in the makefile under the main folder. If you do not write them, it will default to the search path of the entire project, which is the path included in the `EXTRA_COMPONENT_DIRS` variable we set above. This way, you do not need to explicitly write out the dependencies here, making the code structure clearer and more concise.
 
 !!! note
     The core goal of this project is to create a sensor node, focusing on hardware design and basic driver implementation, without much involvement in middleware and application layer development. However, to make the project
@@ -63,7 +66,9 @@ idf_component_register(
 
 ## BRANCH DESCRIPTION
 
-By applying the above modifications to both the AIOT-C-ZERO and AIOT-CPP-ZERO versions, we can obtain the AIOT-C-CORE and AIOT-CPP-CORE project frameworks, which will serve as the basis for core functionality development in subsequent projects.
+<!-- By applying the above modifications to both the AIOT-C-ZERO and AIOT-CPP-ZERO versions, we can obtain the AIOT-C-CORE and AIOT-CPP-CORE project frameworks, which will serve as the basis for core functionality development in subsequent projects. -->
+
+For now, we will name this version AIoTNode-CORE-BLANK, as it has a preliminary framework but has not yet been filled with content.
 
 ## COMPONENTS AND MODULES
 
