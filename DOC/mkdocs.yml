@@ -127,6 +127,7 @@ plugins:
             SCHEMATIC: 原理图
             LAYOUT: PCB布局
             MECHANICAL: 机械设计
+            BOM: 物料清单
             SOFTWARE-ESP32: 软件-ESP32
             ESP32_TUTORIAL: ESP32教程
             TUTORIAL: 教程
@@ -332,6 +333,8 @@ nav:
           - "HARDWARE-ESP/LAYOUT/layout.md"
       - MECHANICAL:
           - "HARDWARE-ESP/MECHANICAL/mechanical.md"
+      - BOM:
+          - "HARDWARE-ESP/BOM/bom.md"
   - SOFTWARE-ESP32:
       - ESP32_TUTORIAL:
           - TUTORIAL:
