@@ -7,483 +7,444 @@
     - node_acc_adxl355
         - include
             - node_acc_adxl355.h
+            - node_acc_adxl355_test.h
         - node_acc_adxl355.c
+        - node_acc_adxl355_test.c
         - CMakeLists.txt
+        - readme.txt
 ```
 
 ## driver/node_acc_adxl355/CMakeLists.txt
 
 ```cmake
-set(src_dirs
-    .
+idf_component_register(
+    SRCS
+        "node_acc_adxl355.c"
+        "node_acc_adxl355_test.c"
+    INCLUDE_DIRS
+        "include"
+    REQUIRES
+        node_spi
+        freertos
+        log
+        esp_driver_gpio
+        esp_driver_spi
 )
 
-set(include_dirs
-    include
-)
-
-set(requires
-    node_spi    
-)
-
-idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRES ${requires})
 ```
-
 
 ## node_acc_adxl355.h
 
 ```c
 /**
- * @file adxl355.h
- * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
- * @brief ADXL355 3-axis accelerometer driver
- * @version 1.0
- * @date 2025-08-23
- * @copyright Copyright (c) 2025
+ * @file node_acc_adxl355.h
+ * @brief ADXL355 (SPI): init, range/ODR, XYZ/temp, DRDY, INT_MAP, FIFO, activity, offset, Phase 5 hardening.
  *
+ * SPI framing matches Analog no-OS ref (driver/ref-adxl355). Bus: call @c spi3_init() from
+ * node_spi before @ref node_acc_adxl355_init when using default eval wiring (CS=GPIO7, SCK/MOSI/MISO=15/16/17).
  */
-
 #pragma once
 
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#include "driver/gpio.h"
+#include "driver/spi_master.h"
+#include "esp_err.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
+
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-#include <stdint.h>
-#include <stdbool.h>
-#include "esp_err.h"
-#include "driver/spi_master.h"
+/** Default SPI clock (Hz); ADXL355 supports up to 10 MHz on SPI. */
+#define NODE_ACC_ADXL355_DEFAULT_SPI_HZ 10000000u
 
-//==============================================================================
-// GPIO Pin Definitions
-//==============================================================================
+/* --- Register addresses (datasheet) --- */
 
-/// @brief ADXL355 CS (Chip Select) GPIO pin
-#define ADXL355_CS_GPIO_PIN GPIO_NUM_4
+#define NODE_ACC_ADXL355_REG_DEVID_AD 0x00u
+#define NODE_ACC_ADXL355_REG_DEVID_MST 0x01u
+#define NODE_ACC_ADXL355_REG_PARTID 0x02u
+#define NODE_ACC_ADXL355_REG_REVID 0x03u
+#define NODE_ACC_ADXL355_REG_STATUS 0x04u
+#define NODE_ACC_ADXL355_REG_FIFO_ENTRIES 0x05u
+#define NODE_ACC_ADXL355_REG_TEMP2 0x06u
+#define NODE_ACC_ADXL355_REG_TEMP1 0x07u
+#define NODE_ACC_ADXL355_REG_XDATA3 0x08u
+#define NODE_ACC_ADXL355_REG_XDATA2 0x09u
+#define NODE_ACC_ADXL355_REG_XDATA1 0x0Au
+#define NODE_ACC_ADXL355_REG_YDATA3 0x0Bu
+#define NODE_ACC_ADXL355_REG_YDATA2 0x0Cu
+#define NODE_ACC_ADXL355_REG_YDATA1 0x0Du
+#define NODE_ACC_ADXL355_REG_ZDATA3 0x0Eu
+#define NODE_ACC_ADXL355_REG_ZDATA2 0x0Fu
+#define NODE_ACC_ADXL355_REG_ZDATA1 0x10u
+#define NODE_ACC_ADXL355_REG_FIFO_DATA 0x11u
+#define NODE_ACC_ADXL355_REG_OFFSET_X_H 0x1Eu
+#define NODE_ACC_ADXL355_REG_OFFSET_X_L 0x1Fu
+#define NODE_ACC_ADXL355_REG_OFFSET_Y_H 0x20u
+#define NODE_ACC_ADXL355_REG_OFFSET_Y_L 0x21u
+#define NODE_ACC_ADXL355_REG_OFFSET_Z_H 0x22u
+#define NODE_ACC_ADXL355_REG_OFFSET_Z_L 0x23u
+#define NODE_ACC_ADXL355_REG_ACT_EN 0x24u
+#define NODE_ACC_ADXL355_REG_ACT_THRESH_H 0x25u
+#define NODE_ACC_ADXL355_REG_ACT_THRESH_L 0x26u
+#define NODE_ACC_ADXL355_REG_ACT_COUNT 0x27u
+#define NODE_ACC_ADXL355_REG_FILTER 0x28u
+#define NODE_ACC_ADXL355_REG_FIFO_SAMPLES 0x29u
+#define NODE_ACC_ADXL355_REG_INT_MAP 0x2Au
+#define NODE_ACC_ADXL355_REG_SYNC 0x2Bu
+#define NODE_ACC_ADXL355_REG_RANGE 0x2Cu
+#define NODE_ACC_ADXL355_REG_POWER_CTL 0x2Du
+#define NODE_ACC_ADXL355_REG_SELF_TEST 0x2Eu
+#define NODE_ACC_ADXL355_REG_RESET 0x2Fu
 
-//==============================================================================
-// Constants (exactly like plasmapper)
-//==============================================================================
+#define NODE_ACC_ADXL355_REG_STATUS_DATA_RDY 0x01u
+#define NODE_ACC_ADXL355_REG_STATUS_FIFO_FULL 0x02u
+#define NODE_ACC_ADXL355_REG_STATUS_FIFO_OVR 0x04u
+#define NODE_ACC_ADXL355_REG_STATUS_ACTIVITY 0x08u
+#define NODE_ACC_ADXL355_REG_STATUS_NVM_BUSY 0x10u
 
-/// @brief Default SPI frequency
-#define ADXL355_DEFAULT_SPI_FREQUENCY 10000000
+#define NODE_ACC_ADXL355_REG_FILTER_HPF_SHIFT 4u
+#define NODE_ACC_ADXL355_REG_FILTER_HPF_MASK 0xF0u
+#define NODE_ACC_ADXL355_REG_FILTER_ODR_MASK 0x0Fu
 
-/// @brief Temperature intercept, LSB
-#define ADXL355_TEMPERATURE_INTERCEPT_LSB 1885
+#define NODE_ACC_ADXL355_REG_RANGE_RANGE_MASK 0x03u
+#define NODE_ACC_ADXL355_REG_RANGE_INT_POL_SHIFT 6u
+#define NODE_ACC_ADXL355_REG_RANGE_INT_POL_MASK 0x40u
 
-/// @brief Temperature intercept, °C
-#define ADXL355_TEMPERATURE_INTERCEPT_DEG_C 25.0f
+#define NODE_ACC_ADXL355_REG_POWER_CTL_STANDBY 0x01u
+#define NODE_ACC_ADXL355_REG_POWER_CTL_TEMP_OFF 0x02u
+#define NODE_ACC_ADXL355_REG_POWER_CTL_DRDY_OFF 0x04u
 
-/// @brief Temperature slope, LSB/°C
-#define ADXL355_TEMPERATURE_SLOPE -9.05f
+#define NODE_ACC_ADXL355_REG_RESET_CODE 0x52u
 
-/// @brief Acceleration scale factor for ±2 g range, g/LSB
-#define ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_2G 3.9e-6f
+/** Max value for FIFO_SAMPLES (0x29); matches Analog ref ADXL355_MAX_FIFO_SAMPLES_VAL. */
+#define NODE_ACC_ADXL355_FIFO_SAMPLES_MAX 0x60u
 
-/// @brief Acceleration scale factor for ±4 g range, g/LSB
-#define ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_4G 7.8e-6f
+/** Expected DEVID_AD (register 0x00). */
+#define NODE_ACC_ADXL355_EXPECT_DEVID_AD 0xADu
+#define NODE_ACC_ADXL355_EXPECT_DEVID_MST 0x1Du
+#define NODE_ACC_ADXL355_EXPECT_PARTID 0xEDu
 
-/// @brief Acceleration scale factor for ±8 g range, g/LSB
-#define ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_8G 15.6e-6f
+typedef enum {
+    NODE_ACC_ADXL355_RANGE_2G = 0x01u,
+    NODE_ACC_ADXL355_RANGE_4G = 0x02u,
+    NODE_ACC_ADXL355_RANGE_8G = 0x03u,
+} node_acc_adxl355_range_t;
 
-/// @brief Maximum number of the FIFO samples
-#define ADXL355_MAX_NUMBER_OF_FIFO_SAMPLES 96
+/**
+ * What to measure / expose (POWER_CTL TEMP_OFF + software policy).
+ * Matches Analog @c adxl355_op_mode idea: accel-only clears the temperature path (TEMP_OFF).
+ * TEMP_ONLY: chip still runs with temperature enabled (same HW as ACCEL_AND_TEMP); only
+ * @ref node_acc_adxl355_read_raw_temp is valid; @ref node_acc_adxl355_read_raw_xyz returns
+ * @c ESP_ERR_INVALID_STATE (ADXL355 has no separate “accel off, temp on” power state).
+ */
+typedef enum {
+    NODE_ACC_ADXL355_MEAS_ACCEL_AND_TEMP = 0,
+    NODE_ACC_ADXL355_MEAS_ACCEL_ONLY,
+    NODE_ACC_ADXL355_MEAS_TEMP_ONLY,
+} node_acc_adxl355_meas_mode_t;
 
-//==============================================================================
-// SPI Configuration (exactly like plasmapper)
-//==============================================================================
+typedef enum {
+    NODE_ACC_ADXL355_ODR_4000_HZ = 0x00u,
+    NODE_ACC_ADXL355_ODR_2000_HZ = 0x01u,
+    NODE_ACC_ADXL355_ODR_1000_HZ = 0x02u,
+    NODE_ACC_ADXL355_ODR_500_HZ = 0x03u,
+    NODE_ACC_ADXL355_ODR_250_HZ = 0x04u,
+    NODE_ACC_ADXL355_ODR_125_HZ = 0x05u,
+    NODE_ACC_ADXL355_ODR_62_5_HZ = 0x06u,
+    NODE_ACC_ADXL355_ODR_31_25_HZ = 0x07u,
+    NODE_ACC_ADXL355_ODR_15_625_HZ = 0x08u,
+    NODE_ACC_ADXL355_ODR_7_813_HZ = 0x09u,
+    NODE_ACC_ADXL355_ODR_3_906_HZ = 0x0Au,
+} node_acc_adxl355_odr_t;
 
-/// @brief SPI mode (8 = Mode 0 in ESP-IDF)
-#define ADXL355_SPI_MODE 8
+typedef enum {
+    NODE_ACC_ADXL355_STATUS_DATA_RDY = 0x01u,
+    NODE_ACC_ADXL355_STATUS_FIFO_FULL = 0x02u,
+    NODE_ACC_ADXL355_STATUS_FIFO_OVR = 0x04u,
+    NODE_ACC_ADXL355_STATUS_ACTIVITY = 0x08u,
+    NODE_ACC_ADXL355_STATUS_NVM_BUSY = 0x10u,
+} node_acc_adxl355_status_t;
 
-/// @brief Number of address bits
-#define ADXL355_SPI_NUMBER_OF_ADDRESS_BITS 8
+typedef struct {
+    uint8_t devid_ad;
+    uint8_t devid_mst;
+    uint8_t partid;
+    uint8_t revid;
+} node_acc_adxl355_ids_t;
 
-/// @brief Max SCLK-MISO delay in ns
-#define ADXL355_SPI_MAX_SCLK_MISO_DELAY 30
+typedef struct {
+    int32_t x;
+    int32_t y;
+    int32_t z;
+} node_acc_adxl355_raw_xyz_t;
 
-    //==============================================================================
-    // Register Addresses (exactly like plasmapper)
-    //==============================================================================
+typedef struct {
+    float x;
+    float y;
+    float z;
+} node_acc_adxl355_g_t;
 
-#define ADXL355_REG_DEVID_AD 0x00
-#define ADXL355_REG_DEVID_MST 0x01
-#define ADXL355_REG_PARTID 0x02
-#define ADXL355_REG_REVID 0x03
-#define ADXL355_REG_STATUS 0x04
-#define ADXL355_REG_FIFO_ENTRIES 0x05
-#define ADXL355_REG_TEMP2 0x06
-#define ADXL355_REG_TEMP1 0x07
-#define ADXL355_REG_XDATA3 0x08
-#define ADXL355_REG_XDATA2 0x09
-#define ADXL355_REG_XDATA1 0x0A
-#define ADXL355_REG_YDATA3 0x0B
-#define ADXL355_REG_YDATA2 0x0C
-#define ADXL355_REG_YDATA1 0x0D
-#define ADXL355_REG_ZDATA3 0x0E
-#define ADXL355_REG_ZDATA2 0x0F
-#define ADXL355_REG_ZDATA1 0x10
-#define ADXL355_REG_FIFO_DATA 0x11
-#define ADXL355_REG_OFFSET_X_H 0x1E
-#define ADXL355_REG_OFFSET_X_L 0x1F
-#define ADXL355_REG_OFFSET_Y_H 0x20
-#define ADXL355_REG_OFFSET_Y_L 0x21
-#define ADXL355_REG_OFFSET_Z_H 0x22
-#define ADXL355_REG_OFFSET_Z_L 0x23
-#define ADXL355_REG_ACT_EN 0x24
-#define ADXL355_REG_ACT_THRESH_H 0x25
-#define ADXL355_REG_ACT_THRESH_L 0x26
-#define ADXL355_REG_ACT_COUNT 0x27
-#define ADXL355_REG_FILTER 0x28
-#define ADXL355_REG_FIFO_SAMPLES 0x29
-#define ADXL355_REG_INT_MAP 0x2A
-#define ADXL355_REG_SYNC 0x2B
-#define ADXL355_REG_RANGE 0x2C
-#define ADXL355_REG_POWER_CTL 0x2D
-#define ADXL355_REG_SELF_TEST 0x2E
-#define ADXL355_REG_RESET 0x2F
+/** INT_MAP (0x2A): route sources to INT1 / INT2 (see datasheet; matches Analog ref bit layout). */
+typedef struct {
+    bool rdy_int1;
+    bool fifo_full_int1;
+    bool fifo_ovr_int1;
+    bool activity_int1;
+    bool rdy_int2;
+    bool fifo_full_int2;
+    bool fifo_ovr_int2;
+    bool activity_int2;
+} node_acc_adxl355_int_map_t;
 
-    //==============================================================================
-    // Register Bit Masks (exactly like plasmapper)
-    //==============================================================================
+/** RANGE[6] interrupt polarity (INT1/INT2/DRDY pin behavior). */
+typedef enum {
+    NODE_ACC_ADXL355_INT_POL_ACTIVE_LOW = 0,
+    NODE_ACC_ADXL355_INT_POL_ACTIVE_HIGH = 1,
+} node_acc_adxl355_int_pol_t;
 
-#define ADXL355_REG_STATUS_DATA_RDY 0x01
-#define ADXL355_REG_STATUS_FIFO_FULL 0x02
-#define ADXL355_REG_STATUS_FIFO_OVR 0x04
-#define ADXL355_REG_STATUS_ACTIVITY 0x08
-#define ADXL355_REG_STATUS_NVM_BUSY 0x10
+/** ACT_EN (0x24): enable activity detection per axis (datasheet bit order). */
+typedef struct {
+    bool x;
+    bool y;
+    bool z;
+} node_acc_adxl355_act_en_t;
 
-#define ADXL355_REG_FILTER_HPF_SHIFT 4
-#define ADXL355_REG_FILTER_HPF_MASK 0xF0
-#define ADXL355_REG_FILTER_ODR_MASK 0x0F
+/** Offset registers: 16-bit per axis, big-endian in SPI (Analog @c adxl355_set_offset). */
+typedef struct {
+    uint16_t x;
+    uint16_t y;
+    uint16_t z;
+} node_acc_adxl355_offset_t;
 
-#define ADXL355_REG_SYNC_SYNC_MAP 0x03
-#define ADXL355_REG_SYNC_EXT_CLK 0x04
-
-#define ADXL355_REG_RANGE_RANGE_MASK 0x03
-#define ADXL355_REG_RANGE_RANGE_PM2G 0x01
-#define ADXL355_REG_RANGE_RANGE_PM4G 0x02
-#define ADXL355_REG_RANGE_RANGE_PM8G 0x03
-#define ADXL355_REG_RANGE_INT_POL_SHIFT 6
-#define ADXL355_REG_RANGE_INT_POL_MASK 0x40
-#define ADXL355_REG_RANGE_I2C_HS_SHIFT 7
-#define ADXL355_REG_RANGE_I2C_HS_MASK 0x80
-
-#define ADXL355_REG_POWER_CTL_STANDBY 0x01
-#define ADXL355_REG_POWER_CTL_TEMP_OFF 0x02
-#define ADXL355_REG_POWER_CTL_DRDY_OFF 0x04
-
-#define ADXL355_REG_SELF_TEST_ST1 0x01
-#define ADXL355_REG_SELF_TEST_ST2 0x02
-
-#define ADXL355_REG_RESET_RESET_CODE 0x52
-
-    //==============================================================================
-    // Enums (exactly like plasmapper)
-    //==============================================================================
-
-    /// @brief ADXL355 status
-    typedef enum
-    {
-        ADXL355_STATUS_DATA_RDY = 0x01,  ///< Data ready
-        ADXL355_STATUS_FIFO_FULL = 0x02, ///< FIFO full
-        ADXL355_STATUS_FIFO_OVR = 0x04,  ///< FIFO overrun
-        ADXL355_STATUS_ACTIVITY = 0x08,  ///< Activity detected
-        ADXL355_STATUS_NVM_BUSY = 0x10   ///< NVM busy
-    } adxl355_status_t;
-
-    /// @brief ADXL355 high-pass filter frequency
-    typedef enum
-    {
-        ADXL355_HPF_NONE = 0x00,   ///< High-pass filter disabled
-        ADXL355_HPF_24_7 = 0x01,   ///< ODR*24.700e-4
-        ADXL355_HPF_6_2084 = 0x02, ///< ODR*6.2084e-4
-        ADXL355_HPF_1_5545 = 0x03, ///< ODR*1.5545e-4
-        ADXL355_HPF_0_3862 = 0x04, ///< ODR*0.3862e-4
-        ADXL355_HPF_0_0954 = 0x05, ///< ODR*0.0954e-4
-        ADXL355_HPF_0_0238 = 0x06  ///< ODR*0.0238e-4
-    } adxl355_hpf_frequency_t;
-
-    /// @brief ADXL355 output data rate
-    typedef enum
-    {
-        ADXL355_ODR_4000 = 0x00,   ///< 4000 Hz
-        ADXL355_ODR_2000 = 0x01,   ///< 2000 Hz
-        ADXL355_ODR_1000 = 0x02,   ///< 1000 Hz
-        ADXL355_ODR_500 = 0x03,    ///< 500 Hz
-        ADXL355_ODR_250 = 0x04,    ///< 250 Hz
-        ADXL355_ODR_125 = 0x05,    ///< 125 Hz
-        ADXL355_ODR_62_5 = 0x06,   ///< 62.5 Hz
-        ADXL355_ODR_31_25 = 0x07,  ///< 31.25 Hz
-        ADXL355_ODR_15_625 = 0x08, ///< 15.625 Hz
-        ADXL355_ODR_7_813 = 0x09,  ///< 7.813 Hz
-        ADXL355_ODR_3_906 = 0x0A   ///< 3.906 Hz
-    } adxl355_output_data_rate_t;
-
-    /// @brief ADXL355 acceleration range
-    typedef enum
-    {
-        ADXL355_RANGE_2G = 0x01, ///< ±2 g
-        ADXL355_RANGE_4G = 0x02, ///< ±4 g
-        ADXL355_RANGE_8G = 0x03  ///< ±8 g
-    } adxl355_range_t;
-
-    /// @brief ADXL355 interrupt polarity
-    typedef enum
-    {
-        ADXL355_INT_POL_ACTIVE_LOW = 0x00, ///< Active low
-        ADXL355_INT_POL_ACTIVE_HIGH = 0x01 ///< Active high
-    } adxl355_interrupt_polarity_t;
-
-    /// @brief ADXL355 I2C speed
-    typedef enum
-    {
-        ADXL355_I2C_SPEED_FAST = 0x00,      ///< Fast
-        ADXL355_I2C_SPEED_HIGH_SPEED = 0x01 ///< High speed
-    } adxl355_i2c_speed_t;
-
-    /// @brief ADXL355 synchronization
-    typedef enum
-    {
-        ADXL355_SYNC_INTERNAL = 0x00,                   ///< Internal
-        ADXL355_SYNC_EXTERNAL = 0x01,                   ///< External
-        ADXL355_SYNC_EXTERNAL_WITH_INTERPOLATION = 0x02 ///< External with interpolation
-    } adxl355_synchronization_t;
-
-    //==============================================================================
-    // Data Structures (exactly like plasmapper)
-    //==============================================================================
-
-    /// @brief ADXL355 device information
-    typedef struct
-    {
-        uint8_t vendor_id;   ///< Vendor ID
-        uint8_t family_id;   ///< Device family ID
-        uint8_t device_id;   ///< Device ID
-        uint8_t revision_id; ///< Revision ID
-    } adxl355_device_info_t;
-
-    /// @brief ADXL355 raw accelerations
-    typedef struct
-    {
-        int32_t x; ///< Raw X-axis acceleration
-        int32_t y; ///< Raw Y-axis acceleration
-        int32_t z; ///< Raw Z-axis acceleration
-    } adxl355_raw_accelerations_t;
-
-    /// @brief ADXL355 accelerations in g
-    typedef struct
-    {
-        float x; ///< X-axis acceleration, g
-        float y; ///< Y-axis acceleration, g
-        float z; ///< Z-axis acceleration, g
-    } adxl355_accelerations_t;
-
-    /// @brief ADXL355 handle
-    typedef struct
-    {
-        spi_device_handle_t spi_handle; ///< SPI device handle
-        adxl355_range_t range;          ///< Current range setting
-        adxl355_output_data_rate_t odr; ///< Current ODR setting
-        float scale_factor;             ///< Current scale factor
-    } adxl355_handle_t;
-
-    //==============================================================================
-    // Function Declarations
-    //==============================================================================
-
+/**
+ * SPI device parameters. @a host bus must be initialized (e.g. @c spi3_init()) before
+ * @ref node_acc_adxl355_init.
+ */
+typedef struct {
+    spi_host_device_t host;
+    gpio_num_t cs_gpio;
+    uint32_t clock_hz;
+    /** SPI mode 0..3; ADXL355 uses mode 0. */
+    uint8_t spi_mode;
+    int input_delay_ns;
     /**
-     * @brief Initialize ADXL355 (including SPI device configuration)
-     * @param handle ADXL355 handle
-     * @param range Initial range setting
-     * @param odr Initial output data rate
-     * @return ESP_OK on success, error code on failure
+     * DRDY MCU input (eval: GPIO6). Use @c GPIO_NUM_NC if @ref node_acc_adxl355_drdy_isr_install
+     * is not used.
      */
-    esp_err_t adxl355_init(adxl355_handle_t *handle, adxl355_range_t range, adxl355_output_data_rate_t odr);
-
+    gpio_num_t gpio_drdy;
+    /** Match RANGE INT_POL / board wiring (often @c GPIO_INTR_POSEDGE for active-high pulse). */
+    gpio_int_type_t drdy_intr_type;
+    /** INT1 / INT2 MCU inputs (eval: GPIO4 / GPIO5). @c GPIO_NUM_NC if unused. */
+    gpio_num_t gpio_int1;
+    gpio_num_t gpio_int2;
+    /** Edges for INT1/INT2; align with @ref node_acc_adxl355_set_interrupt_polarity. */
+    gpio_int_type_t int1_intr_type;
+    gpio_int_type_t int2_intr_type;
+    /** Initial @ref node_acc_adxl355_meas_mode_t (default eval: ACCEL_AND_TEMP). */
+    node_acc_adxl355_meas_mode_t meas_mode;
     /**
-     * @brief Deinitialize ADXL355
-     * @param handle ADXL355 handle
-     * @return ESP_OK on success, error code on failure
+     * If true (default), all SPI transfers are serialized with an internal recursive mutex
+     * (safe with multi-task access). Set false only if a single task touches the device.
      */
-    esp_err_t adxl355_deinit(adxl355_handle_t *handle);
+    bool spi_mutex_enable;
+    /** If true, log one INFO line after successful init. Default false (quieter production). */
+    bool log_info_on_init;
+} node_acc_adxl355_config_t;
 
-    /**
-     * @brief Reset ADXL355 device
-     * @param handle ADXL355 handle
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_reset(adxl355_handle_t *handle);
+typedef struct node_acc_adxl355_dev {
+    spi_device_handle_t spi;
+    node_acc_adxl355_range_t range;
+    node_acc_adxl355_odr_t odr;
+    float scale_factor;
+    node_acc_adxl355_meas_mode_t meas_mode;
+    gpio_num_t gpio_drdy;
+    gpio_int_type_t drdy_intr_type;
+    SemaphoreHandle_t drdy_sem;
+    bool drdy_isr_installed;
+    gpio_num_t gpio_int1;
+    gpio_num_t gpio_int2;
+    gpio_int_type_t int1_intr_type;
+    gpio_int_type_t int2_intr_type;
+    SemaphoreHandle_t int1_sem;
+    SemaphoreHandle_t int2_sem;
+    bool int1_isr_installed;
+    bool int2_isr_installed;
+    /** Recursive mutex when @a spi_mutex_enable was set at init; NULL otherwise. */
+    SemaphoreHandle_t spi_mutex;
+} node_acc_adxl355_dev_t;
 
-    /**
-     * @brief Read device information
-     * @param handle ADXL355 handle
-     * @param device_info Device information output
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_read_device_info(adxl355_handle_t *handle, adxl355_device_info_t *device_info);
+/** Eval board defaults: CS GPIO7, SPI3, 10 MHz, mode 0, DRDY GPIO6 posedge. */
+void node_acc_adxl355_config_default_eval(node_acc_adxl355_config_t *cfg);
 
-    /**
-     * @brief Read device status
-     * @param handle ADXL355 handle
-     * @param status Status output
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_read_status(adxl355_handle_t *handle, adxl355_status_t *status);
+esp_err_t node_acc_adxl355_init(node_acc_adxl355_dev_t *dev, const node_acc_adxl355_config_t *cfg,
+                                node_acc_adxl355_range_t range, node_acc_adxl355_odr_t odr);
 
-    /**
-     * @brief Read raw accelerations
-     * @param handle ADXL355 handle
-     * @param raw_accel Raw accelerations output
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_read_raw_accelerations(adxl355_handle_t *handle, adxl355_raw_accelerations_t *raw_accel);
+esp_err_t node_acc_adxl355_set_measurement_mode(node_acc_adxl355_dev_t *dev, node_acc_adxl355_meas_mode_t mode);
 
-    /**
-     * @brief Read accelerations in g
-     * @param handle ADXL355 handle
-     * @param accel Accelerations output in g
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_read_accelerations(adxl355_handle_t *handle, adxl355_accelerations_t *accel);
+esp_err_t node_acc_adxl355_get_measurement_mode(node_acc_adxl355_dev_t *dev, node_acc_adxl355_meas_mode_t *mode);
 
-    /**
-     * @brief Read raw temperature
-     * @param handle ADXL355 handle
-     * @param raw_temp Raw temperature output
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_read_raw_temperature(adxl355_handle_t *handle, uint16_t *raw_temp);
+/**
+ * Remove GPIO ISRs, clear INT_MAP, disable DRDY pin and measurement, remove SPI device, delete SPI mutex.
+ * Do not call concurrently with other tasks using this @a dev (take mutex first in your app or stop workers).
+ */
+esp_err_t node_acc_adxl355_deinit(node_acc_adxl355_dev_t *dev);
 
-    /**
-     * @brief Read temperature in °C
-     * @param handle ADXL355 handle
-     * @param temp Temperature output in °C
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_read_temperature(adxl355_handle_t *handle, float *temp);
+esp_err_t node_acc_adxl355_reset(node_acc_adxl355_dev_t *dev);
 
-    /**
-     * @brief Set acceleration range
-     * @param handle ADXL355 handle
-     * @param range Range setting
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_set_range(adxl355_handle_t *handle, adxl355_range_t range);
+esp_err_t node_acc_adxl355_read_ids(node_acc_adxl355_dev_t *dev, node_acc_adxl355_ids_t *ids);
 
-    /**
-     * @brief Read acceleration range
-     * @param handle ADXL355 handle
-     * @param range Range output
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_read_range(adxl355_handle_t *handle, adxl355_range_t *range);
+esp_err_t node_acc_adxl355_read_status(node_acc_adxl355_dev_t *dev, uint8_t *status);
 
-    /**
-     * @brief Set output data rate
-     * @param handle ADXL355 handle
-     * @param odr Output data rate
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_set_odr(adxl355_handle_t *handle, adxl355_output_data_rate_t odr);
+esp_err_t node_acc_adxl355_read_raw_xyz(node_acc_adxl355_dev_t *dev, node_acc_adxl355_raw_xyz_t *out);
 
-    /**
-     * @brief Read output data rate
-     * @param handle ADXL355 handle
-     * @param odr Output data rate output
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_read_odr(adxl355_handle_t *handle, adxl355_output_data_rate_t *odr);
+esp_err_t node_acc_adxl355_read_g(node_acc_adxl355_dev_t *dev, node_acc_adxl355_g_t *out);
 
-    /**
-     * @brief Enable measurement mode
-     * @param handle ADXL355 handle
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_enable_measurement(adxl355_handle_t *handle);
+esp_err_t node_acc_adxl355_read_raw_temp(node_acc_adxl355_dev_t *dev, uint16_t *raw_temp);
 
-    /**
-     * @brief Disable measurement mode (standby)
-     * @param handle ADXL355 handle
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_disable_measurement(adxl355_handle_t *handle);
+esp_err_t node_acc_adxl355_read_temp_c(node_acc_adxl355_dev_t *dev, float *temp_c);
 
-    /**
-     * @brief Check if measurement is enabled
-     * @param handle ADXL355 handle
-     * @param is_enabled Output: true if measurement enabled
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_is_measurement_enabled(adxl355_handle_t *handle, bool *is_enabled);
+esp_err_t node_acc_adxl355_set_range(node_acc_adxl355_dev_t *dev, node_acc_adxl355_range_t range);
 
-    /**
-     * @brief Enable temperature processing
-     * @param handle ADXL355 handle
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_enable_temperature(adxl355_handle_t *handle);
+esp_err_t node_acc_adxl355_get_range(node_acc_adxl355_dev_t *dev, node_acc_adxl355_range_t *range);
 
-    /**
-     * @brief Disable temperature processing
-     * @param handle ADXL355 handle
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_disable_temperature(adxl355_handle_t *handle);
+esp_err_t node_acc_adxl355_set_odr(node_acc_adxl355_dev_t *dev, node_acc_adxl355_odr_t odr);
 
-    /**
-     * @brief Check if temperature is enabled
-     * @param handle ADXL355 handle
-     * @param is_enabled Output: true if temperature enabled
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_is_temperature_enabled(adxl355_handle_t *handle, bool *is_enabled);
+esp_err_t node_acc_adxl355_get_odr(node_acc_adxl355_dev_t *dev, node_acc_adxl355_odr_t *odr);
 
-    /**
-     * @brief Enable data ready output
-     * @param handle ADXL355 handle
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_enable_data_ready(adxl355_handle_t *handle);
+esp_err_t node_acc_adxl355_enable_measurement(node_acc_adxl355_dev_t *dev);
 
-    /**
-     * @brief Disable data ready output
-     * @param handle ADXL355 handle
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_disable_data_ready(adxl355_handle_t *handle);
+esp_err_t node_acc_adxl355_disable_measurement(node_acc_adxl355_dev_t *dev);
 
-    /**
-     * @brief Check if data ready is enabled
-     * @param handle ADXL355 handle
-     * @param is_enabled Output: true if data ready enabled
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_is_data_ready_enabled(adxl355_handle_t *handle, bool *is_enabled);
+esp_err_t node_acc_adxl355_enable_temperature(node_acc_adxl355_dev_t *dev);
 
-    /**
-     * @brief Read acceleration scale factor
-     * @param handle ADXL355 handle
-     * @param scale_factor Scale factor output
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_read_acceleration_scale_factor(adxl355_handle_t *handle, float *scale_factor);
+esp_err_t node_acc_adxl355_disable_temperature(node_acc_adxl355_dev_t *dev);
 
-    /**
-     * @brief ADXL355 specific: Write command then read data
-     * @param handle ADXL355 handle
-     * @param cmd Command byte to send
-     * @param data Buffer to store received data
-     * @param len Length of data to read
-     * @return ESP_OK on success, error code on failure
-     */
-    esp_err_t adxl355_spi_read(adxl355_handle_t *handle, uint8_t cmd, uint8_t *data, int len);
+esp_err_t node_acc_adxl355_enable_data_ready_pin(node_acc_adxl355_dev_t *dev);
+
+esp_err_t node_acc_adxl355_disable_data_ready_pin(node_acc_adxl355_dev_t *dev);
+
+esp_err_t node_acc_adxl355_acceleration_scale_g_per_lsb(node_acc_adxl355_dev_t *dev, float *scale);
+
+/**
+ * Install GPIO ISR on @a gpio_drdy from config: binary semaphore released on each DRDY edge.
+ * Requires @ref node_acc_adxl355_enable_data_ready_pin (done in @ref node_acc_adxl355_init).
+ * Call @ref node_acc_adxl355_drdy_isr_remove before @ref node_acc_adxl355_deinit or let deinit do it.
+ */
+esp_err_t node_acc_adxl355_drdy_isr_install(node_acc_adxl355_dev_t *dev);
+
+esp_err_t node_acc_adxl355_drdy_isr_remove(node_acc_adxl355_dev_t *dev);
+
+/** Block until next DRDY interrupt or timeout. Install ISR first. */
+esp_err_t node_acc_adxl355_drdy_wait(node_acc_adxl355_dev_t *dev, uint32_t timeout_ms);
+
+/** Write INT_MAP (0x2A). */
+esp_err_t node_acc_adxl355_int_map_write(node_acc_adxl355_dev_t *dev, const node_acc_adxl355_int_map_t *map);
+
+/** Read INT_MAP. */
+esp_err_t node_acc_adxl355_int_map_read(node_acc_adxl355_dev_t *dev, node_acc_adxl355_int_map_t *map);
+
+/** Set RANGE[6] interrupt polarity (INT1/INT2/DRDY). */
+esp_err_t node_acc_adxl355_set_interrupt_polarity(node_acc_adxl355_dev_t *dev, node_acc_adxl355_int_pol_t pol);
+
+/**
+ * Install GPIO ISR on INT1/INT2 from config (binary semaphore per pin).
+ * Map events with @ref node_acc_adxl355_int_map_write before relying on interrupts.
+ */
+esp_err_t node_acc_adxl355_int_isr_install(node_acc_adxl355_dev_t *dev);
+
+esp_err_t node_acc_adxl355_int_isr_remove(node_acc_adxl355_dev_t *dev);
+
+esp_err_t node_acc_adxl355_int1_wait(node_acc_adxl355_dev_t *dev, uint32_t timeout_ms);
+
+esp_err_t node_acc_adxl355_int2_wait(node_acc_adxl355_dev_t *dev, uint32_t timeout_ms);
+
+/* --- Phase 4: FIFO, activity, offset --- */
+
+/** Write FIFO_SAMPLES (0x29); @a samples must be <= @ref NODE_ACC_ADXL355_FIFO_SAMPLES_MAX. */
+esp_err_t node_acc_adxl355_set_fifo_samples(node_acc_adxl355_dev_t *dev, uint8_t samples);
+
+esp_err_t node_acc_adxl355_get_fifo_samples(node_acc_adxl355_dev_t *dev, uint8_t *samples);
+
+/** Read FIFO_ENTRIES (0x05): number of stored 3-byte axis samples (Analog ref semantics). */
+esp_err_t node_acc_adxl355_read_fifo_entries(node_acc_adxl355_dev_t *dev, uint8_t *entries);
+
+/**
+ * Burst-read FIFO_DATA (0x11), parse XYZ frames (see Analog @c adxl355_get_raw_fifo_data).
+ * @a out_frames is how many frames were written (<= @a max_frames). Drains FIFO when @a max_frames is large enough.
+ */
+esp_err_t node_acc_adxl355_read_fifo_xyz(node_acc_adxl355_dev_t *dev, node_acc_adxl355_raw_xyz_t *out,
+                                         size_t max_frames, size_t *out_frames);
+
+esp_err_t node_acc_adxl355_set_offset_xyz(node_acc_adxl355_dev_t *dev, const node_acc_adxl355_offset_t *off);
+
+esp_err_t node_acc_adxl355_get_offset_xyz(node_acc_adxl355_dev_t *dev, node_acc_adxl355_offset_t *off);
+
+esp_err_t node_acc_adxl355_set_activity_enable(node_acc_adxl355_dev_t *dev, const node_acc_adxl355_act_en_t *en);
+
+esp_err_t node_acc_adxl355_get_activity_enable(node_acc_adxl355_dev_t *dev, node_acc_adxl355_act_en_t *en);
+
+esp_err_t node_acc_adxl355_set_activity_threshold(node_acc_adxl355_dev_t *dev, uint16_t threshold);
+
+esp_err_t node_acc_adxl355_get_activity_threshold(node_acc_adxl355_dev_t *dev, uint16_t *threshold);
+
+esp_err_t node_acc_adxl355_set_activity_count(node_acc_adxl355_dev_t *dev, uint8_t count);
+
+esp_err_t node_acc_adxl355_get_activity_count(node_acc_adxl355_dev_t *dev, uint8_t *count);
 
 #ifdef __cplusplus
 }
 #endif
 
+```
+
+## node_acc_adxl355_test.h
+
+```c
+/**
+ * @file node_acc_adxl355_test.h
+ * @brief Phase 1–4 tests (polling, DRDY, INT_MAP, FIFO/activity/offset). Driver: node_acc_adxl355.h.
+ */
+#pragma once
+
+#include "esp_err.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * Phase 1: @c spi3_init() from node_spi, then init ADXL355 on CS GPIO7.
+ * Reads chip IDs, prints several XYZ + temperature samples, then deinitializes.
+ */
+esp_err_t node_acc_adxl355_run_phase1_test(void);
+
+/**
+ * Phase 2: DRDY on GPIO6 (default eval), @ref node_acc_adxl355_drdy_isr_install + wait + read XYZ.
+ */
+esp_err_t node_acc_adxl355_run_phase2_test(void);
+
+/**
+ * Phase 3: INT_MAP (DATA_RDY -> INT1), GPIO4, @ref node_acc_adxl355_int_isr_install + int1_wait + STATUS/XYZ.
+ */
+esp_err_t node_acc_adxl355_run_phase3_test(void);
+
+/** ACCEL+TEMP / ACCEL-only / TEMP-only (software) paths; expects INVALID_STATE where documented. */
+esp_err_t node_acc_adxl355_run_measurement_mode_test(void);
+
+/** Phase 4: FIFO_SAMPLES / FIFO read, offset regs, activity regs (readback). */
+esp_err_t node_acc_adxl355_run_phase4_test(void);
+
+/** Phase 5: mutex + deinit path (init with optional log, deinit clears device). */
+esp_err_t node_acc_adxl355_run_phase5_test(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 ```
 
@@ -491,1643 +452,1693 @@ extern "C"
 
 ```c
 /**
- * @file adxl355.c
- * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
- * @brief ADXL355 3-axis accelerometer driver implementation
- * @version 1.0
- * @date 2025-08-23
- * @copyright Copyright (c) 2025
- *
+ * @file node_acc_adxl355.c
+ * @brief ADXL355 SPI driver (phase 1–4: DRDY, INT_MAP, FIFO, activity, offset).
  */
-
 #include "node_acc_adxl355.h"
-#include "node_spi.h"
-#include "esp_log.h"
+
+#include <string.h>
+
+#include "driver/gpio.h"
+#include "esp_heap_caps.h"
 #include "esp_check.h"
+#include "esp_log.h"
 #include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
 #include "freertos/task.h"
 
-//==============================================================================
+static const char *TAG = "node_acc_adxl355";
 
-static const char *TAG = "ADXL355";
+/* Temperature: datasheet intercept 1885 LSB @ 25 °C, slope -9.05 LSB/°C */
+static const float k_temp_intercept_lsb = 1885.0f;
+static const float k_temp_slope_lsb_per_c = -9.05f;
+static const float k_temp_ref_c = 25.0f;
 
-//==============================================================================
+static const float k_scale_2g = 3.9e-6f;
+static const float k_scale_4g = 7.8e-6f;
+static const float k_scale_8g = 15.6e-6f;
 
-/* Private function declarations */
-static esp_err_t adxl355_configure_spi_device(spi_device_handle_t *device_handle);
-static esp_err_t adxl355_read_register(adxl355_handle_t *handle, uint8_t reg, uint8_t *value);
-static esp_err_t adxl355_read_registers(adxl355_handle_t *handle, uint8_t reg, uint8_t *data, uint8_t len);
-static esp_err_t adxl355_write_register(adxl355_handle_t *handle, uint8_t reg, uint8_t value);
-static esp_err_t adxl355_write_registers(adxl355_handle_t *handle, uint8_t reg, const uint8_t *data, uint8_t len);
-static const char *adxl355_get_range_string(adxl355_range_t range);
-static const char *adxl355_get_odr_string(adxl355_output_data_rate_t odr);
+static esp_err_t dev_spi_add(node_acc_adxl355_dev_t *dev, const node_acc_adxl355_config_t *cfg);
+static esp_err_t dev_spi_remove(node_acc_adxl355_dev_t *dev);
+static void dev_free_hw(node_acc_adxl355_dev_t *dev);
+static void spi_lock(node_acc_adxl355_dev_t *dev);
+static void spi_unlock(node_acc_adxl355_dev_t *dev);
 
-//==============================================================================
+static esp_err_t reg_read(node_acc_adxl355_dev_t *dev, uint8_t reg, uint8_t *val);
+static esp_err_t reg_write(node_acc_adxl355_dev_t *dev, uint8_t reg, uint8_t val);
+static esp_err_t regs_read(node_acc_adxl355_dev_t *dev, uint8_t reg, uint8_t *data, size_t len);
+static esp_err_t regs_write(node_acc_adxl355_dev_t *dev, uint8_t reg, const uint8_t *data, size_t len);
+static esp_err_t spi_read_after_cmd(node_acc_adxl355_dev_t *dev, uint8_t cmd, uint8_t *data, size_t len);
 
-esp_err_t adxl355_init(adxl355_handle_t *handle, adxl355_range_t range, adxl355_output_data_rate_t odr)
+static void IRAM_ATTR node_acc_adxl355_sem_isr(void *arg)
 {
-    esp_err_t ret;
+    SemaphoreHandle_t sem = (SemaphoreHandle_t)arg;
+    BaseType_t hp = pdFALSE;
+    if (sem != NULL) {
+        (void)xSemaphoreGiveFromISR(sem, &hp);
+    }
+    if (hp) {
+        portYIELD_FROM_ISR();
+    }
+}
 
-    ESP_LOGI(TAG, "=== ADXL355 INITIALIZATION START ===");
-    ESP_LOGI(TAG, "Initialization parameters: range=%s, ODR=%s",
-             adxl355_get_range_string(range), adxl355_get_odr_string(odr));
+/** Call once per process; avoids ESP-IDF ERROR log on duplicate gpio_install_isr_service. */
+static esp_err_t gpio_isr_service_ensure_installed(void)
+{
+    esp_err_t e = gpio_install_isr_service(0);
+    if (e != ESP_OK && e != ESP_ERR_INVALID_STATE) {
+        return e;
+    }
+    return ESP_OK;
+}
 
-    if (handle == NULL)
-    {
-        ESP_LOGE(TAG, "Invalid argument: handle=%p", (void *)handle);
+void node_acc_adxl355_config_default_eval(node_acc_adxl355_config_t *cfg)
+{
+    if (cfg == NULL) {
+        return;
+    }
+    memset(cfg, 0, sizeof(*cfg));
+    cfg->host = SPI3_HOST;
+    cfg->cs_gpio = GPIO_NUM_7;
+    cfg->clock_hz = NODE_ACC_ADXL355_DEFAULT_SPI_HZ;
+    cfg->spi_mode = 0;
+    cfg->input_delay_ns = 30;
+    cfg->gpio_drdy = GPIO_NUM_6;
+    cfg->drdy_intr_type = GPIO_INTR_POSEDGE;
+    cfg->gpio_int1 = GPIO_NUM_4;
+    cfg->gpio_int2 = GPIO_NUM_5;
+    cfg->int1_intr_type = GPIO_INTR_NEGEDGE;
+    cfg->int2_intr_type = GPIO_INTR_NEGEDGE;
+    cfg->meas_mode = NODE_ACC_ADXL355_MEAS_ACCEL_AND_TEMP;
+    cfg->spi_mutex_enable = true;
+    cfg->log_info_on_init = false;
+}
+
+static void spi_lock(node_acc_adxl355_dev_t *dev)
+{
+    if (dev != NULL && dev->spi_mutex != NULL) {
+        xSemaphoreTakeRecursive(dev->spi_mutex, portMAX_DELAY);
+    }
+}
+
+static void spi_unlock(node_acc_adxl355_dev_t *dev)
+{
+    if (dev != NULL && dev->spi_mutex != NULL) {
+        xSemaphoreGiveRecursive(dev->spi_mutex);
+    }
+}
+
+static void dev_free_hw(node_acc_adxl355_dev_t *dev)
+{
+    if (dev == NULL) {
+        return;
+    }
+    if (dev->spi_mutex != NULL) {
+        vSemaphoreDelete(dev->spi_mutex);
+        dev->spi_mutex = NULL;
+    }
+    if (dev->spi != NULL) {
+        (void)dev_spi_remove(dev);
+    }
+}
+
+static esp_err_t dev_spi_add(node_acc_adxl355_dev_t *dev, const node_acc_adxl355_config_t *cfg)
+{
+    if (dev == NULL || cfg == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    if (cfg->cs_gpio < 0) {
         return ESP_ERR_INVALID_ARG;
     }
 
-    /* Step 1: Configure SPI device for ADXL355 */
-    ESP_LOGI(TAG, "Configuring SPI device for ADXL355...");
-    ESP_LOGI(TAG, "Note: SPI3 bus is initialized with DMA enabled (SPI_DMA_CH_AUTO)");
-    ESP_LOGI(TAG, "DMA will be used automatically for SPI transactions to reduce CPU usage");
-    ret = adxl355_configure_spi_device(&handle->spi_handle);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to configure SPI device: %s", esp_err_to_name(ret));
-        return ret;
+    /* No address_bits: ADXL355 expects one SPI stream (cmd + data) like Analog no-OS
+     * write_and_read(1+size), discarding the first received byte. */
+    spi_device_interface_config_t d = {
+        .clock_speed_hz = (int)cfg->clock_hz,
+        .mode = cfg->spi_mode,
+        .spics_io_num = cfg->cs_gpio,
+        .queue_size = 4,
+        .command_bits = 0,
+        .address_bits = 0,
+        .dummy_bits = 0,
+        .input_delay_ns = cfg->input_delay_ns,
+    };
+
+    return spi_bus_add_device(cfg->host, &d, &dev->spi);
+}
+
+static esp_err_t dev_spi_remove(node_acc_adxl355_dev_t *dev)
+{
+    if (dev == NULL || dev->spi == NULL) {
+        return ESP_ERR_INVALID_ARG;
     }
-    ESP_LOGI(TAG, "SPI device configured successfully (DMA enabled)");
+    esp_err_t e = spi_bus_remove_device(dev->spi);
+    dev->spi = NULL;
+    return e;
+}
 
-    /* Initialize handle */
-    handle->range = range;
-    handle->odr = odr;
+/**
+ * SPI read: same as Analog adxl355_read_device_data — one transaction of (1+len) bytes,
+ * MOSI sends cmd then len zeros; first byte of MISO is discarded (command phase).
+ */
+static esp_err_t spi_read_after_cmd(node_acc_adxl355_dev_t *dev, uint8_t cmd, uint8_t *data, size_t len)
+{
+    if (dev == NULL || dev->spi == NULL || data == NULL || len == 0) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    const size_t total = 1u + len;
+    if (total > 320u) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    uint8_t tx_stack[33];
+    uint8_t rx_stack[33];
+    uint8_t *tx_buf = tx_stack;
+    uint8_t *rx_buf = rx_stack;
+    uint8_t *tx_heap = NULL;
+    uint8_t *rx_heap = NULL;
 
-    /* Set initial scale factor based on range */
-    ESP_LOGI(TAG, "Setting scale factor for range %s...", adxl355_get_range_string(range));
-    switch (range)
-    {
-    case ADXL355_RANGE_2G:
-        handle->scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_2G;
-        ESP_LOGI(TAG, "Range %s selected, scale factor: %.2e g/LSB",
-                 adxl355_get_range_string(range), handle->scale_factor);
-        break;
-    case ADXL355_RANGE_4G:
-        handle->scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_4G;
-        ESP_LOGI(TAG, "Range %s selected, scale factor: %.2e g/LSB",
-                 adxl355_get_range_string(range), handle->scale_factor);
-        break;
-    case ADXL355_RANGE_8G:
-        handle->scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_8G;
-        ESP_LOGI(TAG, "Range %s selected, scale factor: %.2e g/LSB",
-                 adxl355_get_range_string(range), handle->scale_factor);
-        break;
+    spi_lock(dev);
+
+    if (total > sizeof(tx_stack)) {
+        tx_heap = heap_caps_malloc(total, MALLOC_CAP_DMA);
+        rx_heap = heap_caps_malloc(total, MALLOC_CAP_DMA);
+        if (tx_heap == NULL || rx_heap == NULL) {
+            heap_caps_free(tx_heap);
+            heap_caps_free(rx_heap);
+            spi_unlock(dev);
+            return ESP_ERR_NO_MEM;
+        }
+        tx_buf = tx_heap;
+        rx_buf = rx_heap;
+    }
+
+    memset(tx_buf, 0, total);
+    tx_buf[0] = cmd;
+    spi_transaction_t t = {0};
+    t.length = (uint32_t)(total * 8u);
+    t.tx_buffer = tx_buf;
+    t.rx_buffer = rx_buf;
+    esp_err_t err = spi_device_polling_transmit(dev->spi, &t);
+    if (err == ESP_OK) {
+        memcpy(data, &rx_buf[1], len);
+    }
+    heap_caps_free(tx_heap);
+    heap_caps_free(rx_heap);
+    spi_unlock(dev);
+    return err;
+}
+
+static esp_err_t reg_read(node_acc_adxl355_dev_t *dev, uint8_t reg, uint8_t *val)
+{
+    uint8_t cmd = (uint8_t)((reg << 1) | 0x01u);
+    return spi_read_after_cmd(dev, cmd, val, 1);
+}
+
+static esp_err_t reg_write(node_acc_adxl355_dev_t *dev, uint8_t reg, uint8_t val)
+{
+    if (dev == NULL || dev->spi == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    uint8_t cmd = (uint8_t)(reg << 1);
+    uint8_t tx_buf[2] = {cmd, val};
+    uint8_t rx_buf[2];
+
+    spi_lock(dev);
+    spi_transaction_t t = {0};
+    t.length = 16;
+    t.tx_buffer = tx_buf;
+    t.rx_buffer = rx_buf;
+    esp_err_t err = spi_device_polling_transmit(dev->spi, &t);
+    spi_unlock(dev);
+    return err;
+}
+
+static esp_err_t regs_read(node_acc_adxl355_dev_t *dev, uint8_t reg, uint8_t *data, size_t len)
+{
+    uint8_t cmd = (uint8_t)((reg << 1) | 0x01u);
+    return spi_read_after_cmd(dev, cmd, data, len);
+}
+
+static esp_err_t regs_write(node_acc_adxl355_dev_t *dev, uint8_t reg, const uint8_t *data, size_t len)
+{
+    if (dev == NULL || dev->spi == NULL || data == NULL || len == 0) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    const size_t total = 1u + len;
+    if (total > 64u) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    uint8_t tx_buf[64];
+    uint8_t rx_buf[64];
+    tx_buf[0] = (uint8_t)(reg << 1);
+    memcpy(&tx_buf[1], data, len);
+
+    spi_lock(dev);
+    spi_transaction_t t = {0};
+    t.length = (uint32_t)(total * 8u);
+    t.tx_buffer = tx_buf;
+    t.rx_buffer = rx_buf;
+    esp_err_t err = spi_device_polling_transmit(dev->spi, &t);
+    spi_unlock(dev);
+    return err;
+}
+
+static int32_t axis_raw_from_3bytes(const uint8_t data[3])
+{
+    int32_t v = 0;
+    ((uint8_t *)&v)[1] = data[2];
+    ((uint8_t *)&v)[2] = data[1];
+    ((uint8_t *)&v)[3] = data[0];
+    return v / 4096;
+}
+
+static bool fifo_frame_is_x_header(const uint8_t frame[9])
+{
+    return ((frame[2] & 1u) != 0) && ((frame[2] & 2u) == 0);
+}
+
+static void fifo_xyz_from_frame(const uint8_t *p, node_acc_adxl355_raw_xyz_t *out)
+{
+    out->x = axis_raw_from_3bytes(&p[0]);
+    out->y = axis_raw_from_3bytes(&p[3]);
+    out->z = axis_raw_from_3bytes(&p[6]);
+}
+
+static void raw_xyz_from_bytes(const uint8_t data[9], node_acc_adxl355_raw_xyz_t *out)
+{
+    int32_t x = 0;
+    int32_t y = 0;
+    int32_t z = 0;
+    ((uint8_t *)&x)[1] = data[2];
+    ((uint8_t *)&x)[2] = data[1];
+    ((uint8_t *)&x)[3] = data[0];
+    ((uint8_t *)&y)[1] = data[5];
+    ((uint8_t *)&y)[2] = data[4];
+    ((uint8_t *)&y)[3] = data[3];
+    ((uint8_t *)&z)[1] = data[8];
+    ((uint8_t *)&z)[2] = data[7];
+    ((uint8_t *)&z)[3] = data[6];
+    out->x = x / 4096;
+    out->y = y / 4096;
+    out->z = z / 4096;
+}
+
+static float scale_for_range(node_acc_adxl355_range_t range)
+{
+    switch (range) {
+    case NODE_ACC_ADXL355_RANGE_2G:
+        return k_scale_2g;
+    case NODE_ACC_ADXL355_RANGE_4G:
+        return k_scale_4g;
+    case NODE_ACC_ADXL355_RANGE_8G:
+        return k_scale_8g;
     default:
-        ESP_LOGE(TAG, "Invalid range setting: %d", range);
+        return k_scale_2g;
+    }
+}
+
+/** POWER_CTL TEMP_OFF: Analog MEAS_TEMP_OFF_* vs MEAS_TEMP_ON_* (driver/ref-adxl355 adxl355_op_mode). */
+static esp_err_t apply_meas_mode_hw(node_acc_adxl355_dev_t *dev)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+    switch (dev->meas_mode) {
+    case NODE_ACC_ADXL355_MEAS_ACCEL_AND_TEMP:
+        return node_acc_adxl355_enable_temperature(dev);
+    case NODE_ACC_ADXL355_MEAS_ACCEL_ONLY:
+        return node_acc_adxl355_disable_temperature(dev);
+    case NODE_ACC_ADXL355_MEAS_TEMP_ONLY:
+        return node_acc_adxl355_enable_temperature(dev);
+    default:
         return ESP_ERR_INVALID_ARG;
     }
+}
 
-    /* Reset device */
-    ESP_LOGI(TAG, "Resetting ADXL355 device...");
-    ret = adxl355_reset(handle);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to reset device: %s", esp_err_to_name(ret));
-        return ret;
+esp_err_t node_acc_adxl355_set_measurement_mode(node_acc_adxl355_dev_t *dev, node_acc_adxl355_meas_mode_t mode)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+    dev->meas_mode = mode;
+    return apply_meas_mode_hw(dev);
+}
+
+esp_err_t node_acc_adxl355_get_measurement_mode(node_acc_adxl355_dev_t *dev, node_acc_adxl355_meas_mode_t *mode)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && mode != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+    *mode = dev->meas_mode;
+    return ESP_OK;
+}
+
+esp_err_t node_acc_adxl355_init(node_acc_adxl355_dev_t *dev, const node_acc_adxl355_config_t *cfg,
+                                node_acc_adxl355_range_t range, node_acc_adxl355_odr_t odr)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && cfg != NULL, ESP_ERR_INVALID_ARG, TAG, "null arg");
+
+    memset(dev, 0, sizeof(*dev));
+    dev->gpio_drdy = cfg->gpio_drdy;
+    dev->drdy_intr_type = cfg->drdy_intr_type;
+    dev->gpio_int1 = cfg->gpio_int1;
+    dev->gpio_int2 = cfg->gpio_int2;
+    dev->int1_intr_type = cfg->int1_intr_type;
+    dev->int2_intr_type = cfg->int2_intr_type;
+
+    esp_err_t err = dev_spi_add(dev, cfg);
+    if (err != ESP_OK) {
+        return err;
     }
-    ESP_LOGI(TAG, "Device reset completed");
 
-    /* Wait for reset to complete */
+    if (cfg->spi_mutex_enable) {
+        dev->spi_mutex = xSemaphoreCreateRecursiveMutex();
+        if (dev->spi_mutex == NULL) {
+            (void)dev_spi_remove(dev);
+            return ESP_ERR_NO_MEM;
+        }
+    }
+
+    dev->range = range;
+    dev->odr = odr;
+    dev->scale_factor = scale_for_range(range);
+
+    err = node_acc_adxl355_reset(dev);
+    if (err != ESP_OK) {
+        goto fail;
+    }
     vTaskDelay(pdMS_TO_TICKS(100));
 
-    /* Read device info to verify communication */
-    ESP_LOGI(TAG, "Reading device information...");
-    adxl355_device_info_t device_info;
-    ret = adxl355_read_device_info(handle, &device_info);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to read device info: %s", esp_err_to_name(ret));
-        return ret;
+    node_acc_adxl355_ids_t ids = {0};
+    err = node_acc_adxl355_read_ids(dev, &ids);
+    if (err != ESP_OK) {
+        goto fail;
+    }
+    if (ids.devid_ad != NODE_ACC_ADXL355_EXPECT_DEVID_AD || ids.devid_mst != NODE_ACC_ADXL355_EXPECT_DEVID_MST ||
+        ids.partid != NODE_ACC_ADXL355_EXPECT_PARTID) {
+        ESP_LOGE(TAG, "ID mismatch: AD=0x%02X MST=0x%02X PART=0x%02X", ids.devid_ad, ids.devid_mst, ids.partid);
+        err = ESP_ERR_NOT_FOUND;
+        goto fail;
     }
 
-    ESP_LOGI(TAG, "Device ID: 0x%02X, Vendor ID: 0x%02X", device_info.device_id, device_info.vendor_id);
-
-    /* Set range and ODR */
-    ESP_LOGI(TAG, "Setting range to %s...", adxl355_get_range_string(range));
-    ret = adxl355_set_range(handle, range);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to set range: %s", esp_err_to_name(ret));
-        return ret;
+    err = node_acc_adxl355_set_range(dev, range);
+    if (err != ESP_OK) {
+        goto fail;
     }
-    ESP_LOGI(TAG, "Range set successfully");
-
-    ESP_LOGI(TAG, "Setting ODR to %s...", adxl355_get_odr_string(odr));
-    ret = adxl355_set_odr(handle, odr);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to set ODR: %s", esp_err_to_name(ret));
-        return ret;
+    err = node_acc_adxl355_set_odr(dev, odr);
+    if (err != ESP_OK) {
+        goto fail;
     }
-    ESP_LOGI(TAG, "ODR set successfully");
-
-    /* Enable measurement mode */
-    ESP_LOGI(TAG, "Enabling measurement mode...");
-    ret = adxl355_enable_measurement(handle);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to enable measurement: %s", esp_err_to_name(ret));
-        return ret;
+    err = node_acc_adxl355_enable_measurement(dev);
+    if (err != ESP_OK) {
+        goto fail;
     }
-    ESP_LOGI(TAG, "Measurement mode enabled");
-
-    /* Enable temperature processing */
-    ESP_LOGI(TAG, "Enabling temperature processing...");
-    ret = adxl355_enable_temperature(handle);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to enable temperature: %s", esp_err_to_name(ret));
-        return ret;
+    dev->meas_mode = cfg->meas_mode;
+    err = apply_meas_mode_hw(dev);
+    if (err != ESP_OK) {
+        goto fail;
     }
-    ESP_LOGI(TAG, "Temperature processing enabled");
+    err = node_acc_adxl355_enable_data_ready_pin(dev);
+    if (err != ESP_OK) {
+        goto fail;
+    }
 
-    ESP_LOGI(TAG, "=== ADXL355 INITIALIZATION COMPLETED SUCCESSFULLY ===");
-    ESP_LOGI(TAG, "Final configuration: range=%s, ODR=%s, scale_factor=%.2e g/LSB",
-             adxl355_get_range_string(handle->range), adxl355_get_odr_string(handle->odr), handle->scale_factor);
+    if (cfg->log_info_on_init) {
+        ESP_LOGI(TAG, "init ok: range=%u odr=%u mode=%u", (unsigned)range, (unsigned)odr, (unsigned)dev->meas_mode);
+    }
+    return ESP_OK;
+
+fail:
+    dev_free_hw(dev);
+    return err;
+}
+
+esp_err_t node_acc_adxl355_deinit(node_acc_adxl355_dev_t *dev)
+{
+    if (dev == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    (void)node_acc_adxl355_int_isr_remove(dev);
+    (void)node_acc_adxl355_drdy_isr_remove(dev);
+
+    if (dev->spi_mutex != NULL) {
+        xSemaphoreTakeRecursive(dev->spi_mutex, portMAX_DELAY);
+    }
+
+    if (dev->spi != NULL) {
+        node_acc_adxl355_int_map_t zmap = {0};
+        (void)node_acc_adxl355_int_map_write(dev, &zmap);
+        (void)node_acc_adxl355_disable_data_ready_pin(dev);
+        (void)node_acc_adxl355_disable_measurement(dev);
+        (void)dev_spi_remove(dev);
+    }
+
+    if (dev->spi_mutex != NULL) {
+        vSemaphoreDelete(dev->spi_mutex);
+        dev->spi_mutex = NULL;
+    }
+
+    memset(dev, 0, sizeof(*dev));
     return ESP_OK;
 }
 
-//==============================================================================
-
-esp_err_t adxl355_deinit(adxl355_handle_t *handle)
+esp_err_t node_acc_adxl355_reset(node_acc_adxl355_dev_t *dev)
 {
-    if (handle == NULL)
-    {
-        return ESP_ERR_INVALID_ARG;
-    }
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+    return reg_write(dev, NODE_ACC_ADXL355_REG_RESET, NODE_ACC_ADXL355_REG_RESET_CODE);
+}
 
-    /* Disable measurement mode */
-    esp_err_t ret = adxl355_disable_measurement(handle);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGW(TAG, "Failed to disable measurement during deinit");
-    }
+esp_err_t node_acc_adxl355_read_ids(node_acc_adxl355_dev_t *dev, node_acc_adxl355_ids_t *ids)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && ids != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
 
-    /* Clear handle */
-    handle->spi_handle = NULL;
-    handle->range = 0;
-    handle->odr = 0;
-    handle->scale_factor = 0.0f;
-
+    uint8_t b[4] = {0};
+    ESP_RETURN_ON_ERROR(regs_read(dev, NODE_ACC_ADXL355_REG_DEVID_AD, b, sizeof(b)), TAG, "regs");
+    ids->devid_ad = b[0];
+    ids->devid_mst = b[1];
+    ids->partid = b[2];
+    ids->revid = b[3];
     return ESP_OK;
 }
 
-//==============================================================================
-
-esp_err_t adxl355_reset(adxl355_handle_t *handle)
+esp_err_t node_acc_adxl355_read_status(node_acc_adxl355_dev_t *dev, uint8_t *status)
 {
-    if (handle == NULL)
-    {
-        return ESP_ERR_INVALID_ARG;
+    ESP_RETURN_ON_FALSE(dev != NULL && status != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+    return reg_read(dev, NODE_ACC_ADXL355_REG_STATUS, status);
+}
+
+esp_err_t node_acc_adxl355_read_raw_xyz(node_acc_adxl355_dev_t *dev, node_acc_adxl355_raw_xyz_t *out)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && out != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+    if (dev->meas_mode == NODE_ACC_ADXL355_MEAS_TEMP_ONLY) {
+        return ESP_ERR_INVALID_STATE;
     }
 
-    /* Send reset command */
-    esp_err_t ret = adxl355_write_register(handle, ADXL355_REG_RESET, ADXL355_REG_RESET_RESET_CODE);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to send reset command");
-        return ret;
-    }
-
+    uint8_t data[9] = {0};
+    ESP_RETURN_ON_ERROR(regs_read(dev, NODE_ACC_ADXL355_REG_XDATA3, data, sizeof(data)), TAG, "burst");
+    raw_xyz_from_bytes(data, out);
     return ESP_OK;
 }
 
-//==============================================================================
-
-esp_err_t adxl355_read_device_info(adxl355_handle_t *handle, adxl355_device_info_t *device_info)
+esp_err_t node_acc_adxl355_read_g(node_acc_adxl355_dev_t *dev, node_acc_adxl355_g_t *out)
 {
-    esp_err_t ret;
-    uint8_t data[4];
+    ESP_RETURN_ON_FALSE(dev != NULL && out != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
 
-    if (handle == NULL || device_info == NULL)
-    {
-        ESP_LOGE(TAG, "Invalid arguments: handle=%p, device_info=%p", (void *)handle, (void *)device_info);
-        return ESP_ERR_INVALID_ARG;
-    }
+    node_acc_adxl355_raw_xyz_t raw = {0};
+    ESP_RETURN_ON_ERROR(node_acc_adxl355_read_raw_xyz(dev, &raw), TAG, "raw");
 
-    /* Read 4 bytes starting from DEVID_AD register */
-    ret = adxl355_read_registers(handle, ADXL355_REG_DEVID_AD, data, 4);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to read device info registers: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
-    /* Extract device information (exactly like plasmapper) */
-    device_info->vendor_id = data[0];
-    device_info->family_id = data[1];
-    device_info->device_id = data[2];
-    device_info->revision_id = data[3];
-
+    float s = 0.0f;
+    ESP_RETURN_ON_ERROR(node_acc_adxl355_acceleration_scale_g_per_lsb(dev, &s), TAG, "scale");
+    out->x = (float)raw.x * s;
+    out->y = (float)raw.y * s;
+    out->z = (float)raw.z * s;
     return ESP_OK;
 }
 
-//==============================================================================
-
-esp_err_t adxl355_read_status(adxl355_handle_t *handle, adxl355_status_t *status)
+esp_err_t node_acc_adxl355_read_raw_temp(node_acc_adxl355_dev_t *dev, uint16_t *raw_temp)
 {
-    if (handle == NULL || status == NULL)
-    {
-        return ESP_ERR_INVALID_ARG;
+    ESP_RETURN_ON_FALSE(dev != NULL && raw_temp != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+    if (dev->meas_mode == NODE_ACC_ADXL355_MEAS_ACCEL_ONLY) {
+        return ESP_ERR_INVALID_STATE;
     }
 
-    uint8_t status_reg;
-    esp_err_t ret = adxl355_read_register(handle, ADXL355_REG_STATUS, &status_reg);
-    if (ret != ESP_OK)
-    {
-        return ret;
-    }
-
-    *status = (adxl355_status_t)status_reg;
-    return ESP_OK;
-}
-
-//==============================================================================
-
-esp_err_t adxl355_read_raw_accelerations(adxl355_handle_t *handle, adxl355_raw_accelerations_t *raw_accel)
-{
-    esp_err_t ret;
-    uint8_t data[9];
-
-    if (handle == NULL || raw_accel == NULL)
-    {
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    /* Read 9 bytes starting from XDATA3 register */
-    ret = adxl355_read_registers(handle, ADXL355_REG_XDATA3, data, 9);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to read acceleration data");
-        return ret;
-    }
-
-    /* Initialize to 0 (exactly like plasmapper) */
-    raw_accel->x = 0;
-    raw_accel->y = 0;
-    raw_accel->z = 0;
-
-    /* Reconstruct 20-bit values (exactly like plasmapper) */
-    /* X-axis: data[2], data[1], data[0] */
-    ((uint8_t *)&raw_accel->x)[1] = data[2];
-    ((uint8_t *)&raw_accel->x)[2] = data[1];
-    ((uint8_t *)&raw_accel->x)[3] = data[0];
-
-    /* Y-axis: data[5], data[4], data[3] */
-    ((uint8_t *)&raw_accel->y)[1] = data[5];
-    ((uint8_t *)&raw_accel->y)[2] = data[4];
-    ((uint8_t *)&raw_accel->y)[3] = data[3];
-
-    /* Z-axis: data[8], data[7], data[6] */
-    ((uint8_t *)&raw_accel->z)[1] = data[8];
-    ((uint8_t *)&raw_accel->z)[2] = data[7];
-    ((uint8_t *)&raw_accel->z)[3] = data[6];
-
-    /* Convert to 20-bit signed values (divide by 4096) */
-    raw_accel->x /= 4096;
-    raw_accel->y /= 4096;
-    raw_accel->z /= 4096;
-
-    return ESP_OK;
-}
-
-//==============================================================================
-
-esp_err_t adxl355_read_accelerations(adxl355_handle_t *handle, adxl355_accelerations_t *accel)
-{
-    esp_err_t ret;
-    adxl355_raw_accelerations_t raw_accel;
-    float scale_factor;
-
-    if (handle == NULL || accel == NULL)
-    {
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    /* Read raw accelerations */
-    ret = adxl355_read_raw_accelerations(handle, &raw_accel);
-    if (ret != ESP_OK)
-    {
-        return ret;
-    }
-
-    /* Get current scale factor */
-    ret = adxl355_read_acceleration_scale_factor(handle, &scale_factor);
-    if (ret != ESP_OK)
-    {
-        return ret;
-    }
-
-    /* Convert to g units */
-    accel->x = raw_accel.x * scale_factor;
-    accel->y = raw_accel.y * scale_factor;
-    accel->z = raw_accel.z * scale_factor;
-
-    return ESP_OK;
-}
-
-//==============================================================================
-
-esp_err_t adxl355_read_raw_temperature(adxl355_handle_t *handle, uint16_t *raw_temp)
-{
-    esp_err_t ret;
-    uint8_t data[2];
-
-    if (handle == NULL || raw_temp == NULL)
-    {
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    /* Read 2 bytes starting from TEMP2 register */
-    ret = adxl355_read_registers(handle, ADXL355_REG_TEMP2, data, 2);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to read temperature data");
-        return ret;
-    }
-
-    /* Reconstruct 16-bit value (exactly like plasmapper) */
+    uint8_t data[2] = {0};
+    ESP_RETURN_ON_ERROR(regs_read(dev, NODE_ACC_ADXL355_REG_TEMP2, data, sizeof(data)), TAG, "temp regs");
     ((uint8_t *)raw_temp)[0] = data[1];
     ((uint8_t *)raw_temp)[1] = data[0];
-
     return ESP_OK;
 }
 
-//==============================================================================
-
-esp_err_t adxl355_read_temperature(adxl355_handle_t *handle, float *temp)
+esp_err_t node_acc_adxl355_read_temp_c(node_acc_adxl355_dev_t *dev, float *temp_c)
 {
-    esp_err_t ret;
-    uint16_t raw_temp;
-
-    if (handle == NULL || temp == NULL)
-    {
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    /* Read raw temperature */
-    ret = adxl355_read_raw_temperature(handle, &raw_temp);
-    if (ret != ESP_OK)
-    {
-        return ret;
-    }
-
-    /* Convert to °C using plasmapper's formula */
-    *temp = (((int16_t)raw_temp) - ((int16_t)ADXL355_TEMPERATURE_INTERCEPT_LSB)) /
-                ADXL355_TEMPERATURE_SLOPE +
-            ADXL355_TEMPERATURE_INTERCEPT_DEG_C;
-
-    return ESP_OK;
-}
-
-//==============================================================================
-
-esp_err_t adxl355_set_range(adxl355_handle_t *handle, adxl355_range_t range)
-{
-    esp_err_t ret;
-    uint8_t range_register;
-
-    if (handle == NULL)
-    {
-        ESP_LOGE(TAG, "Invalid handle: NULL");
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    ESP_LOGI(TAG, "Setting ADXL355 range to %s...", adxl355_get_range_string(range));
-
-    /* Read current range register value like plasmapper */
-    ret = adxl355_read_register(handle, ADXL355_REG_RANGE, &range_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to read range register: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
-    /* Clear range bits (bits 0-1) like plasmapper */
-    range_register &= ~ADXL355_REG_RANGE_RANGE_MASK;
-
-    /* Set new range value */
-    uint8_t new_range_value = range & ADXL355_REG_RANGE_RANGE_MASK;
-    range_register |= new_range_value;
-
-    /* Write updated register value */
-    ret = adxl355_write_register(handle, ADXL355_REG_RANGE, range_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to write range register: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
-    /* Verify the write by reading back */
-    uint8_t verify_register;
-    ret = adxl355_read_register(handle, ADXL355_REG_RANGE, &verify_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to verify range register: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
-    if (verify_register != range_register)
-    {
-        ESP_LOGE(TAG, "Range register verification failed! Expected: 0x%02X, Got: 0x%02X",
-                 range_register, verify_register);
+    ESP_RETURN_ON_FALSE(dev != NULL && temp_c != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+    if (dev->meas_mode == NODE_ACC_ADXL355_MEAS_ACCEL_ONLY) {
         return ESP_ERR_INVALID_STATE;
     }
 
-    /* Update scale factor */
-    float old_scale_factor = handle->scale_factor;
-    switch (range)
-    {
-    case ADXL355_RANGE_2G:
-        handle->scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_2G;
-        break;
-    case ADXL355_RANGE_4G:
-        handle->scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_4G;
-        break;
-    case ADXL355_RANGE_8G:
-        handle->scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_8G;
-        break;
-    default:
-        ESP_LOGE(TAG, "Invalid range value: %d", range);
-        return ESP_ERR_INVALID_ARG;
-    }
+    uint16_t raw = 0;
+    ESP_RETURN_ON_ERROR(node_acc_adxl355_read_raw_temp(dev, &raw), TAG, "raw temp");
 
-    handle->range = range;
-    ESP_LOGI(TAG, "Range changed from %.2e to %s, scale factor: %.2e g/LSB",
-             old_scale_factor, adxl355_get_range_string(range), handle->scale_factor);
+    float v = ((float)(int16_t)raw - k_temp_intercept_lsb) / k_temp_slope_lsb_per_c + k_temp_ref_c;
+    *temp_c = v;
     return ESP_OK;
 }
 
-//==============================================================================
-
-esp_err_t adxl355_read_range(adxl355_handle_t *handle, adxl355_range_t *range)
+esp_err_t node_acc_adxl355_set_range(node_acc_adxl355_dev_t *dev, node_acc_adxl355_range_t range)
 {
-    esp_err_t ret;
-    uint8_t range_register;
-
-    if (handle == NULL || range == NULL)
-    {
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+    if (range != NODE_ACC_ADXL355_RANGE_2G && range != NODE_ACC_ADXL355_RANGE_4G &&
+        range != NODE_ACC_ADXL355_RANGE_8G) {
         return ESP_ERR_INVALID_ARG;
     }
 
-    ret = adxl355_read_register(handle, ADXL355_REG_RANGE, &range_register);
-    if (ret != ESP_OK)
-    {
-        return ret;
-    }
+    uint8_t r = 0;
+    ESP_RETURN_ON_ERROR(reg_read(dev, NODE_ACC_ADXL355_REG_RANGE, &r), TAG, "read range");
+    r = (uint8_t)((r & (uint8_t)~NODE_ACC_ADXL355_REG_RANGE_RANGE_MASK) | (range & NODE_ACC_ADXL355_REG_RANGE_RANGE_MASK));
+    ESP_RETURN_ON_ERROR(reg_write(dev, NODE_ACC_ADXL355_REG_RANGE, r), TAG, "write range");
 
-    *range = (adxl355_range_t)(range_register & ADXL355_REG_RANGE_RANGE_MASK);
-    return ESP_OK;
-}
-
-//==============================================================================
-
-esp_err_t adxl355_set_odr(adxl355_handle_t *handle, adxl355_output_data_rate_t odr)
-{
-    esp_err_t ret;
-    uint8_t filter_reg;
-
-    if (handle == NULL)
-    {
-        ESP_LOGE(TAG, "Invalid handle: NULL");
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    ESP_LOGI(TAG, "Setting ADXL355 ODR to %s...", adxl355_get_odr_string(odr));
-
-    /* Read current filter register value */
-    ret = adxl355_read_register(handle, ADXL355_REG_FILTER, &filter_reg);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to read filter register: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
-    /* Clear ODR bits and set new value (like plasmapper) */
-    uint8_t old_odr = filter_reg & ADXL355_REG_FILTER_ODR_MASK;
-    filter_reg &= ~ADXL355_REG_FILTER_ODR_MASK;
-
-    uint8_t new_odr_value = odr & ADXL355_REG_FILTER_ODR_MASK;
-    filter_reg |= new_odr_value;
-
-    /* Write updated register value */
-    ret = adxl355_write_register(handle, ADXL355_REG_FILTER, filter_reg);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to write filter register: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
-    /* Verify the write by reading back */
-    uint8_t verify_register;
-    ret = adxl355_read_register(handle, ADXL355_REG_FILTER, &verify_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to verify filter register: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
-    if (verify_register != filter_reg)
-    {
-        ESP_LOGE(TAG, "Filter register verification failed! Expected: 0x%02X, Got: 0x%02X",
-                 filter_reg, verify_register);
+    uint8_t verify = 0;
+    ESP_RETURN_ON_ERROR(reg_read(dev, NODE_ACC_ADXL355_REG_RANGE, &verify), TAG, "verify range");
+    if (verify != r) {
         return ESP_ERR_INVALID_STATE;
     }
 
-    handle->odr = odr;
-    ESP_LOGI(TAG, "ODR changed from %s to %s",
-             adxl355_get_odr_string(old_odr), adxl355_get_odr_string(odr));
+    dev->range = range;
+    dev->scale_factor = scale_for_range(range);
     return ESP_OK;
 }
 
-//==============================================================================
-
-esp_err_t adxl355_read_odr(adxl355_handle_t *handle, adxl355_output_data_rate_t *odr)
+esp_err_t node_acc_adxl355_get_range(node_acc_adxl355_dev_t *dev, node_acc_adxl355_range_t *range)
 {
-    esp_err_t ret;
-    uint8_t filter_reg;
+    ESP_RETURN_ON_FALSE(dev != NULL && range != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
 
-    if (handle == NULL || odr == NULL)
-    {
+    uint8_t r = 0;
+    ESP_RETURN_ON_ERROR(reg_read(dev, NODE_ACC_ADXL355_REG_RANGE, &r), TAG, "read");
+    *range = (node_acc_adxl355_range_t)(r & NODE_ACC_ADXL355_REG_RANGE_RANGE_MASK);
+    return ESP_OK;
+}
+
+esp_err_t node_acc_adxl355_set_odr(node_acc_adxl355_dev_t *dev, node_acc_adxl355_odr_t odr)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+
+    uint8_t f = 0;
+    ESP_RETURN_ON_ERROR(reg_read(dev, NODE_ACC_ADXL355_REG_FILTER, &f), TAG, "read filter");
+    f = (uint8_t)((f & (uint8_t)~NODE_ACC_ADXL355_REG_FILTER_ODR_MASK) | ((uint8_t)odr & NODE_ACC_ADXL355_REG_FILTER_ODR_MASK));
+    ESP_RETURN_ON_ERROR(reg_write(dev, NODE_ACC_ADXL355_REG_FILTER, f), TAG, "write filter");
+
+    uint8_t verify = 0;
+    ESP_RETURN_ON_ERROR(reg_read(dev, NODE_ACC_ADXL355_REG_FILTER, &verify), TAG, "verify");
+    if (verify != f) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    dev->odr = odr;
+    return ESP_OK;
+}
+
+esp_err_t node_acc_adxl355_get_odr(node_acc_adxl355_dev_t *dev, node_acc_adxl355_odr_t *odr)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && odr != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+
+    uint8_t f = 0;
+    ESP_RETURN_ON_ERROR(reg_read(dev, NODE_ACC_ADXL355_REG_FILTER, &f), TAG, "read");
+    *odr = (node_acc_adxl355_odr_t)(f & NODE_ACC_ADXL355_REG_FILTER_ODR_MASK);
+    return ESP_OK;
+}
+
+esp_err_t node_acc_adxl355_enable_measurement(node_acc_adxl355_dev_t *dev)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+
+    uint8_t p = 0;
+    ESP_RETURN_ON_ERROR(reg_read(dev, NODE_ACC_ADXL355_REG_POWER_CTL, &p), TAG, "read");
+    p = (uint8_t)(p & (uint8_t)~NODE_ACC_ADXL355_REG_POWER_CTL_STANDBY);
+    return reg_write(dev, NODE_ACC_ADXL355_REG_POWER_CTL, p);
+}
+
+esp_err_t node_acc_adxl355_disable_measurement(node_acc_adxl355_dev_t *dev)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+
+    uint8_t p = 0;
+    ESP_RETURN_ON_ERROR(reg_read(dev, NODE_ACC_ADXL355_REG_POWER_CTL, &p), TAG, "read");
+    p |= NODE_ACC_ADXL355_REG_POWER_CTL_STANDBY;
+    return reg_write(dev, NODE_ACC_ADXL355_REG_POWER_CTL, p);
+}
+
+esp_err_t node_acc_adxl355_enable_temperature(node_acc_adxl355_dev_t *dev)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+
+    uint8_t p = 0;
+    ESP_RETURN_ON_ERROR(reg_read(dev, NODE_ACC_ADXL355_REG_POWER_CTL, &p), TAG, "read");
+    p = (uint8_t)(p & (uint8_t)~NODE_ACC_ADXL355_REG_POWER_CTL_TEMP_OFF);
+    return reg_write(dev, NODE_ACC_ADXL355_REG_POWER_CTL, p);
+}
+
+esp_err_t node_acc_adxl355_disable_temperature(node_acc_adxl355_dev_t *dev)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+
+    uint8_t p = 0;
+    ESP_RETURN_ON_ERROR(reg_read(dev, NODE_ACC_ADXL355_REG_POWER_CTL, &p), TAG, "read");
+    p |= NODE_ACC_ADXL355_REG_POWER_CTL_TEMP_OFF;
+    return reg_write(dev, NODE_ACC_ADXL355_REG_POWER_CTL, p);
+}
+
+esp_err_t node_acc_adxl355_enable_data_ready_pin(node_acc_adxl355_dev_t *dev)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+
+    uint8_t p = 0;
+    ESP_RETURN_ON_ERROR(reg_read(dev, NODE_ACC_ADXL355_REG_POWER_CTL, &p), TAG, "read");
+    p = (uint8_t)(p & (uint8_t)~NODE_ACC_ADXL355_REG_POWER_CTL_DRDY_OFF);
+    return reg_write(dev, NODE_ACC_ADXL355_REG_POWER_CTL, p);
+}
+
+esp_err_t node_acc_adxl355_disable_data_ready_pin(node_acc_adxl355_dev_t *dev)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+
+    uint8_t p = 0;
+    ESP_RETURN_ON_ERROR(reg_read(dev, NODE_ACC_ADXL355_REG_POWER_CTL, &p), TAG, "read");
+    p |= NODE_ACC_ADXL355_REG_POWER_CTL_DRDY_OFF;
+    return reg_write(dev, NODE_ACC_ADXL355_REG_POWER_CTL, p);
+}
+
+esp_err_t node_acc_adxl355_acceleration_scale_g_per_lsb(node_acc_adxl355_dev_t *dev, float *scale)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && scale != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+
+    node_acc_adxl355_range_t range = NODE_ACC_ADXL355_RANGE_2G;
+    ESP_RETURN_ON_ERROR(node_acc_adxl355_get_range(dev, &range), TAG, "range");
+    *scale = scale_for_range(range);
+    return ESP_OK;
+}
+
+esp_err_t node_acc_adxl355_drdy_isr_install(node_acc_adxl355_dev_t *dev)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+    if (dev->gpio_drdy == GPIO_NUM_NC) {
+        return ESP_ERR_NOT_SUPPORTED;
+    }
+    if (dev->drdy_intr_type == GPIO_INTR_DISABLE) {
         return ESP_ERR_INVALID_ARG;
     }
 
-    ret = adxl355_read_register(handle, ADXL355_REG_FILTER, &filter_reg);
-    if (ret != ESP_OK)
-    {
-        return ret;
+    if (dev->drdy_sem == NULL) {
+        dev->drdy_sem = xSemaphoreCreateBinary();
+        ESP_RETURN_ON_FALSE(dev->drdy_sem != NULL, ESP_ERR_NO_MEM, TAG, "sem");
+    }
+    if (dev->drdy_isr_installed) {
+        return ESP_OK;
     }
 
-    *odr = (adxl355_output_data_rate_t)(filter_reg & ADXL355_REG_FILTER_ODR_MASK);
+    ESP_RETURN_ON_ERROR(gpio_isr_service_ensure_installed(), TAG, "isr_service");
+
+    gpio_reset_pin(dev->gpio_drdy);
+    gpio_config_t io = {
+        .pin_bit_mask = 1ULL << (unsigned)dev->gpio_drdy,
+        .mode = GPIO_MODE_INPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = dev->drdy_intr_type,
+    };
+    ESP_RETURN_ON_ERROR(gpio_config(&io), TAG, "gpio_config");
+    ESP_RETURN_ON_ERROR(gpio_isr_handler_add(dev->gpio_drdy, node_acc_adxl355_sem_isr, dev->drdy_sem), TAG,
+                        "isr_add");
+    dev->drdy_isr_installed = true;
+    gpio_intr_enable(dev->gpio_drdy);
     return ESP_OK;
 }
 
-//==============================================================================
-
-esp_err_t adxl355_enable_measurement(adxl355_handle_t *handle)
+esp_err_t node_acc_adxl355_drdy_isr_remove(node_acc_adxl355_dev_t *dev)
 {
-    esp_err_t ret;
-    uint8_t power_ctl_register;
-
-    if (handle == NULL)
-    {
+    if (dev == NULL) {
         return ESP_ERR_INVALID_ARG;
     }
-
-    /* Read current power control register value */
-    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to read power control register");
-        return ret;
+    if (!dev->drdy_isr_installed) {
+        if (dev->drdy_sem != NULL) {
+            vSemaphoreDelete(dev->drdy_sem);
+            dev->drdy_sem = NULL;
+        }
+        return ESP_OK;
     }
 
-    /* Clear standby bit to enable measurement */
-    power_ctl_register &= ~ADXL355_REG_POWER_CTL_STANDBY;
+    gpio_intr_disable(dev->gpio_drdy);
+    (void)gpio_isr_handler_remove(dev->gpio_drdy);
+    gpio_reset_pin(dev->gpio_drdy);
+    dev->drdy_isr_installed = false;
 
-    /* Write updated register value */
-    ret = adxl355_write_register(handle, ADXL355_REG_POWER_CTL, power_ctl_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to enable measurement");
-        return ret;
+    if (dev->drdy_sem != NULL) {
+        vSemaphoreDelete(dev->drdy_sem);
+        dev->drdy_sem = NULL;
     }
-
     return ESP_OK;
 }
 
-//==============================================================================
-
-esp_err_t adxl355_disable_measurement(adxl355_handle_t *handle)
+esp_err_t node_acc_adxl355_drdy_wait(node_acc_adxl355_dev_t *dev, uint32_t timeout_ms)
 {
-    esp_err_t ret;
-    uint8_t power_ctl_register;
+    ESP_RETURN_ON_FALSE(dev != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+    ESP_RETURN_ON_FALSE(dev->drdy_sem != NULL, ESP_ERR_INVALID_STATE, TAG, "no sem (install ISR first)");
 
-    if (handle == NULL)
-    {
+    const TickType_t ticks = pdMS_TO_TICKS(timeout_ms);
+    return xSemaphoreTake(dev->drdy_sem, ticks) == pdTRUE ? ESP_OK : ESP_ERR_TIMEOUT;
+}
+
+static uint8_t int_map_pack(const node_acc_adxl355_int_map_t *m)
+{
+    uint8_t v = 0;
+    if (m->rdy_int1) {
+        v |= 1u << 0;
+    }
+    if (m->fifo_full_int1) {
+        v |= 1u << 1;
+    }
+    if (m->fifo_ovr_int1) {
+        v |= 1u << 2;
+    }
+    if (m->activity_int1) {
+        v |= 1u << 3;
+    }
+    if (m->rdy_int2) {
+        v |= 1u << 4;
+    }
+    if (m->fifo_full_int2) {
+        v |= 1u << 5;
+    }
+    if (m->fifo_ovr_int2) {
+        v |= 1u << 6;
+    }
+    if (m->activity_int2) {
+        v |= 1u << 7;
+    }
+    return v;
+}
+
+static void int_map_unpack(uint8_t v, node_acc_adxl355_int_map_t *m)
+{
+    m->rdy_int1 = (v & (1u << 0)) != 0;
+    m->fifo_full_int1 = (v & (1u << 1)) != 0;
+    m->fifo_ovr_int1 = (v & (1u << 2)) != 0;
+    m->activity_int1 = (v & (1u << 3)) != 0;
+    m->rdy_int2 = (v & (1u << 4)) != 0;
+    m->fifo_full_int2 = (v & (1u << 5)) != 0;
+    m->fifo_ovr_int2 = (v & (1u << 6)) != 0;
+    m->activity_int2 = (v & (1u << 7)) != 0;
+}
+
+esp_err_t node_acc_adxl355_int_map_write(node_acc_adxl355_dev_t *dev, const node_acc_adxl355_int_map_t *map)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && map != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+    uint8_t v = int_map_pack(map);
+    return reg_write(dev, NODE_ACC_ADXL355_REG_INT_MAP, v);
+}
+
+esp_err_t node_acc_adxl355_int_map_read(node_acc_adxl355_dev_t *dev, node_acc_adxl355_int_map_t *map)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && map != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+    uint8_t v = 0;
+    ESP_RETURN_ON_ERROR(reg_read(dev, NODE_ACC_ADXL355_REG_INT_MAP, &v), TAG, "read");
+    int_map_unpack(v, map);
+    return ESP_OK;
+}
+
+esp_err_t node_acc_adxl355_set_interrupt_polarity(node_acc_adxl355_dev_t *dev, node_acc_adxl355_int_pol_t pol)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+    uint8_t r = 0;
+    ESP_RETURN_ON_ERROR(reg_read(dev, NODE_ACC_ADXL355_REG_RANGE, &r), TAG, "read");
+    r = (uint8_t)((r & (uint8_t)~NODE_ACC_ADXL355_REG_RANGE_INT_POL_MASK) |
+                   (((uint8_t)pol << NODE_ACC_ADXL355_REG_RANGE_INT_POL_SHIFT) & NODE_ACC_ADXL355_REG_RANGE_INT_POL_MASK));
+    return reg_write(dev, NODE_ACC_ADXL355_REG_RANGE, r);
+}
+
+static esp_err_t int_gpio_install_one(gpio_num_t gpio, gpio_int_type_t intr, SemaphoreHandle_t *sem, bool *installed)
+{
+    if (gpio == GPIO_NUM_NC) {
+        return ESP_OK;
+    }
+    if (intr == GPIO_INTR_DISABLE) {
         return ESP_ERR_INVALID_ARG;
     }
-
-    /* Read current power control register value */
-    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to read power control register");
-        return ret;
+    if (*sem == NULL) {
+        *sem = xSemaphoreCreateBinary();
+        ESP_RETURN_ON_FALSE(*sem != NULL, ESP_ERR_NO_MEM, TAG, "sem");
+    }
+    if (*installed) {
+        return ESP_OK;
     }
 
-    /* Set standby bit to disable measurement */
-    power_ctl_register |= ADXL355_REG_POWER_CTL_STANDBY;
-
-    /* Write updated register value */
-    ret = adxl355_write_register(handle, ADXL355_REG_POWER_CTL, power_ctl_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to disable measurement");
-        return ret;
-    }
-
+    gpio_reset_pin(gpio);
+    gpio_config_t io = {
+        .pin_bit_mask = 1ULL << (unsigned)gpio,
+        .mode = GPIO_MODE_INPUT,
+        /* ADXL355 INT1/INT2 are open-drain active-low; idle high needs a pull (board or MCU). */
+        .pull_up_en = GPIO_PULLUP_ENABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = intr,
+    };
+    ESP_RETURN_ON_ERROR(gpio_config(&io), TAG, "gpio_config");
+    ESP_RETURN_ON_ERROR(gpio_isr_handler_add(gpio, node_acc_adxl355_sem_isr, *sem), TAG, "isr_add");
+    *installed = true;
+    gpio_intr_enable(gpio);
     return ESP_OK;
 }
 
-//==============================================================================
-
-esp_err_t adxl355_is_measurement_enabled(adxl355_handle_t *handle, bool *is_enabled)
+static void int_gpio_remove_one(gpio_num_t gpio, SemaphoreHandle_t *sem, bool *installed)
 {
-    esp_err_t ret;
-    uint8_t power_ctl_register;
+    if (gpio == GPIO_NUM_NC) {
+        return;
+    }
+    if (!*installed) {
+        if (*sem != NULL) {
+            vSemaphoreDelete(*sem);
+            *sem = NULL;
+        }
+        return;
+    }
+    gpio_intr_disable(gpio);
+    (void)gpio_isr_handler_remove(gpio);
+    gpio_reset_pin(gpio);
+    *installed = false;
+    if (*sem != NULL) {
+        vSemaphoreDelete(*sem);
+        *sem = NULL;
+    }
+}
 
-    if (handle == NULL || is_enabled == NULL)
-    {
+esp_err_t node_acc_adxl355_int_isr_install(node_acc_adxl355_dev_t *dev)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+    if (dev->gpio_int1 == GPIO_NUM_NC && dev->gpio_int2 == GPIO_NUM_NC) {
+        return ESP_ERR_NOT_SUPPORTED;
+    }
+
+    ESP_RETURN_ON_ERROR(gpio_isr_service_ensure_installed(), TAG, "isr_service");
+
+    esp_err_t e = int_gpio_install_one(dev->gpio_int1, dev->int1_intr_type, &dev->int1_sem, &dev->int1_isr_installed);
+    if (e != ESP_OK) {
+        return e;
+    }
+    e = int_gpio_install_one(dev->gpio_int2, dev->int2_intr_type, &dev->int2_sem, &dev->int2_isr_installed);
+    return e;
+}
+
+esp_err_t node_acc_adxl355_int_isr_remove(node_acc_adxl355_dev_t *dev)
+{
+    if (dev == NULL) {
         return ESP_ERR_INVALID_ARG;
     }
-
-    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
-    if (ret != ESP_OK)
-    {
-        return ret;
-    }
-
-    *is_enabled = !(power_ctl_register & ADXL355_REG_POWER_CTL_STANDBY);
+    int_gpio_remove_one(dev->gpio_int1, &dev->int1_sem, &dev->int1_isr_installed);
+    int_gpio_remove_one(dev->gpio_int2, &dev->int2_sem, &dev->int2_isr_installed);
     return ESP_OK;
 }
 
-//==============================================================================
-
-esp_err_t adxl355_enable_temperature(adxl355_handle_t *handle)
+esp_err_t node_acc_adxl355_int1_wait(node_acc_adxl355_dev_t *dev, uint32_t timeout_ms)
 {
-    esp_err_t ret;
-    uint8_t power_ctl_register;
+    ESP_RETURN_ON_FALSE(dev != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+    ESP_RETURN_ON_FALSE(dev->int1_sem != NULL, ESP_ERR_INVALID_STATE, TAG, "INT1 ISR not installed");
+    const TickType_t ticks = pdMS_TO_TICKS(timeout_ms);
+    return xSemaphoreTake(dev->int1_sem, ticks) == pdTRUE ? ESP_OK : ESP_ERR_TIMEOUT;
+}
 
-    if (handle == NULL)
-    {
+esp_err_t node_acc_adxl355_int2_wait(node_acc_adxl355_dev_t *dev, uint32_t timeout_ms)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+    ESP_RETURN_ON_FALSE(dev->int2_sem != NULL, ESP_ERR_INVALID_STATE, TAG, "INT2 ISR not installed");
+    const TickType_t ticks = pdMS_TO_TICKS(timeout_ms);
+    return xSemaphoreTake(dev->int2_sem, ticks) == pdTRUE ? ESP_OK : ESP_ERR_TIMEOUT;
+}
+
+esp_err_t node_acc_adxl355_set_fifo_samples(node_acc_adxl355_dev_t *dev, uint8_t samples)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+    if (samples > NODE_ACC_ADXL355_FIFO_SAMPLES_MAX) {
         return ESP_ERR_INVALID_ARG;
     }
+    return reg_write(dev, NODE_ACC_ADXL355_REG_FIFO_SAMPLES, samples);
+}
 
-    /* Read current power control register value */
-    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to read power control register");
-        return ret;
+esp_err_t node_acc_adxl355_get_fifo_samples(node_acc_adxl355_dev_t *dev, uint8_t *samples)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && samples != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+    return reg_read(dev, NODE_ACC_ADXL355_REG_FIFO_SAMPLES, samples);
+}
+
+esp_err_t node_acc_adxl355_read_fifo_entries(node_acc_adxl355_dev_t *dev, uint8_t *entries)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && entries != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+    return reg_read(dev, NODE_ACC_ADXL355_REG_FIFO_ENTRIES, entries);
+}
+
+esp_err_t node_acc_adxl355_read_fifo_xyz(node_acc_adxl355_dev_t *dev, node_acc_adxl355_raw_xyz_t *out,
+                                         size_t max_frames, size_t *out_frames)
+{
+    if (out_frames != NULL) {
+        *out_frames = 0;
+    }
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+    ESP_RETURN_ON_FALSE(out != NULL && max_frames > 0, ESP_ERR_INVALID_ARG, TAG, "out");
+    if (dev->meas_mode == NODE_ACC_ADXL355_MEAS_TEMP_ONLY) {
+        return ESP_ERR_INVALID_STATE;
     }
 
-    /* Clear temperature off bit to enable temperature processing */
-    power_ctl_register &= ~ADXL355_REG_POWER_CTL_TEMP_OFF;
-
-    /* Write updated register value */
-    ret = adxl355_write_register(handle, ADXL355_REG_POWER_CTL, power_ctl_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to enable temperature");
-        return ret;
+    uint8_t ent = 0;
+    ESP_RETURN_ON_ERROR(node_acc_adxl355_read_fifo_entries(dev, &ent), TAG, "fifo_entries");
+    uint8_t n = (uint8_t)(((unsigned)ent / 3u) * 3u);
+    if (n == 0) {
+        return ESP_OK;
     }
 
+    const size_t byte_len = (size_t)n * 3u;
+    uint8_t *buf = heap_caps_malloc(byte_len, MALLOC_CAP_DMA);
+    ESP_RETURN_ON_FALSE(buf != NULL, ESP_ERR_NO_MEM, TAG, "fifo buf");
+
+    uint8_t cmd = (uint8_t)((NODE_ACC_ADXL355_REG_FIFO_DATA << 1) | 0x01u);
+    esp_err_t err = spi_read_after_cmd(dev, cmd, buf, byte_len);
+    if (err != ESP_OK) {
+        heap_caps_free(buf);
+        return err;
+    }
+
+    const size_t num_frames = byte_len / 9u;
+    size_t k = 0;
+    for (size_t i = 0; i < num_frames && k < max_frames; i++) {
+        const uint8_t *p = &buf[i * 9u];
+        if (fifo_frame_is_x_header(p)) {
+            fifo_xyz_from_frame(p, &out[k]);
+            k++;
+        }
+    }
+    if (k == 0 && num_frames >= 1) {
+        fifo_xyz_from_frame(buf, &out[0]);
+        k = 1;
+    }
+    if (out_frames != NULL) {
+        *out_frames = k;
+    }
+    heap_caps_free(buf);
     return ESP_OK;
 }
 
-//==============================================================================
-
-esp_err_t adxl355_disable_temperature(adxl355_handle_t *handle)
+esp_err_t node_acc_adxl355_set_offset_xyz(node_acc_adxl355_dev_t *dev, const node_acc_adxl355_offset_t *off)
 {
-    esp_err_t ret;
-    uint8_t power_ctl_register;
+    ESP_RETURN_ON_FALSE(dev != NULL && off != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+    uint8_t b[6];
+    b[0] = (uint8_t)(off->x >> 8);
+    b[1] = (uint8_t)(off->x);
+    b[2] = (uint8_t)(off->y >> 8);
+    b[3] = (uint8_t)(off->y);
+    b[4] = (uint8_t)(off->z >> 8);
+    b[5] = (uint8_t)(off->z);
+    return regs_write(dev, NODE_ACC_ADXL355_REG_OFFSET_X_H, b, sizeof(b));
+}
 
-    if (handle == NULL)
-    {
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    /* Read current power control register value */
-    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to read power control register");
-        return ret;
-    }
-
-    /* Set temperature off bit to disable temperature processing */
-    power_ctl_register |= ADXL355_REG_POWER_CTL_TEMP_OFF;
-
-    /* Write updated register value */
-    ret = adxl355_write_register(handle, ADXL355_REG_POWER_CTL, power_ctl_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to disable temperature");
-        return ret;
-    }
-
+esp_err_t node_acc_adxl355_get_offset_xyz(node_acc_adxl355_dev_t *dev, node_acc_adxl355_offset_t *off)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && off != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+    uint8_t b[6] = {0};
+    ESP_RETURN_ON_ERROR(regs_read(dev, NODE_ACC_ADXL355_REG_OFFSET_X_H, b, sizeof(b)), TAG, "offset read");
+    off->x = (uint16_t)(((unsigned)b[0] << 8) | b[1]);
+    off->y = (uint16_t)(((unsigned)b[2] << 8) | b[3]);
+    off->z = (uint16_t)(((unsigned)b[4] << 8) | b[5]);
     return ESP_OK;
 }
 
-//==============================================================================
-
-esp_err_t adxl355_is_temperature_enabled(adxl355_handle_t *handle, bool *is_enabled)
+esp_err_t node_acc_adxl355_set_activity_enable(node_acc_adxl355_dev_t *dev, const node_acc_adxl355_act_en_t *en)
 {
-    esp_err_t ret;
-    uint8_t power_ctl_register;
-
-    if (handle == NULL || is_enabled == NULL)
-    {
-        return ESP_ERR_INVALID_ARG;
+    ESP_RETURN_ON_FALSE(dev != NULL && en != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+    uint8_t v = 0;
+    if (en->x) {
+        v |= 1u;
     }
-
-    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
-    if (ret != ESP_OK)
-    {
-        return ret;
+    if (en->y) {
+        v |= 2u;
     }
+    if (en->z) {
+        v |= 4u;
+    }
+    return reg_write(dev, NODE_ACC_ADXL355_REG_ACT_EN, v);
+}
 
-    *is_enabled = !(power_ctl_register & ADXL355_REG_POWER_CTL_TEMP_OFF);
+esp_err_t node_acc_adxl355_get_activity_enable(node_acc_adxl355_dev_t *dev, node_acc_adxl355_act_en_t *en)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && en != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+    uint8_t v = 0;
+    ESP_RETURN_ON_ERROR(reg_read(dev, NODE_ACC_ADXL355_REG_ACT_EN, &v), TAG, "read");
+    en->x = (v & 1u) != 0;
+    en->y = (v & 2u) != 0;
+    en->z = (v & 4u) != 0;
     return ESP_OK;
 }
 
-//==============================================================================
-
-esp_err_t adxl355_enable_data_ready(adxl355_handle_t *handle)
+esp_err_t node_acc_adxl355_set_activity_threshold(node_acc_adxl355_dev_t *dev, uint16_t threshold)
 {
-    esp_err_t ret;
-    uint8_t power_ctl_register;
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+    uint8_t d[2] = {(uint8_t)(threshold >> 8), (uint8_t)threshold};
+    return regs_write(dev, NODE_ACC_ADXL355_REG_ACT_THRESH_H, d, sizeof(d));
+}
 
-    if (handle == NULL)
-    {
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    /* Read current power control register value */
-    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to read power control register");
-        return ret;
-    }
-
-    /* Clear data ready off bit to enable data ready output */
-    power_ctl_register &= ~ADXL355_REG_POWER_CTL_DRDY_OFF;
-
-    /* Write updated register value */
-    ret = adxl355_write_register(handle, ADXL355_REG_POWER_CTL, power_ctl_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to enable data ready");
-        return ret;
-    }
-
+esp_err_t node_acc_adxl355_get_activity_threshold(node_acc_adxl355_dev_t *dev, uint16_t *threshold)
+{
+    ESP_RETURN_ON_FALSE(dev != NULL && threshold != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+    uint8_t d[2] = {0};
+    ESP_RETURN_ON_ERROR(regs_read(dev, NODE_ACC_ADXL355_REG_ACT_THRESH_H, d, sizeof(d)), TAG, "read");
+    *threshold = (uint16_t)(((unsigned)d[0] << 8) | d[1]);
     return ESP_OK;
 }
 
-//==============================================================================
-
-esp_err_t adxl355_disable_data_ready(adxl355_handle_t *handle)
+esp_err_t node_acc_adxl355_set_activity_count(node_acc_adxl355_dev_t *dev, uint8_t count)
 {
-    esp_err_t ret;
-    uint8_t power_ctl_register;
-
-    if (handle == NULL)
-    {
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    /* Read current power control register value */
-    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to read power control register");
-        return ret;
-    }
-
-    /* Set data ready off bit to disable data ready output */
-    power_ctl_register |= ADXL355_REG_POWER_CTL_DRDY_OFF;
-
-    /* Write updated register value */
-    ret = adxl355_write_register(handle, ADXL355_REG_POWER_CTL, power_ctl_register);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to disable data ready");
-        return ret;
-    }
-
-    return ESP_OK;
+    ESP_RETURN_ON_FALSE(dev != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "dev");
+    return reg_write(dev, NODE_ACC_ADXL355_REG_ACT_COUNT, count);
 }
 
-//==============================================================================
-
-esp_err_t adxl355_is_data_ready_enabled(adxl355_handle_t *handle, bool *is_enabled)
+esp_err_t node_acc_adxl355_get_activity_count(node_acc_adxl355_dev_t *dev, uint8_t *count)
 {
-    esp_err_t ret;
-    uint8_t power_ctl_register;
-
-    if (handle == NULL || is_enabled == NULL)
-    {
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    ret = adxl355_read_register(handle, ADXL355_REG_POWER_CTL, &power_ctl_register);
-    if (ret != ESP_OK)
-    {
-        return ret;
-    }
-
-    *is_enabled = !(power_ctl_register & ADXL355_REG_POWER_CTL_DRDY_OFF);
-    return ESP_OK;
-}
-
-//==============================================================================
-
-esp_err_t adxl355_read_acceleration_scale_factor(adxl355_handle_t *handle, float *scale_factor)
-{
-    esp_err_t ret;
-    adxl355_range_t range;
-
-    if (handle == NULL || scale_factor == NULL)
-    {
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    ret = adxl355_read_range(handle, &range);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to read range");
-        return ret;
-    }
-
-    switch (range)
-    {
-    case ADXL355_RANGE_2G:
-        *scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_2G;
-        break;
-    case ADXL355_RANGE_4G:
-        *scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_4G;
-        break;
-    case ADXL355_RANGE_8G:
-        *scale_factor = ADXL355_ACCELERATION_SCALE_FACTOR_RANGE_8G;
-        break;
-    default:
-        *scale_factor = 1.0f;
-        break;
-    }
-
-    return ESP_OK;
-}
-
-//==============================================================================
-// Private Functions
-//==============================================================================
-
-/**
- * @brief Configure and add ADXL355 SPI device to SPI3 bus
- * @param device_handle Output parameter, returns SPI device handle
- * @return ESP_OK on success, error code on failure
- */
-static esp_err_t adxl355_configure_spi_device(spi_device_handle_t *device_handle)
-{
-    esp_err_t ret;
-    spi_device_interface_config_t dev_config = {0};
-
-    /* Configure ADXL355-specific SPI device parameters */
-    dev_config.clock_speed_hz = 10000000;          // 10 MHz (ADXL355 maximum supported)
-    dev_config.mode = 0;                           // SPI Mode 0 (CPOL=0, CPHA=0)
-    dev_config.spics_io_num = ADXL355_CS_GPIO_PIN; // CS pin
-    dev_config.queue_size = 1;                     // Single transaction queue
-    dev_config.command_bits = 0;                   // No command bits
-    dev_config.address_bits = 8;                   // 8-bit address
-    dev_config.input_delay_ns = 30;                // 30ns delay
-    dev_config.flags = 0;                          // Default flags (full-duplex)
-
-    /* Add SPI device to bus */
-    ret = spi_bus_add_device(SPI3_HOST, &dev_config, device_handle);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "Failed to add ADXL355 device to SPI3 bus: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
-    ESP_LOGI(TAG, "ADXL355 SPI device configured successfully");
-    return ESP_OK;
-}
-
-//==============================================================================
-
-/**
- * @brief Read single register
- * @param handle ADXL355 handle
- * @param reg Register address
- * @param value Output value
- * @return ESP_OK on success, error code on failure
- */
-static esp_err_t adxl355_read_register(adxl355_handle_t *handle, uint8_t reg, uint8_t *value)
-{
-    ESP_LOGD(TAG, "READ_REG: reg=0x%02X, handle=%p, value_ptr=%p", reg, (void *)handle, (void *)value);
-
-    if (handle == NULL || value == NULL)
-    {
-        ESP_LOGE(TAG, "READ_REG: Invalid arguments - handle=%p, value=%p", (void *)handle, (void *)value);
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    /* Left shift address by 1 and set LSB to 1 for read (exactly like plasmapper) */
-    uint8_t read_cmd = (reg << 1) | 0x01;
-    ESP_LOGD(TAG, "READ_REG: reg=0x%02X, shifted=0x%02X, read_cmd=0x%02X", reg, reg << 1, read_cmd);
-
-    /* Use SPI transaction: write command then read data */
-    spi_transaction_t t = {0};
-    t.cmd = 0;           /* No command bits */
-    t.addr = read_cmd;   /* Address with read bit set */
-    t.length = 8;        /* 1 byte = 8 bits */
-    t.tx_buffer = NULL;  /* No write data */
-    t.rx_buffer = value; /* Read data buffer */
-    t.flags = 0;         /* Use default flags */
-
-    ESP_LOGD(TAG, "READ_REG: SPI transaction - addr=0x%02X, length=%d bits", t.addr, t.length);
-
-    esp_err_t ret = spi_device_polling_transmit(handle->spi_handle, &t);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "READ_REG: SPI read transaction failed: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
-    ESP_LOGD(TAG, "READ_REG: Success - reg=0x%02X, value=0x%02X", reg, *value);
-    return ESP_OK;
-}
-
-//==============================================================================
-
-/**
- * @brief Read multiple registers
- * @param handle ADXL355 handle
- * @param reg Starting register address
- * @param data Output data buffer
- * @param len Number of bytes to read
- * @return ESP_OK on success, error code on failure
- */
-static esp_err_t adxl355_read_registers(adxl355_handle_t *handle, uint8_t reg, uint8_t *data, uint8_t len)
-{
-    if (handle == NULL || data == NULL || len == 0)
-    {
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    /* Left shift address by 1 and set LSB to 1 for read (exactly like plasmapper) */
-    uint8_t read_cmd = (reg << 1) | 0x01;
-
-    /* Use the new ADXL355-specific SPI read function */
-    return adxl355_spi_read(handle, read_cmd, data, len);
-}
-
-//==============================================================================
-
-/**
- * @brief Write single register
- * @param handle ADXL355 handle
- * @param reg Register address
- * @param value Value to write
- * @return ESP_OK on success, error code on failure
- */
-static esp_err_t adxl355_write_register(adxl355_handle_t *handle, uint8_t reg, uint8_t value)
-{
-    ESP_LOGD(TAG, "WRITE_REG: reg=0x%02X, value=0x%02X, handle=%p", reg, value, (void *)handle);
-
-    if (handle == NULL)
-    {
-        ESP_LOGE(TAG, "WRITE_REG: Invalid handle - NULL");
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    /* Left shift address by 1 (exactly like plasmapper) */
-    uint8_t write_cmd = reg << 1;
-    ESP_LOGD(TAG, "WRITE_REG: reg=0x%02X, shifted=0x%02X, write_cmd=0x%02X", reg, reg << 1, write_cmd);
-
-    /* Use SPI transaction: write command and data */
-    spi_transaction_t t = {0};
-    t.cmd = 0;            /* No command bits */
-    t.addr = write_cmd;   /* Address with write bit clear */
-    t.length = 8;         /* 1 byte = 8 bits */
-    t.tx_buffer = &value; /* Write data */
-    t.rx_buffer = NULL;   /* No read data */
-    t.flags = 0;          /* Use default flags */
-
-    ESP_LOGD(TAG, "WRITE_REG: SPI transaction - addr=0x%02X, length=%d bits, data=0x%02X",
-             t.addr, t.length, value);
-
-    esp_err_t ret = spi_device_polling_transmit(handle->spi_handle, &t);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "WRITE_REG: SPI write transaction failed: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
-    ESP_LOGD(TAG, "WRITE_REG: Success - reg=0x%02X, value=0x%02X", reg, value);
-    return ESP_OK;
-}
-
-//==============================================================================
-
-/**
- * @brief Write multiple registers
- * @param handle ADXL355 handle
- * @param reg Starting register address
- * @param data Data to write
- * @param len Number of bytes to write
- * @return ESP_OK on success, error code on failure
- */
-static esp_err_t adxl355_write_registers(adxl355_handle_t *handle, uint8_t reg, const uint8_t *data, uint8_t len)
-{
-    if (handle == NULL || data == NULL || len == 0)
-    {
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    /* Left shift address by 1 (exactly like plasmapper) */
-    uint8_t write_cmd = reg << 1;
-
-    /* Use SPI transaction: write command and data */
-    spi_transaction_t t = {0};
-    t.cmd = 0;          /* No command bits */
-    t.addr = write_cmd; /* Address with write bit clear */
-    t.length = len * 8; /* Data size in bits */
-    t.tx_buffer = data; /* Write data */
-    t.rx_buffer = NULL; /* No read data */
-    t.flags = 0;        /* Use default flags */
-
-    esp_err_t ret = spi_device_polling_transmit(handle->spi_handle, &t);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "SPI write registers transaction failed: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
-    return ESP_OK;
-}
-
-//==============================================================================
-
-/**
- * @brief ADXL355 specific: Write command then read data
- * @param handle SPI handle
- * @param cmd Command byte to send
- * @param data Buffer to store received data
- * @param len Length of data to read
- * @return ESP_OK on success, error code on failure
- */
-esp_err_t adxl355_spi_read(adxl355_handle_t *handle, uint8_t cmd, uint8_t *data, int len)
-{
-    if (handle == NULL || data == NULL || len <= 0)
-    {
-        ESP_LOGE(TAG, "Invalid arguments for ADXL355 SPI read");
-        return ESP_ERR_INVALID_ARG;
-    }
-
-    /* Configure transaction exactly like plasmapper */
-    /* command = 0, address = cmd, writeData = NULL, readData = data, dataSize = len * 8 */
-    spi_transaction_t t = {0};
-    t.cmd = 0;          /* No command bits */
-    t.addr = cmd;       /* Address (already formatted) */
-    t.length = len * 8; /* Data size in bits */
-    t.tx_buffer = NULL; /* No write data */
-    t.rx_buffer = data; /* Read data buffer */
-    t.flags = 0;        /* Use default flags */
-
-    /* Use polling transmit - DMA will be used automatically if enabled on SPI bus */
-    /* Note: spi_device_polling_transmit() works with DMA enabled, CPU waits for DMA completion */
-    esp_err_t ret = spi_device_polling_transmit(handle->spi_handle, &t);
-    if (ret != ESP_OK)
-    {
-        ESP_LOGE(TAG, "ADXL355 SPI read failed: %s", esp_err_to_name(ret));
-        return ret;
-    }
-
-    return ESP_OK;
-}
-
-/**
- * @brief Get string representation of range setting
- * @param range Range setting
- * @return String representation
- */
-static const char *adxl355_get_range_string(adxl355_range_t range)
-{
-    switch (range)
-    {
-    case ADXL355_RANGE_2G:
-        return "±2G";
-    case ADXL355_RANGE_4G:
-        return "±4G";
-    case ADXL355_RANGE_8G:
-        return "±8G";
-    default:
-        return "Unknown";
-    }
-}
-
-/**
- * @brief Get string representation of ODR setting
- * @param odr ODR setting
- * @return String representation
- */
-static const char *adxl355_get_odr_string(adxl355_output_data_rate_t odr)
-{
-    switch (odr)
-    {
-    case ADXL355_ODR_4000:
-        return "4000 Hz";
-    case ADXL355_ODR_2000:
-        return "2000 Hz";
-    case ADXL355_ODR_1000:
-        return "1000 Hz";
-    case ADXL355_ODR_500:
-        return "500 Hz";
-    case ADXL355_ODR_250:
-        return "250 Hz";
-    case ADXL355_ODR_125:
-        return "125 Hz";
-    case ADXL355_ODR_62_5:
-        return "62.5 Hz";
-    case ADXL355_ODR_31_25:
-        return "31.25 Hz";
-    case ADXL355_ODR_15_625:
-        return "15.625 Hz";
-    case ADXL355_ODR_7_813:
-        return "7.813 Hz";
-    case ADXL355_ODR_3_906:
-        return "3.906 Hz";
-    default:
-        return "Unknown";
-    }
+    ESP_RETURN_ON_FALSE(dev != NULL && count != NULL && dev->spi != NULL, ESP_ERR_INVALID_ARG, TAG, "arg");
+    return reg_read(dev, NODE_ACC_ADXL355_REG_ACT_COUNT, count);
 }
 
 ```
 
-## main.c
+## node_acc_adxl355_test.c
 
 ```c
 /**
- * @file main.c
- * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
- * @brief 
- * @version 1.0
- * @date 2024-11-17
- * 
- * @copyright Copyright (c) 2024
- * 
+ * @file node_acc_adxl355_test.c
+ * @brief Phase 1 polling; Phase 2 DRDY; Phase 3 INT_MAP; Phase 4 FIFO/activity/offset.
  */
+#include "node_acc_adxl355_test.h"
 
-/* DEPENDENCIES */
-// ESP
-#include "esp_system.h" // ESP32 System
-#include "nvs_flash.h"  // ESP32 NVS
-#include "esp_chip_info.h" // ESP32 Chip Info
-#include "esp_psram.h" // ESP32 PSRAM
-#include "esp_flash.h" // ESP32 Flash
-#include "esp_log.h" // ESP32 Logging
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
+#include "freertos/task.h"
 
-// BSP
-#include "node_led.h"
-#include "node_exit.h"
-#include "node_spi.h"
-#include "node_lcd.h"
-#include "node_timer.h"
-#include "node_rtc.h"
-#include "node_sdcard.h"
-#include "node_wifi.h"
-#include "node_mqtt.h"
 #include "node_acc_adxl355.h"
+#include "node_spi.h"
 
-/* Variables */
-const char *TAG = "AIoTNode";
+static const char *TAG = "adxl355_test";
 
-/* ADXL355 handle */
-adxl355_handle_t adxl355_handle;
+#ifndef NODE_ACC_ADXL355_TEST_SAMPLES
+#define NODE_ACC_ADXL355_TEST_SAMPLES 8
+#endif
 
-/**
- * @brief Entry point of the program
- * @param None
- * @retval None
- */
-void app_main(void)
+#ifndef NODE_ACC_ADXL355_TEST_SAMPLE_DELAY_MS
+#define NODE_ACC_ADXL355_TEST_SAMPLE_DELAY_MS 100
+#endif
+
+#ifndef NODE_ACC_ADXL355_TEST_PHASE2_SAMPLES
+#define NODE_ACC_ADXL355_TEST_PHASE2_SAMPLES 16
+#endif
+
+/** Per-sample wait; ODR 125 Hz => ~8 ms period, allow margin. */
+#ifndef NODE_ACC_ADXL355_TEST_PHASE2_WAIT_MS
+#define NODE_ACC_ADXL355_TEST_PHASE2_WAIT_MS 50
+#endif
+
+#ifndef NODE_ACC_ADXL355_TEST_PHASE3_SAMPLES
+#define NODE_ACC_ADXL355_TEST_PHASE3_SAMPLES 12
+#endif
+
+#ifndef NODE_ACC_ADXL355_TEST_PHASE3_WAIT_MS
+#define NODE_ACC_ADXL355_TEST_PHASE3_WAIT_MS 100
+#endif
+
+/** Override before init if board uses active-high INT (e.g. POSEDGE + ACTIVE_HIGH). */
+#ifndef NODE_ACC_ADXL355_PHASE3_INT_POL
+#define NODE_ACC_ADXL355_PHASE3_INT_POL NODE_ACC_ADXL355_INT_POL_ACTIVE_LOW
+#endif
+#ifndef NODE_ACC_ADXL355_PHASE3_INT_INTR
+#define NODE_ACC_ADXL355_PHASE3_INT_INTR GPIO_INTR_NEGEDGE
+#endif
+
+#ifndef NODE_ACC_ADXL355_TEST_PHASE4_DRDY_WAITS
+#define NODE_ACC_ADXL355_TEST_PHASE4_DRDY_WAITS 24
+#endif
+
+esp_err_t node_acc_adxl355_run_phase1_test(void)
 {
-    esp_err_t ret;
-    uint32_t flash_size;
-    esp_chip_info_t chip_info;
-
-    char mqtt_pub_buff[64];
-    // int count = 0;
-    
-    /* ADXL355 variables */
-    adxl355_accelerations_t accel;
-    // adxl355_raw_accelerations_t raw_accel;  // Unused variable, commented out
-    float temperature;
-    
-    // SPI3 device handle is now managed internally by ADXL355
-
-    // Initialize NVS
-    ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
-    {
-        ESP_ERROR_CHECK(nvs_flash_erase()); // Erase if needed
-        ret = nvs_flash_init();
-    }
-
-    // Get FLASH size
-    esp_flash_get_size(NULL, &flash_size);
-    esp_chip_info(&chip_info);
-
-    // Display CPU core count
-    printf("CPU Cores: %d\n", chip_info.cores);
-
-    // Display FLASH size
-    printf("Flash size: %ld MB flash\n", flash_size / (1024 * 1024));
-
-    // Display PSRAM size
-    printf("PSRAM size: %d bytes\n", esp_psram_get_size());
-
-    // BSP Initialization
-    led_init();
-    exit_init();
-    spi2_init();
-    // spi3_init();  // Refactored, now called during ADXL355 initialization
-    lcd_init();
-
-    // spiffs_test();                                                  /* Run SPIFFS test */
-    while (sd_card_init())                               /* SD card not detected */
-    {
-        lcd_show_string(0, 0, 200, 16, 16, "SD Card Error!", RED);
-        vTaskDelay(500);
-        lcd_show_string(0, 20, 200, 16, 16, "Please Check!", RED);
-        vTaskDelay(500);
-    }
-
-    // clean the screen
-    lcd_clear(WHITE);
-
-    lcd_show_string(0, 0, 200, 16, 16, "SD Initialized!", RED);
-
-    sd_card_test_filesystem();                                        /* Run SD card test */
-
-    lcd_show_string(0, 0, 200, 16, 16, "SD Tested CSW! ", RED);
-
-    // sd_card_unmount();
-
-    vTaskDelay(3000);
-
-    // Initialize WiFi and MQTT first
-    lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test  ", RED);
-    
-    ret = wifi_sta_wpa2_init();
-    if(ret == ESP_OK)
-    {
-        ESP_LOGI(TAG_WIFI, "WiFi STA Init OK");
-        lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test OK", RED);
-    }
-    else
-    {
-        ESP_LOGE(TAG_WIFI, "WiFi STA Init Failed");
-    }
-
-    // only when the ip is obtained, start mqtt
-    EventBits_t ev = 0;
-    ev = xEventGroupWaitBits(wifi_event_group,CONNECTED_BIT,pdTRUE,pdFALSE,portMAX_DELAY);
-    if(ev & CONNECTED_BIT)
-    {
-        mqtt_app_start();
-    }
-
-    // Initialize and test ADXL355 after WiFi and MQTT
-    lcd_clear(WHITE);
-    lcd_show_string(0, 0, 200, 16, 16, "Testing ADXL355...", BLUE);
-    
-    ESP_LOGI(TAG, "=== MAIN: Starting ADXL355 test ===");
-    
-    // Step 1: Initialize SPI3 bus (general purpose)
     spi3_init();
-    
-    // Step 2: Initialize ADXL355 sensor (includes SPI device configuration)
-    ret = adxl355_init(&adxl355_handle, ADXL355_RANGE_2G, ADXL355_ODR_1000);
-    
-    if (ret == ESP_OK) {
-        ESP_LOGI(TAG, "✓ ADXL355 initialization successful!");
-        lcd_show_string(0, 20, 200, 16, 16, "ADXL355 OK!", GREEN);
-        
-        // Read device info
-        adxl355_device_info_t device_info;
-        esp_err_t info_ret = adxl355_read_device_info(&adxl355_handle, &device_info);
-        
-        if (info_ret == ESP_OK) {
-            ESP_LOGI(TAG, "Device ID: 0x%02X, Vendor ID: 0x%02X", device_info.device_id, device_info.vendor_id);
-            
-            char info_str[64];
-            snprintf(info_str, sizeof(info_str), "ID: 0x%02X, 0x%02X, 0x%02X", 
-                     device_info.vendor_id, device_info.family_id, device_info.device_id);
-            lcd_show_string(0, 40, 200, 16, 16, info_str, BLACK);
-            
-            // Test temperature reading
-            float test_temp;
-            esp_err_t temp_test_ret = adxl355_read_temperature(&adxl355_handle, &test_temp);
-            if (temp_test_ret == ESP_OK) {
-                ESP_LOGI(TAG, "Temperature test: %.2f°C", test_temp);
-                char temp_str[64];
-                snprintf(temp_str, sizeof(temp_str), "Temp: %.1f°C", test_temp);
-                lcd_show_string(0, 60, 200, 16, 16, temp_str, BLUE);
-            } else {
-                ESP_LOGE(TAG, "Temperature test failed: %s", esp_err_to_name(temp_test_ret));
-                lcd_show_string(0, 60, 200, 16, 16, "Temp: Failed!", RED);
-            }
-        } else {
-            ESP_LOGE(TAG, "✗ Failed to read device info: %s", esp_err_to_name(info_ret));
-        }
-        
-    } else {
-        ESP_LOGE(TAG, "✗ ADXL355 initialization failed: %s", esp_err_to_name(ret));
-        lcd_show_string(0, 20, 200, 16, 16, "ADXL355 Failed!", RED);
-    }
-    
-    vTaskDelay(3000);
-    
-    ESP_LOGI(TAG, "ADXL355 initialized and ready for MQTT publishing");
 
-    ESP_LOGI(TAG, "=== MAIN: Entering main loop ===");
-    
-    while (1)
-    {
-        if(s_is_mqtt_connected)
-        {
-            // Read both acceleration and temperature data
-            esp_err_t accel_ret = adxl355_read_accelerations(&adxl355_handle, &accel);
-            esp_err_t temp_ret = adxl355_read_temperature(&adxl355_handle, &temperature);
-            
-            if (accel_ret == ESP_OK && temp_ret == ESP_OK) {
-                // Format MQTT payload with both acceleration and temperature
-                snprintf(mqtt_pub_buff, 64,
-                    "{\"x\":%.4f,\"y\":%.4f,\"z\":%.4f,\"temp\":%.2f}",
-                    accel.x, accel.y, accel.z, temperature);
-                
-                int mqtt_ret = esp_mqtt_client_publish(s_mqtt_client, MQTT_PUBLISH_TOPIC,
-                                mqtt_pub_buff, strlen(mqtt_pub_buff), 1, 0);
-                
-                if (mqtt_ret < 0) {
-                    ESP_LOGE(TAG, "✗ MQTT publish failed: %d", mqtt_ret);
-                }
-                
-                // Output both acceleration and temperature to console
-                printf("Accelerations: X: %f g, Y: %f g, Z: %f g | Temperature: %.2f°C\n", 
-                       accel.x, accel.y, accel.z, temperature);
-                
-                // Also log to ESP log system
-                ESP_LOGI(TAG, "Data: X=%.4f, Y=%.4f, Z=%.4f g, Temp=%.2f°C", 
-                         accel.x, accel.y, accel.z, temperature);
-                
-            } else {
-                if (accel_ret != ESP_OK) {
-                    ESP_LOGE(TAG, "✗ Failed to read ADXL355 acceleration data: %s", esp_err_to_name(accel_ret));
-                }
-                if (temp_ret != ESP_OK) {
-                    ESP_LOGE(TAG, "✗ Failed to read ADXL355 temperature data: %s", esp_err_to_name(temp_ret));
-                }
-            }
-        } else {
-            ESP_LOGW(TAG, "MQTT not connected, skipping data read");
-        }
-        
-        led_toggle();
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
+    node_acc_adxl355_config_t cfg;
+    node_acc_adxl355_config_default_eval(&cfg);
+
+    node_acc_adxl355_dev_t dev = {0};
+    esp_err_t ret =
+        node_acc_adxl355_init(&dev, &cfg, NODE_ACC_ADXL355_RANGE_2G, NODE_ACC_ADXL355_ODR_125_HZ);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "init failed: %s", esp_err_to_name(ret));
+        return ret;
     }
+
+    node_acc_adxl355_ids_t ids = {0};
+    ret = node_acc_adxl355_read_ids(&dev, &ids);
+    if (ret == ESP_OK) {
+        ESP_LOGI(TAG, "IDs: AD=0x%02X MST=0x%02X PART=0x%02X REV=0x%02X", ids.devid_ad, ids.devid_mst, ids.partid,
+                 ids.revid);
+    }
+
+    for (int i = 0; i < NODE_ACC_ADXL355_TEST_SAMPLES; i++) {
+        node_acc_adxl355_raw_xyz_t raw = {0};
+        node_acc_adxl355_g_t g = {0};
+        float tc = 0.0f;
+        uint8_t st = 0;
+
+        ret = node_acc_adxl355_read_status(&dev, &st);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "status: %s", esp_err_to_name(ret));
+            break;
+        }
+        ret = node_acc_adxl355_read_raw_xyz(&dev, &raw);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "raw xyz: %s", esp_err_to_name(ret));
+            break;
+        }
+        ret = node_acc_adxl355_read_g(&dev, &g);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "g: %s", esp_err_to_name(ret));
+            break;
+        }
+        ret = node_acc_adxl355_read_temp_c(&dev, &tc);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "temp: %s", esp_err_to_name(ret));
+            break;
+        }
+
+        ESP_LOGI(TAG, "sample %d: ST=0x%02X raw xyz=%ld %ld %ld  g=(%.5f %.5f %.5f)  T=%.2f C", i,
+                 (unsigned)st, (long)raw.x, (long)raw.y, (long)raw.z, (double)g.x, (double)g.y, (double)g.z,
+                 (double)tc);
+
+        vTaskDelay(pdMS_TO_TICKS(NODE_ACC_ADXL355_TEST_SAMPLE_DELAY_MS));
+    }
+
+    esp_err_t de = node_acc_adxl355_deinit(&dev);
+    if (de != ESP_OK) {
+        ESP_LOGW(TAG, "deinit: %s", esp_err_to_name(de));
+    }
+    if (ret != ESP_OK) {
+        return ret;
+    }
+    return de;
 }
+
+esp_err_t node_acc_adxl355_run_phase2_test(void)
+{
+    spi3_init();
+
+    node_acc_adxl355_config_t cfg;
+    node_acc_adxl355_config_default_eval(&cfg);
+
+    node_acc_adxl355_dev_t dev = {0};
+    esp_err_t ret =
+        node_acc_adxl355_init(&dev, &cfg, NODE_ACC_ADXL355_RANGE_2G, NODE_ACC_ADXL355_ODR_125_HZ);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase2 init failed: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ret = node_acc_adxl355_drdy_isr_install(&dev);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase2 drdy_isr_install failed: %s", esp_err_to_name(ret));
+        (void)node_acc_adxl355_deinit(&dev);
+        return ret;
+    }
+
+    if (dev.drdy_sem != NULL) {
+        while (xSemaphoreTake(dev.drdy_sem, 0) == pdTRUE) {
+        }
+    }
+
+    ESP_LOGI(TAG, "phase2: DRDY GPIO%u %s, %d samples, wait %u ms", (unsigned)dev.gpio_drdy,
+             (dev.drdy_intr_type == GPIO_INTR_POSEDGE) ? "posedge" : "edge", NODE_ACC_ADXL355_TEST_PHASE2_SAMPLES,
+             (unsigned)NODE_ACC_ADXL355_TEST_PHASE2_WAIT_MS);
+
+    for (int i = 0; i < NODE_ACC_ADXL355_TEST_PHASE2_SAMPLES; i++) {
+        ret = node_acc_adxl355_drdy_wait(&dev, NODE_ACC_ADXL355_TEST_PHASE2_WAIT_MS);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "phase2 wait sample %d: %s", i, esp_err_to_name(ret));
+            break;
+        }
+
+        node_acc_adxl355_raw_xyz_t raw = {0};
+        node_acc_adxl355_g_t g = {0};
+        ret = node_acc_adxl355_read_raw_xyz(&dev, &raw);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "phase2 raw xyz: %s", esp_err_to_name(ret));
+            break;
+        }
+        ret = node_acc_adxl355_read_g(&dev, &g);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "phase2 g: %s", esp_err_to_name(ret));
+            break;
+        }
+        ESP_LOGI(TAG, "phase2 sample %d: raw %ld %ld %ld  g=(%.5f %.5f %.5f)", i, (long)raw.x, (long)raw.y,
+                 (long)raw.z, (double)g.x, (double)g.y, (double)g.z);
+    }
+
+    esp_err_t de = node_acc_adxl355_deinit(&dev);
+    if (de != ESP_OK) {
+        ESP_LOGW(TAG, "phase2 deinit: %s", esp_err_to_name(de));
+    }
+    if (ret != ESP_OK) {
+        return ret;
+    }
+    return de;
+}
+
+esp_err_t node_acc_adxl355_run_phase3_test(void)
+{
+    spi3_init();
+
+    node_acc_adxl355_config_t cfg;
+    node_acc_adxl355_config_default_eval(&cfg);
+    cfg.int1_intr_type = NODE_ACC_ADXL355_PHASE3_INT_INTR;
+
+    node_acc_adxl355_dev_t dev = {0};
+    esp_err_t ret =
+        node_acc_adxl355_init(&dev, &cfg, NODE_ACC_ADXL355_RANGE_2G, NODE_ACC_ADXL355_ODR_125_HZ);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase3 init failed: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ret = node_acc_adxl355_set_interrupt_polarity(&dev, NODE_ACC_ADXL355_PHASE3_INT_POL);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase3 set_interrupt_polarity: %s", esp_err_to_name(ret));
+        (void)node_acc_adxl355_deinit(&dev);
+        return ret;
+    }
+
+    /* Arm GPIO ISR before INT_MAP so the first DATA_RDY pulse after mapping is not missed. */
+    ret = node_acc_adxl355_int_isr_install(&dev);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase3 int_isr_install: %s", esp_err_to_name(ret));
+        (void)node_acc_adxl355_deinit(&dev);
+        return ret;
+    }
+
+    node_acc_adxl355_int_map_t imap = {0};
+    imap.rdy_int1 = true;
+    ret = node_acc_adxl355_int_map_write(&dev, &imap);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase3 int_map_write: %s", esp_err_to_name(ret));
+        (void)node_acc_adxl355_deinit(&dev);
+        return ret;
+    }
+
+    if (dev.int1_sem != NULL) {
+        while (xSemaphoreTake(dev.int1_sem, 0) == pdTRUE) {
+        }
+    }
+
+    /* Clear any pending DATA_RDY so the first int1_wait aligns to the next edge. */
+    {
+        const TickType_t t_end = xTaskGetTickCount() + pdMS_TO_TICKS(200);
+        while (xTaskGetTickCount() < t_end) {
+            uint8_t st = 0;
+            ret = node_acc_adxl355_read_status(&dev, &st);
+            if (ret != ESP_OK) {
+                break;
+            }
+            if (st & NODE_ACC_ADXL355_REG_STATUS_DATA_RDY) {
+                node_acc_adxl355_raw_xyz_t raw = {0};
+                (void)node_acc_adxl355_read_raw_xyz(&dev, &raw);
+                break;
+            }
+            vTaskDelay(pdMS_TO_TICKS(1));
+        }
+        while (dev.int1_sem != NULL && xSemaphoreTake(dev.int1_sem, 0) == pdTRUE) {
+        }
+    }
+
+    ESP_LOGI(TAG, "phase3: INT1 GPIO%u (DATA_RDY), %d samples", (unsigned)dev.gpio_int1,
+             NODE_ACC_ADXL355_TEST_PHASE3_SAMPLES);
+
+    for (int i = 0; i < NODE_ACC_ADXL355_TEST_PHASE3_SAMPLES; i++) {
+        ret = node_acc_adxl355_int1_wait(&dev, NODE_ACC_ADXL355_TEST_PHASE3_WAIT_MS);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "phase3 int1_wait %d: %s", i, esp_err_to_name(ret));
+            break;
+        }
+
+        uint8_t st = 0;
+        ret = node_acc_adxl355_read_status(&dev, &st);
+        if (ret != ESP_OK) {
+            break;
+        }
+        node_acc_adxl355_raw_xyz_t raw = {0};
+        ret = node_acc_adxl355_read_raw_xyz(&dev, &raw);
+        if (ret != ESP_OK) {
+            break;
+        }
+        ESP_LOGI(TAG, "phase3 sample %d: STATUS=0x%02X (DATA_RDY=%u) raw %ld %ld %ld", i, (unsigned)st,
+                 (unsigned)(st & NODE_ACC_ADXL355_REG_STATUS_DATA_RDY), (long)raw.x, (long)raw.y, (long)raw.z);
+    }
+
+    node_acc_adxl355_int_map_t zmap = {0};
+    (void)node_acc_adxl355_int_map_write(&dev, &zmap);
+
+    esp_err_t de = node_acc_adxl355_deinit(&dev);
+    if (de != ESP_OK) {
+        ESP_LOGW(TAG, "phase3 deinit: %s", esp_err_to_name(de));
+    }
+    if (ret != ESP_OK) {
+        return ret;
+    }
+    return de;
+}
+
+esp_err_t node_acc_adxl355_run_phase4_test(void)
+{
+    spi3_init();
+
+    node_acc_adxl355_config_t cfg;
+    node_acc_adxl355_config_default_eval(&cfg);
+
+    node_acc_adxl355_dev_t dev = {0};
+    esp_err_t ret =
+        node_acc_adxl355_init(&dev, &cfg, NODE_ACC_ADXL355_RANGE_2G, NODE_ACC_ADXL355_ODR_125_HZ);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase4 init failed: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    node_acc_adxl355_offset_t off0 = {0};
+    ret = node_acc_adxl355_get_offset_xyz(&dev, &off0);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase4 get_offset: %s", esp_err_to_name(ret));
+        (void)node_acc_adxl355_deinit(&dev);
+        return ret;
+    }
+    ESP_LOGI(TAG, "phase4: offset readback X=0x%04X Y=0x%04X Z=0x%04X", (unsigned)off0.x, (unsigned)off0.y,
+             (unsigned)off0.z);
+
+    ret = node_acc_adxl355_set_fifo_samples(&dev, 32);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase4 set_fifo_samples: %s", esp_err_to_name(ret));
+        (void)node_acc_adxl355_deinit(&dev);
+        return ret;
+    }
+    uint8_t fs = 0;
+    (void)node_acc_adxl355_get_fifo_samples(&dev, &fs);
+    ESP_LOGI(TAG, "phase4: FIFO_SAMPLES reg=%u", (unsigned)fs);
+
+    ret = node_acc_adxl355_drdy_isr_install(&dev);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase4 drdy_isr_install: %s", esp_err_to_name(ret));
+        (void)node_acc_adxl355_deinit(&dev);
+        return ret;
+    }
+
+    for (int w = 0; w < NODE_ACC_ADXL355_TEST_PHASE4_DRDY_WAITS; w++) {
+        ret = node_acc_adxl355_drdy_wait(&dev, 100);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "phase4 drdy_wait %d: %s", w, esp_err_to_name(ret));
+            break;
+        }
+    }
+
+    uint8_t ent = 0;
+    ret = node_acc_adxl355_read_fifo_entries(&dev, &ent);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase4 fifo_entries: %s", esp_err_to_name(ret));
+        (void)node_acc_adxl355_deinit(&dev);
+        return ret;
+    }
+    ESP_LOGI(TAG, "phase4: FIFO_ENTRIES=%u (after DRDY waits)", (unsigned)ent);
+
+    node_acc_adxl355_raw_xyz_t fifo_xyz[8] = {0};
+    size_t nfrm = 0;
+    ret = node_acc_adxl355_read_fifo_xyz(&dev, fifo_xyz, 8, &nfrm);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase4 read_fifo_xyz: %s", esp_err_to_name(ret));
+    } else if (nfrm > 0) {
+        ESP_LOGI(TAG, "phase4: FIFO frames=%u  first raw %ld %ld %ld", (unsigned)nfrm, (long)fifo_xyz[0].x,
+                 (long)fifo_xyz[0].y, (long)fifo_xyz[0].z);
+    } else {
+        ESP_LOGW(TAG, "phase4: FIFO parse got 0 frames (entries may still be valid for chip)");
+    }
+
+    node_acc_adxl355_act_en_t act = {.x = false, .y = false, .z = false};
+    ret = node_acc_adxl355_set_activity_enable(&dev, &act);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase4 set_activity_enable: %s", esp_err_to_name(ret));
+        (void)node_acc_adxl355_deinit(&dev);
+        return ret;
+    }
+    ret = node_acc_adxl355_set_activity_threshold(&dev, 0x0400);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase4 set_activity_threshold: %s", esp_err_to_name(ret));
+        (void)node_acc_adxl355_deinit(&dev);
+        return ret;
+    }
+    ret = node_acc_adxl355_set_activity_count(&dev, 0x01);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase4 set_activity_count: %s", esp_err_to_name(ret));
+        (void)node_acc_adxl355_deinit(&dev);
+        return ret;
+    }
+    node_acc_adxl355_act_en_t ar = {0};
+    uint16_t thr = 0;
+    uint8_t ac = 0;
+    (void)node_acc_adxl355_get_activity_enable(&dev, &ar);
+    (void)node_acc_adxl355_get_activity_threshold(&dev, &thr);
+    (void)node_acc_adxl355_get_activity_count(&dev, &ac);
+    ESP_LOGI(TAG, "phase4: ACT readback en=%d%d%d thresh=0x%04X count=%u", ar.x ? 1 : 0, ar.y ? 1 : 0,
+             ar.z ? 1 : 0, (unsigned)thr, (unsigned)ac);
+
+    esp_err_t de = node_acc_adxl355_deinit(&dev);
+    if (de != ESP_OK) {
+        ESP_LOGW(TAG, "phase4 deinit: %s", esp_err_to_name(de));
+    }
+    if (ret != ESP_OK) {
+        return ret;
+    }
+    return de;
+}
+
+esp_err_t node_acc_adxl355_run_phase5_test(void)
+{
+    spi3_init();
+
+    node_acc_adxl355_config_t cfg;
+    node_acc_adxl355_config_default_eval(&cfg);
+    cfg.log_info_on_init = true;
+
+    node_acc_adxl355_dev_t dev = {0};
+    esp_err_t ret =
+        node_acc_adxl355_init(&dev, &cfg, NODE_ACC_ADXL355_RANGE_2G, NODE_ACC_ADXL355_ODR_125_HZ);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase5 init failed: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    node_acc_adxl355_raw_xyz_t raw = {0};
+    ret = node_acc_adxl355_read_raw_xyz(&dev, &raw);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase5 read_raw_xyz: %s", esp_err_to_name(ret));
+        (void)node_acc_adxl355_deinit(&dev);
+        return ret;
+    }
+    ESP_LOGI(TAG, "phase5: sample raw %ld %ld %ld (mutex + SPI ok)", (long)raw.x, (long)raw.y, (long)raw.z);
+
+    ret = node_acc_adxl355_deinit(&dev);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "phase5 deinit: %s", esp_err_to_name(ret));
+        return ret;
+    }
+    ESP_LOGI(TAG, "phase5: deinit ok (device zeroed)");
+    return ESP_OK;
+}
+
+esp_err_t node_acc_adxl355_run_measurement_mode_test(void)
+{
+    spi3_init();
+
+    node_acc_adxl355_config_t cfg;
+    node_acc_adxl355_config_default_eval(&cfg);
+
+    node_acc_adxl355_dev_t dev = {0};
+    esp_err_t ret =
+        node_acc_adxl355_init(&dev, &cfg, NODE_ACC_ADXL355_RANGE_2G, NODE_ACC_ADXL355_ODR_125_HZ);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "meas_mode: init failed: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    vTaskDelay(pdMS_TO_TICKS(50));
+
+    ret = node_acc_adxl355_set_measurement_mode(&dev, NODE_ACC_ADXL355_MEAS_ACCEL_AND_TEMP);
+    if (ret != ESP_OK) {
+        goto out_deinit;
+    }
+    {
+        node_acc_adxl355_raw_xyz_t raw = {0};
+        float tc = 0.0f;
+        ret = node_acc_adxl355_read_raw_xyz(&dev, &raw);
+        if (ret != ESP_OK) {
+            goto out_deinit;
+        }
+        ret = node_acc_adxl355_read_temp_c(&dev, &tc);
+        if (ret != ESP_OK) {
+            goto out_deinit;
+        }
+        ESP_LOGI(TAG, "ACCEL_AND_TEMP: raw z=%ld  T=%.2f C", (long)raw.z, (double)tc);
+    }
+
+    vTaskDelay(pdMS_TO_TICKS(50));
+    ret = node_acc_adxl355_set_measurement_mode(&dev, NODE_ACC_ADXL355_MEAS_ACCEL_ONLY);
+    if (ret != ESP_OK) {
+        goto out_deinit;
+    }
+    vTaskDelay(pdMS_TO_TICKS(50));
+    {
+        node_acc_adxl355_raw_xyz_t raw = {0};
+        float tc = 0.0f;
+        ret = node_acc_adxl355_read_raw_xyz(&dev, &raw);
+        if (ret != ESP_OK) {
+            goto out_deinit;
+        }
+        ret = node_acc_adxl355_read_temp_c(&dev, &tc);
+        if (ret != ESP_ERR_INVALID_STATE) {
+            ESP_LOGE(TAG, "ACCEL_ONLY: expected temp INVALID_STATE, got %s", esp_err_to_name(ret));
+            ret = ESP_FAIL;
+            goto out_deinit;
+        }
+        ESP_LOGI(TAG, "ACCEL_ONLY: raw z=%ld  temp read rejected OK", (long)raw.z);
+    }
+
+    vTaskDelay(pdMS_TO_TICKS(50));
+    ret = node_acc_adxl355_set_measurement_mode(&dev, NODE_ACC_ADXL355_MEAS_TEMP_ONLY);
+    if (ret != ESP_OK) {
+        goto out_deinit;
+    }
+    vTaskDelay(pdMS_TO_TICKS(50));
+    {
+        float tc = 0.0f;
+        ret = node_acc_adxl355_read_temp_c(&dev, &tc);
+        if (ret != ESP_OK) {
+            goto out_deinit;
+        }
+        node_acc_adxl355_raw_xyz_t raw = {0};
+        ret = node_acc_adxl355_read_raw_xyz(&dev, &raw);
+        if (ret != ESP_ERR_INVALID_STATE) {
+            ESP_LOGE(TAG, "TEMP_ONLY: expected xyz INVALID_STATE, got %s", esp_err_to_name(ret));
+            ret = ESP_FAIL;
+            goto out_deinit;
+        }
+        ESP_LOGI(TAG, "TEMP_ONLY: T=%.2f C  xyz read rejected OK", (double)tc);
+    }
+
+    ret = ESP_OK;
+
+out_deinit : {
+    esp_err_t de = node_acc_adxl355_deinit(&dev);
+    if (de != ESP_OK) {
+        ESP_LOGW(TAG, "meas_mode deinit: %s", esp_err_to_name(de));
+    }
+    if (ret != ESP_OK) {
+        return ret;
+    }
+    return de;
+}
+}
+
 ```
 
 ## main.cpp
 
 ```cpp
 /**
- * @file main.c
- * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
- * @brief 
- * @version 1.0
- * @date 2024-11-17
- * 
- * @copyright Copyright (c) 2024
- * 
+ * @file AIoTNode.cpp
+ * @brief 应用入口：ADXL355 典型用法演示（SPI、初始化、WHOAMI、DRDY 同步读、周期轮询）。
  */
+#include "nvs_flash.h"
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
-/* DEPENDENCIES */
-// ESP
-#include "esp_system.h" // ESP32 System
-#include "nvs_flash.h"  // ESP32 NVS
-#include "esp_chip_info.h" // ESP32 Chip Info
-#include "esp_psram.h" // ESP32 PSRAM
-#include "esp_flash.h" // ESP32 Flash
-#include "esp_log.h" // ESP32 Logging
-
-// BSP
-#include "node_led.h"
-#include "node_exit.h"
 #include "node_spi.h"
-#include "node_lcd.h"
-#include "node_timer.h"
-#include "node_rtc.h"
-#include "node_sdcard.h"
-#include "node_wifi.h"
-#include "node_mqtt.h"
 #include "node_acc_adxl355.h"
 
-/* Variables */
-const char *TAG = "AIoTNode";
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/* ADXL355 handle */
-adxl355_handle_t adxl355_handle;
+static const char *TAG = "AIoTNode";
 
-extern "C" void app_main();
-/**
- * @brief Entry point of the program
- * @param None
- * @retval None
- */
-void app_main()
+/** DRDY 中断同步采样次数（演示用，结束后改为轮询）。 */
+#ifndef AIOTNODE_ADXL355_DRDY_SAMPLES
+#define AIOTNODE_ADXL355_DRDY_SAMPLES 5
+#endif
+
+/** 轮询打印周期 (ms)。 */
+#ifndef AIOTNODE_ADXL355_POLL_MS
+#define AIOTNODE_ADXL355_POLL_MS 2000
+#endif
+
+void app_main(void)
 {
-    esp_err_t ret;
-    uint32_t flash_size;
-    esp_chip_info_t chip_info;
-
-    char mqtt_pub_buff[64];
-    // int count = 0;
-    
-    /* ADXL355 variables */
-    adxl355_accelerations_t accel;
-    // adxl355_raw_accelerations_t raw_accel;  // Unused variable, commented out
-    float temperature;
-    
-    // SPI3 device handle is now managed internally by ADXL355
-
-    // Initialize NVS
-    ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
-    {
-        ESP_ERROR_CHECK(nvs_flash_erase()); // Erase if needed
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
         ret = nvs_flash_init();
     }
+    ESP_ERROR_CHECK(ret);
 
-    // Get FLASH size
-    esp_flash_get_size(NULL, &flash_size);
-    esp_chip_info(&chip_info);
-
-    // Display CPU core count
-    printf("CPU Cores: %d\n", chip_info.cores);
-
-    // Display FLASH size
-    printf("Flash size: %ld MB flash\n", flash_size / (1024 * 1024));
-
-    // Display PSRAM size
-    printf("PSRAM size: %d bytes\n", esp_psram_get_size());
-
-    // BSP Initialization
-    led_init();
-    exit_init();
-    spi2_init();
-    // spi3_init();  // Refactored, now called during ADXL355 initialization
-    lcd_init();
-
-    // spiffs_test();                                                  /* Run SPIFFS test */
-    while (sd_card_init())                               /* SD card not detected */
-    {
-        lcd_show_string(0, 0, 200, 16, 16, (char*)"SD Card Error!", RED);
-        vTaskDelay(500);
-        lcd_show_string(0, 20, 200, 16, 16, (char*)"Please Check!", RED);
-        vTaskDelay(500);
-    }
-
-    // clean the screen
-    lcd_clear(WHITE);
-
-    lcd_show_string(0, 0, 200, 16, 16, (char*)"SD Initialized!", RED);
-
-    sd_card_test_filesystem();                                        /* Run SD card test */
-
-    lcd_show_string(0, 0, 200, 16, 16, (char*)"SD Tested CSW! ", RED);
-
-    // sd_card_unmount();
-
-    vTaskDelay(3000);
-
-    // Initialize WiFi and MQTT first
-    lcd_show_string(0, 0, lcd_self.width, 16, 16, (char*)"WiFi STA Test  ", RED);
-    
-    ret = wifi_sta_wpa2_init();
-    if(ret == ESP_OK)
-    {
-        ESP_LOGI(TAG_WIFI, "WiFi STA Init OK");
-        lcd_show_string(0, 0, lcd_self.width, 16, 16, (char*)"WiFi STA Test OK", RED);
-    }
-    else
-    {
-        ESP_LOGE(TAG_WIFI, "WiFi STA Init Failed");
-    }
-
-    // only when the ip is obtained, start mqtt
-    EventBits_t ev = 0;
-    ev = xEventGroupWaitBits(wifi_event_group,CONNECTED_BIT,pdTRUE,pdFALSE,portMAX_DELAY);
-    if(ev & CONNECTED_BIT)
-    {
-        mqtt_app_start();
-    }
-
-    // Initialize and test ADXL355 after WiFi and MQTT
-    lcd_clear(WHITE);
-    lcd_show_string(0, 0, 200, 16, 16, (char*)"Testing ADXL355...", BLUE);
-    
-    ESP_LOGI(TAG, "=== MAIN: Starting ADXL355 test ===");
-    
-    // Step 1: Initialize SPI3 bus (general purpose)
     spi3_init();
-    
-    // Step 2: Initialize ADXL355 sensor (includes SPI device configuration)
-    ret = adxl355_init(&adxl355_handle, ADXL355_RANGE_2G, ADXL355_ODR_1000);
-    
-    if (ret == ESP_OK) {
-        ESP_LOGI(TAG, "✓ ADXL355 initialization successful!");
-        lcd_show_string(0, 20, 200, 16, 16, (char*)"ADXL355 OK!", GREEN);
-        
-        // Read device info
-        adxl355_device_info_t device_info;
-        esp_err_t info_ret = adxl355_read_device_info(&adxl355_handle, &device_info);
-        
-        if (info_ret == ESP_OK) {
-            ESP_LOGI(TAG, "Device ID: 0x%02X, Vendor ID: 0x%02X", device_info.device_id, device_info.vendor_id);
-            
-            char info_str[64];
-            snprintf(info_str, sizeof(info_str), "ID: 0x%02X, 0x%02X, 0x%02X", 
-                     device_info.vendor_id, device_info.family_id, device_info.device_id);
-            lcd_show_string(0, 40, 200, 16, 16, (char*)info_str, BLACK);
-            
-            // Test temperature reading
-            float test_temp;
-            esp_err_t temp_test_ret = adxl355_read_temperature(&adxl355_handle, &test_temp);
-            if (temp_test_ret == ESP_OK) {
-                ESP_LOGI(TAG, "Temperature test: %.2f°C", test_temp);
-                char temp_str[64];
-                snprintf(temp_str, sizeof(temp_str), "Temp: %.1f°C", test_temp);
-                lcd_show_string(0, 60, 200, 16, 16, (char*)temp_str, BLUE);
-            } else {
-                ESP_LOGE(TAG, "Temperature test failed: %s", esp_err_to_name(temp_test_ret));
-                lcd_show_string(0, 60, 200, 16, 16, (char*)"Temp: Failed!", RED);
-            }
-        } else {
-            ESP_LOGE(TAG, "✗ Failed to read device info: %s", esp_err_to_name(info_ret));
-        }
-        
-    } else {
-        ESP_LOGE(TAG, "✗ ADXL355 initialization failed: %s", esp_err_to_name(ret));
-        lcd_show_string(0, 20, 200, 16, 16, (char*)"ADXL355 Failed!", RED);
-    }
-    
-    vTaskDelay(3000);
-    
-    ESP_LOGI(TAG, "ADXL355 initialized and ready for MQTT publishing");
 
-    ESP_LOGI(TAG, "=== MAIN: Entering main loop ===");
-    
-    while (1)
-    {
-        if(s_is_mqtt_connected)
-        {
-            // Read both acceleration and temperature data
-            esp_err_t accel_ret = adxl355_read_accelerations(&adxl355_handle, &accel);
-            esp_err_t temp_ret = adxl355_read_temperature(&adxl355_handle, &temperature);
-            
-            if (accel_ret == ESP_OK && temp_ret == ESP_OK) {
-                // Format MQTT payload with both acceleration and temperature
-                snprintf(mqtt_pub_buff, 64,
-                    "{\"x\":%.4f,\"y\":%.4f,\"z\":%.4f,\"temp\":%.2f}",
-                    accel.x, accel.y, accel.z, temperature);
-                
-                int mqtt_ret = esp_mqtt_client_publish(s_mqtt_client, MQTT_PUBLISH_TOPIC,
-                                mqtt_pub_buff, strlen(mqtt_pub_buff), 1, 0);
-                
-                if (mqtt_ret < 0) {
-                    ESP_LOGE(TAG, "✗ MQTT publish failed: %d", mqtt_ret);
-                }
-                
-                // Output both acceleration and temperature to console
-                printf("Accelerations: X: %f g, Y: %f g, Z: %f g | Temperature: %.2f°C\n", 
-                       accel.x, accel.y, accel.z, temperature);
-                
-                // Also log to ESP log system
-                ESP_LOGI(TAG, "Data: X=%.4f, Y=%.4f, Z=%.4f g, Temp=%.2f°C", 
-                         accel.x, accel.y, accel.z, temperature);
-                
-            } else {
-                if (accel_ret != ESP_OK) {
-                    ESP_LOGE(TAG, "✗ Failed to read ADXL355 acceleration data: %s", esp_err_to_name(accel_ret));
-                }
-                if (temp_ret != ESP_OK) {
-                    ESP_LOGE(TAG, "✗ Failed to read ADXL355 temperature data: %s", esp_err_to_name(temp_ret));
-                }
-            }
-        } else {
-            ESP_LOGW(TAG, "MQTT not connected, skipping data read");
+    node_acc_adxl355_config_t cfg;
+    node_acc_adxl355_config_default_eval(&cfg);
+    cfg.log_info_on_init = true;
+
+    node_acc_adxl355_dev_t dev = {};
+    ret = node_acc_adxl355_init(&dev, &cfg, NODE_ACC_ADXL355_RANGE_2G, NODE_ACC_ADXL355_ODR_125_HZ);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "ADXL355 init failed: %s", esp_err_to_name(ret));
+        for (;;) {
+            vTaskDelay(pdMS_TO_TICKS(1000));
         }
-        
-        led_toggle();
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
+    }
+
+    node_acc_adxl355_ids_t ids = {};
+    ret = node_acc_adxl355_read_ids(&dev, &ids);
+    if (ret == ESP_OK) {
+        ESP_LOGI(TAG, "WHOAMI: AD=0x%02X MST=0x%02X PART=0x%02X REV=0x%02X", ids.devid_ad, ids.devid_mst,
+                 ids.partid, ids.revid);
+    }
+
+    /* 典型流式采集：DRDY 边沿同步读 XYZ + 温度（与 eval 板 GPIO6 连线一致）。 */
+    ret = node_acc_adxl355_drdy_isr_install(&dev);
+    if (ret == ESP_OK) {
+        ESP_LOGI(TAG, "DRDY-synchronized samples (%d):", AIOTNODE_ADXL355_DRDY_SAMPLES);
+        for (int i = 0; i < AIOTNODE_ADXL355_DRDY_SAMPLES; i++) {
+            ret = node_acc_adxl355_drdy_wait(&dev, 150);
+            if (ret != ESP_OK) {
+                ESP_LOGW(TAG, "drdy_wait[%d]: %s", i, esp_err_to_name(ret));
+                break;
+            }
+            node_acc_adxl355_raw_xyz_t raw = {};
+            float tc = 0.0f;
+            (void)node_acc_adxl355_read_raw_xyz(&dev, &raw);
+            (void)node_acc_adxl355_read_temp_c(&dev, &tc);
+            ESP_LOGI(TAG, "  [%d] raw xyz: %ld, %ld, %ld  T: %.2f C", i, (long)raw.x, (long)raw.y, (long)raw.z,
+                     (double)tc);
+        }
+        (void)node_acc_adxl355_drdy_isr_remove(&dev);
+    } else {
+        ESP_LOGW(TAG, "DRDY ISR not installed (%s); skip DRDY demo", esp_err_to_name(ret));
+    }
+
+    ESP_LOGI(TAG, "Polling every %d ms (STATUS + raw xyz + T). Ctrl+C monitor to stop.", AIOTNODE_ADXL355_POLL_MS);
+
+    for (;;) {
+        vTaskDelay(pdMS_TO_TICKS(AIOTNODE_ADXL355_POLL_MS));
+
+        uint8_t status = 0;
+        node_acc_adxl355_raw_xyz_t raw = {};
+        float tc = 0.0f;
+        ret = node_acc_adxl355_read_status(&dev, &status);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "read_status: %s", esp_err_to_name(ret));
+            continue;
+        }
+        ret = node_acc_adxl355_read_raw_xyz(&dev, &raw);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "read_raw_xyz: %s", esp_err_to_name(ret));
+            continue;
+        }
+        ret = node_acc_adxl355_read_temp_c(&dev, &tc);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "read_temp_c: %s", esp_err_to_name(ret));
+            continue;
+        }
+
+        ESP_LOGI(TAG, "STATUS=0x%02X (DRDY=%u) | xyz raw %ld, %ld, %ld | %.2f C", (unsigned)status,
+                 (unsigned)(status & NODE_ACC_ADXL355_REG_STATUS_DATA_RDY), (long)raw.x, (long)raw.y, (long)raw.z,
+                 (double)tc);
     }
 }
+
+#ifdef __cplusplus
+}
+#endif
+
 ```

@@ -15,3 +15,5 @@
 | Actuation     | SD Card Storage         | node_sdcard        |  Used for data storage        |
 | Communication | WIFI Wireless Communication     | node_wifi          |  Used for wireless network connection     |
 | Communication | IoT Communication        | node_iot           |  Used for IoT data interaction    |
+
+The version that includes the above functions is named AIoTNode-CORE, and we will develop the AIoTNode-MORE version based on this for extended function development.

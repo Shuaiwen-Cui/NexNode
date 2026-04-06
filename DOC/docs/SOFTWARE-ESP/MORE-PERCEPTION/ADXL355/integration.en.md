@@ -26,6 +26,8 @@ The above command means to create a new component named `node_acc_adxl355` in th
 
 Alternatively, you can manually create the `node_acc_adxl355` directory in the `driver` directory, and then create the `CMakeLists.txt`, `node_acc_adxl355.h`, and `node_acc_adxl355.c` files in the `node_acc_adxl355` directory.
 
+Note, for testing convenience, we provide a test file in both the include and node_acc_adxl355 directories, which tests the source code and can serve as a reference for application development.
+
 ## Replacing Code
 
 > At the component level
@@ -44,4 +46,4 @@ Open your project in VSCode, open the integrated terminal, and enter
 idf.py build flash monitor
 ```
 
-Then you will see feedback in the serial monitor. Alternatively, you can check the SD card for verification.
+Then you will see feedback in the serial monitor. 

@@ -26,6 +26,8 @@ idf.py -C driver create-component node_acc_adxl355
 
 或者，您可以在 `driver` 目录中手动创建 `node_acc_adxl355` 目录，然后在 `node_acc_adxl355` 目录中创建 `CMakeLists.txt`、`node_acc_adxl355.h` 和 `node_acc_adxl355.c` 文件。
 
+注意，为方便测试，我们在include和node_acc_adxl355目录下各自提供了一个测试文件，里面是对源码进行测试，可以作为应用开发的参考。
+
 ## 替换代码
 
 > 组件层面
@@ -44,5 +46,5 @@ idf.py -C driver create-component node_acc_adxl355
 idf.py build flash monitor
 ```
 
-然后您将在串行监视器中看到反馈。或者，您可以检查 SD 卡以进行验证。
+然后您将在串行监视器中看到反馈。
 

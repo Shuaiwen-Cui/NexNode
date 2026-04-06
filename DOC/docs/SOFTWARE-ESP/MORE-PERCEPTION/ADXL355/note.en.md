@@ -51,3 +51,45 @@ The ADXL355 features low noise density, high resolution, and a wide measurement 
     - **Automatic Usage**: Once DMA is enabled during SPI bus initialization, all SPI transactions (including `spi_device_polling_transmit()`) automatically use DMA without additional configuration
     
     The initialization process will output log messages confirming that DMA is enabled, and all SPI read/write operations will automatically utilize DMA for data transfer.
+
+## Evaluation Board
+
+![](ADXL355-EVAL.png)
+
+## Wiring
+
+![](DNESP32S3M.png){width=100%}
+
+![](WORKING-ADXL355.png){width=100%}
+
+As shown in the figure, this project uses SPI wiring for the ADXL355 and connects it to the ESP32-S3 SPI3 bus.
+
+| ADXL355 Evaluation Board Pin | Abbreviation | Function | Corresponding MCU Pin | Description |
+|------------------------------|--------------|----------|----------------------|-------------|
+| PIN 1                        | CS           | Chip select | GPIO 7              | SPI chip select signal |
+| PIN 2                        | MOSI         | Master out, slave in | GPIO 16        | SPI master output / slave input |
+| PIN 3                        | MISO         | Master in, slave out | GPIO 17        | SPI master input / slave output |
+| PIN 4                        | SCK          | Clock    | GPIO 15              | SPI clock signal |
+| PIN 5                        | DGND         | Digital ground | GND               | Digital ground connection |
+| PIN 6                        | VDD          | Supply voltage | 3.3 V              | Supply voltage connection |
+| PIN 7                        | INT1         | Interrupt output | GPIO 4          | Optional interrupt output connection |
+| PIN 8                        | NC           | Not connected | Floating          | Not connected |
+| PIN 9                        | INT2         | Interrupt output | GPIO 5          | Optional interrupt output connection |
+| PIN 10                       | DRDY         | Data ready output | GPIO 6         | Optional data-ready signal connection |
+| PIN 11                       | DGND         | Digital ground | GND               | Digital ground connection |
+| PIN 12                       | VDD          | Supply voltage | 3.3 V              | Supply voltage connection |
+
+## Official Driver Reference
+
+<div class="grid cards" markdown>
+
+-   :material-file:{ .lg .middle } ADXL355 Driver
+
+    ---
+
+    ADXL355
+
+
+    [:octicons-arrow-right-24: <a href="https://github.com/analogdevicesinc/no-OS/tree/main/drivers/accel/adxl355" target="_blank"> Portal </a>](#)
+
+</div>

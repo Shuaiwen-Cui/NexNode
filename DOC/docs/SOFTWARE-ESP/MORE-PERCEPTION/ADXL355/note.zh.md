@@ -52,3 +52,46 @@ ADXL354/ADXL355 系列为低噪声、低漂移且低功耗的三轴 MEMS 加速�
     
     初始化过程中会输出日志信息确认 DMA 已启用，所有 SPI 读写操作都会自动利用 DMA 进行数据传输。
 
+## 评估板
+
+![](ADXL355-EVAL.png)
+
+## 接线
+
+![](DNESP32S3M.png){width=100%}
+
+![](WORKING-ADXL355.png){width=100%}
+
+如图所示，本项目中ADXL355 采用 SPI 接线方式，连接到 ESP32-S3 的 SPI3 总线。
+
+| ADXL355 评估板引脚 |    缩写    |    功能    |   对应 MCU 引脚  | 说明 |
+|-------------------|------------|------------|-----------------|------|
+| PIN 1             | CS         | 片选       | GPIO 7          | SPI 片选信号 |
+| PIN 2             | MOSI       | 主输出从输入 | GPIO 16        | SPI 主输出/从输入 |
+| PIN 3             | MISO       | 主输入从输出 | GPIO 17        | SPI 主输入/从输出 |
+| PIN 4             | SCK        | 时钟       | GPIO 15         | SPI 时钟信号 |
+| PIN 5             | DGND        | 数字地       | GND             | 数字地连接 |
+| PIN 6             | VDD         | 电源正极     | 3.3 V           | 电源正极连接 |
+| PIN 7             | INT1        | 中断输出     | GPIO 4        | 可选中断输出连接 |
+| PIN 8             | NC          | 不连接       | 悬空            | 不连接 |
+| PIN 9             | INT2        | 中断输出     | GPIO 5        | 可选中断输出连接 |
+| PIN 10            | DRDY         | 数据就绪输出   | GPIO 6        | 可选数据就绪信号连接 |
+| PIN 11            | DGND         | 数字地       | GND             | 数字地连接 |
+| PIN 12            | VDD         | 电源正极     | 3.3 V           | 电源正极连接 |
+
+
+
+## 官方驱动参考
+
+<div class="grid cards" markdown>
+
+-   :material-file:{ .lg .middle } ADXL355驱动
+
+    ---
+
+    ADXL355
+
+
+    [:octicons-arrow-right-24: <a href="https://github.com/analogdevicesinc/no-OS/tree/main/drivers/accel/adxl355" target="_blank"> Portal </a>](#)
+
+</div>

@@ -161,6 +161,7 @@ plugins:
             MORE-CONTROL: 扩展功能-控制
             MORE-PERCEPTION: 扩展功能-感知
             DHT11: 数字温湿度传感器-DHT11
+            ADXL367: 三轴加速度传感器-ADXL367
             ADXL355: 三轴加速度传感器-ADXL355
             DS3231: 实时时钟模块-DS3231
             WSN-ESP: 无线传感器网络-ESP32
@@ -401,16 +402,20 @@ nav:
               - INTEGRATION: "SOFTWARE-ESP/CORE-ACTUATION/SD-CARD/integration.md"
       - MORE:
           - "SOFTWARE-ESP/MORE/more.md"
-      - MORE-CONTROL:
-          - DS3231:
-              - NOTE: "SOFTWARE-ESP/MORE-CONTROL/DS3231/note.md"
-              - CODE: "SOFTWARE-ESP/MORE-CONTROL/DS3231/code.md"
-              - INTEGRATION: "SOFTWARE-ESP/MORE-CONTROL/DS3231/integration.md"
+      # - MORE-CONTROL:
+      #     - DS3231:
+      #         - NOTE: "SOFTWARE-ESP/MORE-CONTROL/DS3231/note.md"
+      #         - CODE: "SOFTWARE-ESP/MORE-CONTROL/DS3231/code.md"
+      #         - INTEGRATION: "SOFTWARE-ESP/MORE-CONTROL/DS3231/integration.md"
       - MORE-PERCEPTION:
-          - DHT11:
-              - NOTE: "SOFTWARE-ESP/MORE-PERCEPTION/DHT11/note.md" 
-              - CODE: "SOFTWARE-ESP/MORE-PERCEPTION/DHT11/code.md"
-              - INTEGRATION: "SOFTWARE-ESP/MORE-PERCEPTION/DHT11/integration.md"
+          # - DHT11:
+          #     - NOTE: "SOFTWARE-ESP/MORE-PERCEPTION/DHT11/note.md" 
+          #     - CODE: "SOFTWARE-ESP/MORE-PERCEPTION/DHT11/code.md"
+          #     - INTEGRATION: "SOFTWARE-ESP/MORE-PERCEPTION/DHT11/integration.md"
+          - ADXL367:
+              - NOTE: "SOFTWARE-ESP/MORE-PERCEPTION/ADXL367/note.md"
+              - CODE: "SOFTWARE-ESP/MORE-PERCEPTION/ADXL367/code.md"
+              - INTEGRATION: "SOFTWARE-ESP/MORE-PERCEPTION/ADXL367/integration.md"
           - ADXL355:
               - NOTE: "SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/note.md"
               - CODE: "SOFTWARE-ESP/MORE-PERCEPTION/ADXL355/code.md"

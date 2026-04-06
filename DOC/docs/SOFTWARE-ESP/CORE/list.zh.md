@@ -16,3 +16,5 @@
 | 执行          | SD 卡存储         | node_sdcard        |  用于数据存储        |
 | 通信          | WIFI 无线通信     | node_wifi          |  用于无线网络连接     |
 | 通信          | 物联网通信        | node_iot           |  用于物联网数据交互    |
+
+包含以上功能的版本我们命名为 AIoTNode-CORE，后续我们会在此基础上进行扩展功能开发，推出 AIoTNode-MORE 版本。
