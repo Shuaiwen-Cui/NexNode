@@ -6,6 +6,8 @@
 
 "Nex" 源自 "Next" 和 "Nexus"，意味着下一代IoT设备和物理世界与数字世界之间的连接。
 
+### 设计图
+
 ![](FRONT-RIGHT.png){width=100%}
 *节点设计图-视角1*
 
@@ -17,6 +19,23 @@
 
 ![](EXTENSION BOARD.png){width=100%}
 *扩展板设计图*
+
+### 实物图
+
+![](PCB-PHYSICAL.jpg){width=100%}
+*PCB实物图*
+
+![](PCB-STACK.jpg){width=100%}
+*PCB堆叠图*
+
+![](NODE-INSIDE.jpg){width=100%}
+*节点内部实物图*
+
+![](NODE-BATTERY.jpg){width=100%}
+*节点电池实物图*
+
+![](NODE-LOOK.jpg){width=100%}
+*节点外观实物图*
 
 ## 路线图
 

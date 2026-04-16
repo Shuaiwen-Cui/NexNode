@@ -6,6 +6,8 @@ This project dedicates to the development of an EdgeAI-powered MCU level IoT nod
 
 "Nex" is stemmed from both "Next" and "Nexus", which implies the next generation of IoT devices and the connection between the physical and digital worlds.
 
+### Design Diagrams
+
 ![](FRONT-RIGHT.png){width=100%}
 *Node Overview - Perspective 1*
 
@@ -17,6 +19,23 @@ This project dedicates to the development of an EdgeAI-powered MCU level IoT nod
 
 ![](EXTENSION BOARD.png){width=100%}
 *Extension Board Design*
+
+### Physical Photos
+
+![](PCB-PHYSICAL.jpg){width=100%}
+*Physical Photo of PCB*
+
+![](PCB-STACK.jpg){width=100%}
+*Stacked PCB Photo*
+
+![](NODE-INSIDE.jpg){width=100%}
+*Inside Node Physical Photo*
+
+![](NODE-BATTERY.jpg){width=100%}
+*Node Battery Physical Photo*
+
+![](NODE-LOOK.jpg){width=100%}
+*Node Appearance Physical Photo*
 
 ## ROADMAP
 
