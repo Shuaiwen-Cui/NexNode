@@ -981,6 +981,27 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-ACTUATION/LED/note/"/>
     </url>
     <url>
+        <loc>https://localhost:8000/SOFTWARE-ESP/CORE-ACTUATION/RGB/code/</loc>
+        <lastmod>2026-04-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/CORE-ACTUATION/RGB/code/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-ACTUATION/RGB/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/SOFTWARE-ESP/CORE-ACTUATION/RGB/integration/</loc>
+        <lastmod>2026-04-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/CORE-ACTUATION/RGB/integration/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-ACTUATION/RGB/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/SOFTWARE-ESP/CORE-ACTUATION/RGB/note/</loc>
+        <lastmod>2026-04-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/CORE-ACTUATION/RGB/note/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-ACTUATION/RGB/note/"/>
+    </url>
+    <url>
         <loc>https://localhost:8000/SOFTWARE-ESP/CORE-ACTUATION/SD-CARD/code/</loc>
         <lastmod>2026-04-17</lastmod>
         <changefreq>daily</changefreq>
@@ -2771,6 +2792,27 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-ACTUATION/LED/note/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/CORE-ACTUATION/LED/note/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/SOFTWARE-ESP/CORE-ACTUATION/RGB/code/</loc>
+        <lastmod>2026-04-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-ACTUATION/RGB/code/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/CORE-ACTUATION/RGB/code/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/SOFTWARE-ESP/CORE-ACTUATION/RGB/integration/</loc>
+        <lastmod>2026-04-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-ACTUATION/RGB/integration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/CORE-ACTUATION/RGB/integration/"/>
+    </url>
+    <url>
+        <loc>https://localhost:8000/zh/SOFTWARE-ESP/CORE-ACTUATION/RGB/note/</loc>
+        <lastmod>2026-04-17</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://localhost:8000/zh/SOFTWARE-ESP/CORE-ACTUATION/RGB/note/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://localhost:8000/SOFTWARE-ESP/CORE-ACTUATION/RGB/note/"/>
     </url>
     <url>
         <loc>https://localhost:8000/zh/SOFTWARE-ESP/CORE-ACTUATION/SD-CARD/code/</loc>
