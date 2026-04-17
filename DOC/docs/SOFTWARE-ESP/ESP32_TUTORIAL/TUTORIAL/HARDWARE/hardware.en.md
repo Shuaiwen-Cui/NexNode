@@ -52,4 +52,4 @@
     
     - A USB cable
     
-    - A DNESP32S3M/DNESP32S3 development board or other ESP32 development board
+    - A dev board with ESP32S3

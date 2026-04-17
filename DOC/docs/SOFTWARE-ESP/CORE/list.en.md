@@ -5,6 +5,7 @@
 | Category      | Function          | Component/Module     | Remarks          |
 | ------------- | ----------------- | -------------------- | ---------------- |
 | Actuation     | LED Indicator Control | node_led            |  Used to feedback node status     |
+| Actuation     | RGB Indicator Control | node_rgb            |  Used to feedback node status     |
 | Control       | External Interrupt | node_exti           |  Used for external interrupt handling and response |
 | Control       | Timer             | node_timer          |  Used for periodic background task processing |
 | Control       | Real-Time Clock   | node_rtc            |  Used for time management and timed wake-up |

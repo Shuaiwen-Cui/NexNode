@@ -22,7 +22,7 @@ idf.py -C driver create-component node_mqtt
 ```
 
 !!! danger
-    Note that there is a built-in MQTT module in esp-idf, so to avoid conflicts, we name this module node_mqtt. In the past, ESPRESSIF had a built-in MQTT module, but later ESPRESSIF stripped the MQTT module from the built-in modules, so now there is no built-in MQTT module in ESP-IDF. Our node_mqtt module still depends on this library, but this library is no longer part of the built-in modules of ESP-IDF. Now, if you want to use it, you can either use the online download method or the offline package method. Here we use the offline package method, I have put this library in the driver directory, please make sure this package is also in your project driver directory.
+    Note that， to avoid conflicts, we name this module node_mqtt. In the past, ESPRESSIF had a built-in MQTT module, but later ESPRESSIF stripped the MQTT module from the built-in modules, so now there is no built-in MQTT module in ESP-IDF. Our node_mqtt module still depends on this library, but this library is no longer part of the built-in modules of ESP-IDF. Now, if you want to use it, you can either use the online download method or the offline package method. Here we use the offline package method, I have put this library in the driver directory, please make sure this package is also in your project driver directory.
 
 The command above means to create a new component named `node_mqtt` in the `driver` directory. After executing the command, you will see a new directory named `node_mqtt` in the `driver` directory. And the command will automatically generate the `CMakeLists.txt` file for the new component, as well as the `node_mqtt.h` and `node_mqtt.c` files.
 

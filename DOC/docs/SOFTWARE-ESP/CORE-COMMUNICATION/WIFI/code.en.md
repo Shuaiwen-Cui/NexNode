@@ -24,7 +24,6 @@ set(include_dirs
 
 set(requires
     node_led
-    node_lcd
     esp_wifi
     wpa_supplicant
 )
@@ -294,7 +293,6 @@ extern "C"
 #include "node_led.h"
 #include "node_exit.h"
 #include "node_spi.h"
-#include "node_lcd.h"
 #include "node_timer.h"
 #include "node_rtc.h"
 #include "node_sdcard.h"
@@ -339,38 +337,34 @@ void app_main(void)
     led_init();
     exit_init();
     spi2_init();
-    lcd_init();
 
     // spiffs_test();                                                  /* Run SPIFFS test */
     while (sd_card_init())                               /* SD card not detected */
     {
-        lcd_show_string(0, 0, 200, 16, 16, "SD Card Error!", RED);
+        ESP_LOGE(TAG, "SD Card Error!");
         vTaskDelay(500);
-        lcd_show_string(0, 20, 200, 16, 16, "Please Check!", RED);
+        ESP_LOGW(TAG, "Please Check!");
         vTaskDelay(500);
     }
 
-    // clean the screen
-    lcd_clear(WHITE);
-
-    lcd_show_string(0, 0, 200, 16, 16, "SD Initialized!", RED);
+    ESP_LOGI(TAG, "SD Initialized!");
 
     sd_card_test_filesystem();                                        /* Run SD card test */
 
-    lcd_show_string(0, 0, 200, 16, 16, "SD Tested CSW! ", RED);
+    ESP_LOGI(TAG, "SD Tested CSW!");
 
     // sd_card_unmount();
 
     vTaskDelay(3000);
 
-    lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test  ", RED);
+    ESP_LOGI(TAG, "WiFi STA Test");
 
     ret = wifi_sta_wpa2_init();
     // ret = wifi_sta_personal_init(); // for personal wifi
     if(ret == ESP_OK)
     {
         ESP_LOGI(TAG_WIFI, "WiFi STA Init OK");
-        lcd_show_string(0, 0, lcd_self.width, 16, 16, "WiFi STA Test OK", RED);
+        ESP_LOGI(TAG, "WiFi STA Test OK");
     }
     else
     {
@@ -419,7 +413,6 @@ void app_main(void)
 #include "node_led.h"
 #include "node_exit.h"
 #include "node_spi.h"
-#include "node_lcd.h"
 #include "node_timer.h"
 #include "node_rtc.h"
 #include "node_sdcard.h"
@@ -468,38 +461,34 @@ void app_main(void)
     led_init();
     exit_init();
     spi2_init();
-    lcd_init();
 
     // spiffs_test();                                                  /* Run SPIFFS test */
     while (sd_card_init())                               /* SD card not detected */
     {
-        lcd_show_string(0, 0, 200, 16, 16, (char*)"SD Card Error!", RED);
+        ESP_LOGW(TAG, "SD Card Error!");
         vTaskDelay(500);
-        lcd_show_string(0, 20, 200, 16, 16, (char*)"Please Check!", RED);
+        ESP_LOGW(TAG, "Please Check!");
         vTaskDelay(500);
     }
 
-    // clean the screen
-    lcd_clear(WHITE);
-
-    lcd_show_string(0, 0, 200, 16, 16, (char*)"SD Initialized!", RED);
+    ESP_LOGI(TAG, "SD Initialized!");
 
     sd_card_test_filesystem();                                        /* Run SD card test */
 
-    lcd_show_string(0, 0, 200, 16, 16, (char*)"SD Tested CSW! ", RED);
+    ESP_LOGI(TAG, "SD Tested CSW!");
 
     // sd_card_unmount();
 
     vTaskDelay(3000);
 
-    lcd_show_string(0, 0, lcd_self.width, 16, 16, (char*)"WiFi STA Test  ", RED);
+    ESP_LOGI(TAG_WIFI, "WiFi STA Test");
 
     ret = wifi_sta_wpa2_init();
     // ret = wifi_sta_personal_init(); // for personal wifi
     if(ret == ESP_OK)
     {
         ESP_LOGI(TAG_WIFI, "WiFi STA Init OK");
-        lcd_show_string(0, 0, lcd_self.width, 16, 16, (char*)"WiFi STA Test OK", RED);
+        ESP_LOGI(TAG_WIFI, "WiFi STA Test OK");
     }
     else
     {

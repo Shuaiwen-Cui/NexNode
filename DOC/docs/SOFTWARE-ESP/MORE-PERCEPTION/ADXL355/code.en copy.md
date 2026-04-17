@@ -1899,235 +1899,118 @@ void app_main(void)
 
 ```cpp
 /**
- * @file main.c
- * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
- * @brief 
- * @version 1.0
- * @date 2024-11-17
- * 
- * @copyright Copyright (c) 2024
- * 
+ * @file AIoTNode.cpp
+ * @brief Application entry: ADXL355 typical usage demo (SPI, init, WHOAMI, DRDY-synced read, periodic polling).
  */
+#include "nvs_flash.h"
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
-/* DEPENDENCIES */
-// ESP
-#include "esp_system.h" // ESP32 System
-#include "nvs_flash.h"  // ESP32 NVS
-#include "esp_chip_info.h" // ESP32 Chip Info
-#include "esp_psram.h" // ESP32 PSRAM
-#include "esp_flash.h" // ESP32 Flash
-#include "esp_log.h" // ESP32 Logging
-
-// BSP
-#include "node_led.h"
-#include "node_exit.h"
 #include "node_spi.h"
-#include "node_lcd.h"
-#include "node_timer.h"
-#include "node_rtc.h"
-#include "node_sdcard.h"
-#include "node_wifi.h"
-#include "node_mqtt.h"
 #include "node_acc_adxl355.h"
 
-/* Variables */
-const char *TAG = "AIoTNode";
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/* ADXL355 handle */
-adxl355_handle_t adxl355_handle;
+static const char *TAG = "AIoTNode";
 
-extern "C" void app_main();
-/**
- * @brief Entry point of the program
- * @param None
- * @retval None
- */
-void app_main()
+/** Number of DRDY interrupt-synchronized samples (for demo; switches to polling afterward). */
+#ifndef AIOTNODE_ADXL355_DRDY_SAMPLES
+#define AIOTNODE_ADXL355_DRDY_SAMPLES 5
+#endif
+
+/** Polling print interval (ms). */
+#ifndef AIOTNODE_ADXL355_POLL_MS
+#define AIOTNODE_ADXL355_POLL_MS 2000
+#endif
+
+void app_main(void)
 {
-    esp_err_t ret;
-    uint32_t flash_size;
-    esp_chip_info_t chip_info;
-
-    char mqtt_pub_buff[64];
-    // int count = 0;
-    
-    /* ADXL355 variables */
-    adxl355_accelerations_t accel;
-    // adxl355_raw_accelerations_t raw_accel;  // Unused variable, commented out
-    float temperature;
-    
-    // SPI3 device handle is now managed internally by ADXL355
-
-    // Initialize NVS
-    ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
-    {
-        ESP_ERROR_CHECK(nvs_flash_erase()); // Erase if needed
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
         ret = nvs_flash_init();
     }
+    ESP_ERROR_CHECK(ret);
 
-    // Get FLASH size
-    esp_flash_get_size(NULL, &flash_size);
-    esp_chip_info(&chip_info);
-
-    // Display CPU core count
-    printf("CPU Cores: %d\n", chip_info.cores);
-
-    // Display FLASH size
-    printf("Flash size: %ld MB flash\n", flash_size / (1024 * 1024));
-
-    // Display PSRAM size
-    printf("PSRAM size: %d bytes\n", esp_psram_get_size());
-
-    // BSP Initialization
-    led_init();
-    exit_init();
-    spi2_init();
-    // spi3_init();  // Refactored, now called during ADXL355 initialization
-    lcd_init();
-
-    // spiffs_test();                                                  /* Run SPIFFS test */
-    while (sd_card_init())                               /* SD card not detected */
-    {
-        lcd_show_string(0, 0, 200, 16, 16, (char*)"SD Card Error!", RED);
-        vTaskDelay(500);
-        lcd_show_string(0, 20, 200, 16, 16, (char*)"Please Check!", RED);
-        vTaskDelay(500);
-    }
-
-    // clean the screen
-    lcd_clear(WHITE);
-
-    lcd_show_string(0, 0, 200, 16, 16, (char*)"SD Initialized!", RED);
-
-    sd_card_test_filesystem();                                        /* Run SD card test */
-
-    lcd_show_string(0, 0, 200, 16, 16, (char*)"SD Tested CSW! ", RED);
-
-    // sd_card_unmount();
-
-    vTaskDelay(3000);
-
-    // Initialize WiFi and MQTT first
-    lcd_show_string(0, 0, lcd_self.width, 16, 16, (char*)"WiFi STA Test  ", RED);
-    
-    ret = wifi_sta_wpa2_init();
-    if(ret == ESP_OK)
-    {
-        ESP_LOGI(TAG_WIFI, "WiFi STA Init OK");
-        lcd_show_string(0, 0, lcd_self.width, 16, 16, (char*)"WiFi STA Test OK", RED);
-    }
-    else
-    {
-        ESP_LOGE(TAG_WIFI, "WiFi STA Init Failed");
-    }
-
-    // only when the ip is obtained, start mqtt
-    EventBits_t ev = 0;
-    ev = xEventGroupWaitBits(wifi_event_group,CONNECTED_BIT,pdTRUE,pdFALSE,portMAX_DELAY);
-    if(ev & CONNECTED_BIT)
-    {
-        mqtt_app_start();
-    }
-
-    // Initialize and test ADXL355 after WiFi and MQTT
-    lcd_clear(WHITE);
-    lcd_show_string(0, 0, 200, 16, 16, (char*)"Testing ADXL355...", BLUE);
-    
-    ESP_LOGI(TAG, "=== MAIN: Starting ADXL355 test ===");
-    
-    // Step 1: Initialize SPI3 bus (general purpose)
     spi3_init();
-    
-    // Step 2: Initialize ADXL355 sensor (includes SPI device configuration)
-    ret = adxl355_init(&adxl355_handle, ADXL355_RANGE_2G, ADXL355_ODR_1000);
-    
-    if (ret == ESP_OK) {
-        ESP_LOGI(TAG, "✓ ADXL355 initialization successful!");
-        lcd_show_string(0, 20, 200, 16, 16, (char*)"ADXL355 OK!", GREEN);
-        
-        // Read device info
-        adxl355_device_info_t device_info;
-        esp_err_t info_ret = adxl355_read_device_info(&adxl355_handle, &device_info);
-        
-        if (info_ret == ESP_OK) {
-            ESP_LOGI(TAG, "Device ID: 0x%02X, Vendor ID: 0x%02X", device_info.device_id, device_info.vendor_id);
-            
-            char info_str[64];
-            snprintf(info_str, sizeof(info_str), "ID: 0x%02X, 0x%02X, 0x%02X", 
-                     device_info.vendor_id, device_info.family_id, device_info.device_id);
-            lcd_show_string(0, 40, 200, 16, 16, (char*)info_str, BLACK);
-            
-            // Test temperature reading
-            float test_temp;
-            esp_err_t temp_test_ret = adxl355_read_temperature(&adxl355_handle, &test_temp);
-            if (temp_test_ret == ESP_OK) {
-                ESP_LOGI(TAG, "Temperature test: %.2f°C", test_temp);
-                char temp_str[64];
-                snprintf(temp_str, sizeof(temp_str), "Temp: %.1f°C", test_temp);
-                lcd_show_string(0, 60, 200, 16, 16, (char*)temp_str, BLUE);
-            } else {
-                ESP_LOGE(TAG, "Temperature test failed: %s", esp_err_to_name(temp_test_ret));
-                lcd_show_string(0, 60, 200, 16, 16, (char*)"Temp: Failed!", RED);
-            }
-        } else {
-            ESP_LOGE(TAG, "✗ Failed to read device info: %s", esp_err_to_name(info_ret));
-        }
-        
-    } else {
-        ESP_LOGE(TAG, "✗ ADXL355 initialization failed: %s", esp_err_to_name(ret));
-        lcd_show_string(0, 20, 200, 16, 16, (char*)"ADXL355 Failed!", RED);
-    }
-    
-    vTaskDelay(3000);
-    
-    ESP_LOGI(TAG, "ADXL355 initialized and ready for MQTT publishing");
 
-    ESP_LOGI(TAG, "=== MAIN: Entering main loop ===");
-    
-    while (1)
-    {
-        if(s_is_mqtt_connected)
-        {
-            // Read both acceleration and temperature data
-            esp_err_t accel_ret = adxl355_read_accelerations(&adxl355_handle, &accel);
-            esp_err_t temp_ret = adxl355_read_temperature(&adxl355_handle, &temperature);
-            
-            if (accel_ret == ESP_OK && temp_ret == ESP_OK) {
-                // Format MQTT payload with both acceleration and temperature
-                snprintf(mqtt_pub_buff, 64,
-                    "{\"x\":%.4f,\"y\":%.4f,\"z\":%.4f,\"temp\":%.2f}",
-                    accel.x, accel.y, accel.z, temperature);
-                
-                int mqtt_ret = esp_mqtt_client_publish(s_mqtt_client, MQTT_PUBLISH_TOPIC,
-                                mqtt_pub_buff, strlen(mqtt_pub_buff), 1, 0);
-                
-                if (mqtt_ret < 0) {
-                    ESP_LOGE(TAG, "✗ MQTT publish failed: %d", mqtt_ret);
-                }
-                
-                // Output both acceleration and temperature to console
-                printf("Accelerations: X: %f g, Y: %f g, Z: %f g | Temperature: %.2f°C\n", 
-                       accel.x, accel.y, accel.z, temperature);
-                
-                // Also log to ESP log system
-                ESP_LOGI(TAG, "Data: X=%.4f, Y=%.4f, Z=%.4f g, Temp=%.2f°C", 
-                         accel.x, accel.y, accel.z, temperature);
-                
-            } else {
-                if (accel_ret != ESP_OK) {
-                    ESP_LOGE(TAG, "✗ Failed to read ADXL355 acceleration data: %s", esp_err_to_name(accel_ret));
-                }
-                if (temp_ret != ESP_OK) {
-                    ESP_LOGE(TAG, "✗ Failed to read ADXL355 temperature data: %s", esp_err_to_name(temp_ret));
-                }
-            }
-        } else {
-            ESP_LOGW(TAG, "MQTT not connected, skipping data read");
+    node_acc_adxl355_config_t cfg;
+    node_acc_adxl355_config_default_eval(&cfg);
+    cfg.log_info_on_init = true;
+
+    node_acc_adxl355_dev_t dev = {};
+    ret = node_acc_adxl355_init(&dev, &cfg, NODE_ACC_ADXL355_RANGE_2G, NODE_ACC_ADXL355_ODR_125_HZ);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "ADXL355 init failed: %s", esp_err_to_name(ret));
+        for (;;) {
+            vTaskDelay(pdMS_TO_TICKS(1000));
         }
-        
-        led_toggle();
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
+    }
+
+    node_acc_adxl355_ids_t ids = {};
+    ret = node_acc_adxl355_read_ids(&dev, &ids);
+    if (ret == ESP_OK) {
+        ESP_LOGI(TAG, "WHOAMI: AD=0x%02X MST=0x%02X PART=0x%02X REV=0x%02X", ids.devid_ad, ids.devid_mst,
+                 ids.partid, ids.revid);
+    }
+
+    /* Typical streaming acquisition: DRDY edge-synchronized read of XYZ + temperature (matching eval board GPIO6 wiring). */
+    ret = node_acc_adxl355_drdy_isr_install(&dev);
+    if (ret == ESP_OK) {
+        ESP_LOGI(TAG, "DRDY-synchronized samples (%d):", AIOTNODE_ADXL355_DRDY_SAMPLES);
+        for (int i = 0; i < AIOTNODE_ADXL355_DRDY_SAMPLES; i++) {
+            ret = node_acc_adxl355_drdy_wait(&dev, 150);
+            if (ret != ESP_OK) {
+                ESP_LOGW(TAG, "drdy_wait[%d]: %s", i, esp_err_to_name(ret));
+                break;
+            }
+            node_acc_adxl355_raw_xyz_t raw = {};
+            float tc = 0.0f;
+            (void)node_acc_adxl355_read_raw_xyz(&dev, &raw);
+            (void)node_acc_adxl355_read_temp_c(&dev, &tc);
+            ESP_LOGI(TAG, "  [%d] raw xyz: %ld, %ld, %ld  T: %.2f C", i, (long)raw.x, (long)raw.y, (long)raw.z,
+                     (double)tc);
+        }
+        (void)node_acc_adxl355_drdy_isr_remove(&dev);
+    } else {
+        ESP_LOGW(TAG, "DRDY ISR not installed (%s); skip DRDY demo", esp_err_to_name(ret));
+    }
+
+    ESP_LOGI(TAG, "Polling every %d ms (STATUS + raw xyz + T). Ctrl+C monitor to stop.", AIOTNODE_ADXL355_POLL_MS);
+
+    for (;;) {
+        vTaskDelay(pdMS_TO_TICKS(AIOTNODE_ADXL355_POLL_MS));
+
+        uint8_t status = 0;
+        node_acc_adxl355_raw_xyz_t raw = {};
+        float tc = 0.0f;
+        ret = node_acc_adxl355_read_status(&dev, &status);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "read_status: %s", esp_err_to_name(ret));
+            continue;
+        }
+        ret = node_acc_adxl355_read_raw_xyz(&dev, &raw);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "read_raw_xyz: %s", esp_err_to_name(ret));
+            continue;
+        }
+        ret = node_acc_adxl355_read_temp_c(&dev, &tc);
+        if (ret != ESP_OK) {
+            ESP_LOGE(TAG, "read_temp_c: %s", esp_err_to_name(ret));
+            continue;
+        }
+
+        ESP_LOGI(TAG, "STATUS=0x%02X (DRDY=%u) | xyz raw %ld, %ld, %ld | %.2f C", (unsigned)status,
+                 (unsigned)(status & NODE_ACC_ADXL355_REG_STATUS_DATA_RDY), (long)raw.x, (long)raw.y, (long)raw.z,
+                 (double)tc);
     }
 }
+
+#ifdef __cplusplus
+}
+#endif
+
 ```

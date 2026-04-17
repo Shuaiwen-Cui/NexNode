@@ -41,7 +41,7 @@ idf_component_register(SRC_DIRS ${src_dirs} INCLUDE_DIRS ${include_dirs} REQUIRE
  * @file node_sdcard.h
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
  * @brief This file is for SD card initialization and related functions
- * ！Here, we use SPI2, which is already initialized previously for LCD. For a same SPI, there can be many devices using different CS (Chip Select) pins.
+ * ！Here, we use SPI2. For a same SPI, there can be many devices using different CS (Chip Select) pins.
  * @version 1.0
  * @date 2025-10-22
  * @copyright Copyright (c) 2024
@@ -63,7 +63,7 @@ extern "C"
 #define MOUNT_POINT "/sdcard"
 #define SD_MAX_CHAR_SIZE 64
 
-#define SD_PIN_NUM_CS GPIO_NUM_2
+#define SD_PIN_NUM_CS GPIO_NUM_14
 
     /* VARIABLES */
     extern sdmmc_card_t *card;
@@ -103,7 +103,7 @@ extern "C"
  * @file node_sdcard.c
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
  * @brief This file is for SD card initialization and related functions
- * ！Here, we use SPI2, which is already initialized previously for LCD. For a same SPI, there can be many devices using different CS (Chip Select) pins.
+ * ！Here, we use SPI2. For a same SPI, there can be many devices using different CS (Chip Select) pins.
  * @version 1.0
  * @date 2025-10-22
  * @copyright Copyright (c) 2024
@@ -257,7 +257,7 @@ extern "C"
 
     /**
      * @brief Unmount the File System and SPI Bus
-     * @note Here, since LCD and SD card share the same SPI bus, this function may not suceed.
+     * @note Here, since SD card and other devices may share the same SPI bus, this function may not suceed.
      * @param None
      * @retval esp_err_t
      */
@@ -323,7 +323,6 @@ extern "C"
 #include "node_led.h"
 #include "node_exit.h"
 #include "node_spi.h"
-#include "node_lcd.h"
 #include "node_timer.h"
 #include "node_rtc.h"
 #include "node_sdcard.h"
@@ -338,6 +337,7 @@ void app_main(void)
     esp_err_t ret;
     uint32_t flash_size;
     esp_chip_info_t chip_info;
+    const char *tag = "AIoTNode";
 
     // Initialize NVS
     ret = nvs_flash_init();
@@ -364,27 +364,23 @@ void app_main(void)
     led_init();
     exit_init();
     spi2_init();
-    lcd_init();
 
     // spiffs_test();                                                  /* Run SPIFFS test */
     while (sd_card_init())                               /* SD card not detected */
     {
-        lcd_show_string(0, 0, 200, 16, 16, "SD Card Error!", RED);
+        ESP_LOGE(tag, "SD Card Error!");
         vTaskDelay(500);
-        lcd_show_string(0, 20, 200, 16, 16, "Please Check!", RED);
+        ESP_LOGW(tag, "Please Check!");
         vTaskDelay(500);
     }
 
-    // clean the screen
-    lcd_clear(WHITE);
-
-    lcd_show_string(0, 0, 200, 16, 16, "SD Initialized!", RED);
+    ESP_LOGI(tag, "SD Initialized!");
 
     sd_card_test_filesystem();                                        /* Run SD card test */
 
-    lcd_show_string(0, 0, 200, 16, 16, "SD Tested CSW! ", RED);
+    ESP_LOGI(tag, "SD Tested CSW!");
 
-    // sd_card_unmount();  // will not be successful since LCD still uses the same SPI bus
+    // sd_card_unmount();
 
     while (1)
     {
@@ -426,7 +422,6 @@ void app_main(void)
 #include "node_led.h"
 #include "node_exit.h"
 #include "node_spi.h"
-#include "node_lcd.h"
 #include "node_timer.h"
 #include "node_rtc.h"
 #include "node_sdcard.h"
@@ -471,27 +466,23 @@ void app_main(void)
     led_init();
     exit_init();
     spi2_init();
-    lcd_init();
 
     // spiffs_test();                                                  /* Run SPIFFS test */
     while (sd_card_init())                               /* SD card not detected */
     {
-        lcd_show_string(0, 0, 200, 16, 16, (char*)"SD Card Error!", RED);
+        ESP_LOGW("APP", "SD Card Error!");
         vTaskDelay(500);
-        lcd_show_string(0, 20, 200, 16, 16, (char*)"Please Check!", RED);
+        ESP_LOGW("APP", "Please Check!");
         vTaskDelay(500);
     }
 
-    // clean the screen
-    lcd_clear(WHITE);
-
-    lcd_show_string(0, 0, 200, 16, 16, (char*)"SD Initialized!", RED);
+    ESP_LOGI("APP", "SD Initialized!");
 
     sd_card_test_filesystem();                                        /* Run SD card test */
 
-    lcd_show_string(0, 0, 200, 16, 16, (char*)"SD Tested CSW! ", RED);
+    ESP_LOGI("APP", "SD Tested CSW!");
 
-    // sd_card_unmount();  // will not be successful since LCD still uses the same SPI bus
+    // sd_card_unmount();
 
     while (1)
     {

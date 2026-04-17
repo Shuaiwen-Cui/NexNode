@@ -2,7 +2,7 @@
  * @file node_sdcard.h
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
  * @brief This file is for SD card initialization and related functions
- * ！Here, we use SPI2, which is already initialized previously for LCD. For a same SPI, there can be many devices using different CS (Chip Select) pins.
+ * ！Here, we use SPI2. For a same SPI, there can be many devices using different CS (Chip Select) pins.
  * @version 1.0
  * @date 2025-10-22
  * @copyright Copyright (c) 2024
@@ -24,7 +24,7 @@ extern "C"
 #define MOUNT_POINT "/sdcard"
 #define SD_MAX_CHAR_SIZE 64
 
-#define SD_PIN_NUM_CS GPIO_NUM_2
+#define SD_PIN_NUM_CS GPIO_NUM_14
 
     /* VARIABLES */
     extern sdmmc_card_t *card;

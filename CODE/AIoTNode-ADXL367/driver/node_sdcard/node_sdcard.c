@@ -2,7 +2,7 @@
  * @file node_sdcard.c
  * @author SHUAIWEN CUI (SHUAIWEN001@e.ntu.edu.sg)
  * @brief This file is for SD card initialization and related functions
- * ！Here, we use SPI2, which is already initialized previously for LCD. For a same SPI, there can be many devices using different CS (Chip Select) pins.
+ * ！Here, we use SPI2. For a same SPI, there can be many devices using different CS (Chip Select) pins.
  * @version 1.0
  * @date 2025-10-22
  * @copyright Copyright (c) 2024
@@ -156,7 +156,7 @@ extern "C"
 
     /**
      * @brief Unmount the File System and SPI Bus
-     * @note Here, since LCD and SD card share the same SPI bus, this function may not suceed.
+     * @note Here, SD card and other devices may share the same SPI bus, this function may not suceed.
      * @param None
      * @retval esp_err_t
      */

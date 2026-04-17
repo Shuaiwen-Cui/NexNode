@@ -17,7 +17,7 @@ As can be seen, the GPIO to control the LED is IO1.
 
 ## The Effect
 
-![LED-RED](LED-RED.png){ width=800px }
+![LED-STAT](LED-STAT.jpg){ width=800px }
 
 ## Dependencies
 

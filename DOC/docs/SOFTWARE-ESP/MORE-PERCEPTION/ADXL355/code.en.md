@@ -2028,7 +2028,7 @@ out_deinit : {
 ```cpp
 /**
  * @file AIoTNode.cpp
- * @brief 应用入口：ADXL355 典型用法演示（SPI、初始化、WHOAMI、DRDY 同步读、周期轮询）。
+ * @brief Application entry: ADXL355 typical usage demo (SPI, init, WHOAMI, DRDY-synced read, periodic polling).
  */
 #include "nvs_flash.h"
 #include "esp_log.h"
@@ -2044,12 +2044,12 @@ extern "C" {
 
 static const char *TAG = "AIoTNode";
 
-/** DRDY 中断同步采样次数（演示用，结束后改为轮询）。 */
+/** Number of DRDY interrupt-synchronized samples (for demo; switches to polling afterward). */
 #ifndef AIOTNODE_ADXL355_DRDY_SAMPLES
 #define AIOTNODE_ADXL355_DRDY_SAMPLES 5
 #endif
 
-/** 轮询打印周期 (ms)。 */
+/** Polling print interval (ms). */
 #ifndef AIOTNODE_ADXL355_POLL_MS
 #define AIOTNODE_ADXL355_POLL_MS 2000
 #endif
@@ -2085,7 +2085,7 @@ void app_main(void)
                  ids.partid, ids.revid);
     }
 
-    /* 典型流式采集：DRDY 边沿同步读 XYZ + 温度（与 eval 板 GPIO6 连线一致）。 */
+    /* Typical streaming acquisition: DRDY edge-synchronized read of XYZ + temperature (matching eval board GPIO6 wiring). */
     ret = node_acc_adxl355_drdy_isr_install(&dev);
     if (ret == ESP_OK) {
         ESP_LOGI(TAG, "DRDY-synchronized samples (%d):", AIOTNODE_ADXL355_DRDY_SAMPLES);

@@ -8,7 +8,6 @@ set(include_dirs
 
 set(requires
     node_led
-    node_lcd
     esp_wifi
     wpa_supplicant
 )

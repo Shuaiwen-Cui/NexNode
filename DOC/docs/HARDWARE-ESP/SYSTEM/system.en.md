@@ -1,8 +1,5 @@
 # SYSTEM
 
-!!! TIP "Note"
-    Note that currently the hardware and software design are being developed separately and simultaneously, and the software part is currently being developed based on existing ESP32 development boards on the market, which will be adapted to our designed hardware platform in the future.
-
 !!! warning "Note"
 	The current version is 1.0. Its primary goal is to support scientific research and algorithm validation. There is still a significant gap before real-world field deployment and commercial use. The system will be adjusted and optimized later based on practical requirements and constraints.
 

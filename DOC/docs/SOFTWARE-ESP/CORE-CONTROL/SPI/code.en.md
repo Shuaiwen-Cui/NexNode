@@ -476,7 +476,7 @@ extern "C"
 ## main.c
 
 ```c
-refer to LCD code
+refer to SPI code
 ```
 
 !!! note

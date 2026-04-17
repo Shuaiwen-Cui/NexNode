@@ -23,9 +23,9 @@ extern "C"
 #include "driver/gpio.h"
 
 /* SPI2 GPIO Definitions */
-#define SPI2_MOSI_GPIO_PIN GPIO_NUM_11 /* SPI2_MOSI */
+#define SPI2_MISO_GPIO_PIN GPIO_NUM_11 /* SPI2_MISO */
 #define SPI2_CLK_GPIO_PIN GPIO_NUM_12  /* SPI2_CLK */
-#define SPI2_MISO_GPIO_PIN GPIO_NUM_13 /* SPI2_MISO */
+#define SPI2_MOSI_GPIO_PIN GPIO_NUM_13 /* SPI2_MOSI */
 
 /* SPI3 GPIO Definitions */
 #define SPI3_MOSI_GPIO_PIN GPIO_NUM_16 /* SPI3_MOSI */

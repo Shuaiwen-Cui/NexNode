@@ -28,22 +28,21 @@
 
 ## Use Case
 
-This experiment introduces the following functionality: After a series of initializations, an SD card initialization condition is used within a `while` loop to check whether the SD card is successfully initialized. If initialization succeeds, SD card parameters will be output to the serial terminal or VSCode terminal, and the total capacity and remaining capacity will be displayed on the LCD. The LED blinks to indicate the program is running.
+This experiment functionality overview: After a series of initializations, a while loop is used to check if the SD card initialization is successful. If the SD card is initialized successfully, relevant parameters of the SD card will be output through the serial port or VSCode terminal. At this time, the LED will blink, indicating that the program is running.
 
 ## Resources Used
 
 1. **LED**
    - LED: IO0
-2. **0.96-inch LCD**
-3. **SD Card**
-   - CS: IO2
+2. **SD Card**
+   - CS: IO14
    - SCK: IO12
-   - MOSI: IO11
-   - MISO: IO13
+   - MOSI: IO13
+   - MISO: IO11
 
 ## Connection Diagram
 
-This experiment connects the SD card to the ESP32-S3 using the SPI interface. The DNESP32S3M minimal system board has an onboard Micro SD card slot for connecting the SD card. The schematic for connecting the SD card to the ESP32-S3 is shown below.
+This experiment connects the SD card to the ESP32-S3 using the SPI interface. The system board has an onboard Micro SD card slot for connecting the SD card. The schematic for connecting the SD card to the ESP32-S3 is shown below.
 
 ![TF](TF.png)
 
