@@ -1,6 +1,6 @@
 # HARDWARE
 
-!!! tip
+<!-- !!! tip
     This article takes the Alientek DNESP32S3M/DNESP32S3 development board as an example for illustration. Other ESP32-S3 development boards are similar.
 
 >Alientek DNESP32S3M Main Control Board
@@ -20,9 +20,9 @@
 ![MODULES_EN](MODULES_EN.png){width=800px}
 
 !!! info "DNESP32S3M/DNESP32S3"
-    The hardware platform used in this document is the DNESP32S3M/DNESP32S3 from Alientek， which is based on ESP32-S3, as shown in the figure above. It should be possible to migrate the relevant programs to other development boards, but adaptation should be made according to the actual situation.
+    The hardware platform used in this document is the DNESP32S3M/DNESP32S3 from Alientek， which is based on ESP32-S3, as shown in the figure above. It should be possible to migrate the relevant programs to other development boards, but adaptation should be made according to the actual situation. -->
 
-!!! info "DNESP32S3M/DNESP32S3 Hardware Features"
+!!! info
     ESP32-S3 is a system on a chip that integrates the following features:
 
     - Wi-Fi (2.4 GHz band)

@@ -17,7 +17,7 @@
 
 ## 效果图
 
-![LED-RED](LED-RED.png){ width=800px }
+![LED-STAT](LED-STAT.jpg){ width=800px }
 
 ## 依赖关系
 

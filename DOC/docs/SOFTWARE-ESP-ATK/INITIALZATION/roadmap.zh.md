@@ -1,0 +1,113 @@
+# 开发路线图
+
+## 代码架构
+
+>一般意义上的 ESP32 项目结构
+
+```txt
+- myProject/
+             - CMakeLists.txt
+             - sdkconfig
+             - components/ - component1/ - CMakeLists.txt
+                                         - Kconfig
+                                         - src1.c
+                           - component2/ - CMakeLists.txt
+                                         - Kconfig
+                                         - src1.c
+                                         - include/ - component2.h
+             - main/       - CMakeLists.txt
+                           - src1.c
+                           - src2.c
+             - build/
+
+```
+
+>AIoTNode 模板项目结构
+
+```txt
+- AIoTNode/
+             - .vscode/ (vscode 设置文件，可以忽略)
+             - CMakeLists.txt (项目级 cmake 文件)
+             - sdkconfig (项目级 sdkconfig 文件，通过 idf.py menuconfig 生成)
+             - sdkconfig.old (sdkconfig 备份)
+             - partitions-16MiB.csv (16MiB flash 调整的分区表文件)
+             - dependencies.lock (依赖库版本锁定文件,自动生成，首次运行前请删除此文件)
+             - application/         - component1/ - CMakeLists.txt
+                                                  - Kconfig
+                                                  - src1.c
+                                    - component2/ - CMakeLists.txt
+                                                  - Kconfig
+                                                  - src1.c
+                                                  - include/ - component2.h
+             - middleware/          - component1/ - CMakeLists.txt
+                                                  - Kconfig
+                                                  - src1.c
+                                    - component2/ - CMakeLists.txt
+                                                  - Kconfig
+                                                  - src1.c
+                                                  - include/ - component2.h
+             - driver/              - component1/ - CMakeLists.txt
+                                                  - Kconfig
+                                                  - src1.c
+                                    - component2/ - CMakeLists.txt
+                                                  - Kconfig
+                                                  - src1.c
+                                                  - include/ - component2.h
+             - main/                - CMakeLists.txt
+                                    - src1.c
+                                    - src2.c
+             - build/
+
+```
+
+!!! NOTE "AIoTNode 模板项目结构"
+    - `application` 目录下放置应用层代码
+    - `middleware` 目录下放置中间件代码
+    - `driver` 目录下放置驱动代码
+    - `main` 目录下放置主函数代码
+
+我们在ZERO模板基础上，添加了 `application`、`middleware` 和 `driver` 目录，以更好地组织代码结构。根据功能的不同，我们将代码分为应用层、中间件和驱动层，以提高代码的可维护性和可扩展性。
+
+对应的，需要修改整个项目的 `CMakeLists.txt` 文件，以正确地包含这些目录中的代码。具体来说，需要在 `CMakeLists.txt` 中用以下内容进行覆盖，从而保证上面新添加的目录能够被正确编译：
+
+```cmake
+# The following five lines of boilerplate have to be in your project's
+# CMakeLists in this exact order for cmake to work correctly
+cmake_minimum_required(VERSION 3.22)
+
+# Extra components (e.g. driver/node_led): one subfolder with CMakeLists.txt = one component.
+# With no REQUIRES in main/CMakeLists.txt, `main` depends on all built components automatically.
+set(EXTRA_COMPONENT_DIRS "${CMAKE_SOURCE_DIR}/driver" "${CMAKE_SOURCE_DIR}/middleware" "${CMAKE_SOURCE_DIR}/application")
+
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+project(AIoTNode)
+``` 
+
+友情提示，为了防止git不同步空文件夹，我们在每个目录下都放置了一个 `readme.txt` 的空文件，用户可以删除这个文件并在对应目录下添加自己的代码。
+
+## 本项目开发顺序
+
+!!! tip
+    对于每个组件，需要保证其前置条件已经满足，才能进行后续的开发。
+
+假定您已完成项目初始化工作，建议按照以下顺序进行各个模块的开发：
+
+| 功能类别             | 功能模块         | 依赖组件（Official）     | 依赖组件（User）    |
+|----------------------|------------------|--------------------------|---------------------|
+| 执行                 | LED              | driver                     |                     |
+| 控制                 | 外部中断          | driver                     |   node_led                  |
+| 控制                 | 定时器            | driver                     |   node_led                  |
+| 控制                 | 实时时钟          |                     |                     |
+| 控制                 | 随机数发生器      |                      |                     |
+| 控制                 | I2C              | driver                     |                     |
+| 控制                 | SPI              | driver                     |                     |
+| 执行                 | LCD              | driver                     | node_spi                     |
+| 执行                 | SD 卡            | driver, fatfs, vfs, sdmmc   | node_spi                     |
+| 通信                 | WIFI             | esp_wifi, wpa_supplicant    | node_led, node_lcd(可选)           |
+| 通信                 | IOT              | mqtt     |            |
+| 其他                 |                  |                             |                              |
+
+## 额外说明
+
+!!! danger "额外说明"
+    建议烧录的时候，彻底清空build文件夹，开发板重新上电后烧录。

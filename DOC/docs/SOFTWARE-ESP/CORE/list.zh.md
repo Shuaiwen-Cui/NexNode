@@ -12,9 +12,10 @@
 | 控制          | 随机数发生器       | node_rng            |  用于生成随机数       |
 | 控制          | I2C 总线          | node_i2c            |  用于连接 I2C 设备    |
 | 控制          | SPI 总线          | node_spi            |  用于连接 SPI 设备    |
-| 执行          | LCD 显示屏       | node_lcd            |  用于显示信息        |
 | 执行          | SD 卡存储         | node_sdcard        |  用于数据存储        |
 | 通信          | WIFI 无线通信     | node_wifi          |  用于无线网络连接     |
 | 通信          | 物联网通信        | node_iot           |  用于物联网数据交互    |
+<!-- | 执行          | LCD 显示屏       | node_lcd            |  用于显示信息        | -->
+
 
 包含以上功能的版本我们命名为 AIoTNode-CORE，后续我们会在此基础上进行扩展功能开发，推出 AIoTNode-MORE 版本。

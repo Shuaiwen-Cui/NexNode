@@ -102,11 +102,12 @@ Assuming you have completed the project initialization work, it is recommended t
 | Main Control        | Random Number Generator|                              |                             |
 | Main Control        | I2C              | driver                           |                             |
 | Main Control        | SPI              | driver                           |                             |
-| Actuation            | LCD              | driver                           | node_spi                    |
 | Actuation            | SD Card          | driver, fatfs, vfs, sdmmc     | node_spi                    |
 | Communication       | WIFI             | esp_wifi, wpa_supplicant    | node_led, node_lcd(optional)           |
 | Communication       | IOT              | mqtt     |            |
 | Other                |                  |                             |                              |
+<!-- | Actuation            | LCD              | driver                           | node_spi                    | -->
+
 
 ## ADDITIONAL NOTES
 

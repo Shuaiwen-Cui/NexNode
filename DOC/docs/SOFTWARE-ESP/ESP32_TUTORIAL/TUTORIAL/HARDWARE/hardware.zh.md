@@ -1,6 +1,6 @@
 # 硬件平台
 
-!!! tip
+<!-- !!! tip
     本文以正点原子DNESP32S3M/DNESP32S3开发板为例进行说明，其他ESP32-S3开发板情况类似。
 
 >正点原子 DNESP32S3M 主控板
@@ -20,9 +20,9 @@
 ![MODULES_CN](MODULES_CN.png){width=800px}
 
 !!! info "DNESP32S3M/DNESP32S3"
-    本文档使用的硬件平台为正点原子的DNESP32S3M/DNESP32S3,基于ESP32-S3，如上图所示。相关程序迁移到其他开发板应该也是可以的，但是需要根据实际情况进行适配。
+    本文档使用的硬件平台为正点原子的DNESP32S3M/DNESP32S3,基于ESP32-S3，如上图所示。相关程序迁移到其他开发板应该也是可以的，但是需要根据实际情况进行适配。 -->
 
-!!! info "DNESP32S3M/DNESP32S3"
+!!! info
     ESP32-S3 SoC 芯片支持以下功能：
 
     - 2.4 GHz Wi-Fi

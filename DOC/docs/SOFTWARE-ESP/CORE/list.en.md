@@ -11,9 +11,10 @@
 | Control       | Random Number Generator | node_rng            |  Used to generate random numbers       |
 | Control       | I2C Bus          | node_i2c            |  Used to connect I2C devices    |
 | Control       | SPI Bus          | node_spi            |  Used to connect SPI devices    |
-| Actuation     | LCD Display       | node_lcd            |  Used to display information        |
 | Actuation     | SD Card Storage         | node_sdcard        |  Used for data storage        |
 | Communication | WIFI Wireless Communication     | node_wifi          |  Used for wireless network connection     |
 | Communication | IoT Communication        | node_iot           |  Used for IoT data interaction    |
+<!-- | Actuation     | LCD Display       | node_lcd            |  Used to display information        | -->
+
 
 The version that includes the above functions is named AIoTNode-CORE, and we will develop the AIoTNode-MORE version based on this for extended function development.
