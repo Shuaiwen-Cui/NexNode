@@ -96,7 +96,7 @@ Assuming you have completed the project initialization work, it is recommended t
 | Function Category    | Function Module  | Dependency Component (Official) | Dependency Component (User) |
 |----------------------|------------------|----------------------------------|-----------------------------|
 | Actuation            | LED              | driver                           |   
-| Actuation            | RGBLED              | driver                           |                            |
+| Actuation            | RGBLED              | driver，espressif__led_strip                           |                            |
 | Actuation            | External Interrupt| driver                           |   node_led                  |
 | Main Control        | Timer            | driver                           |   node_led                  |
 | Main Control        | Real-Time Clock  |                                  |                             |

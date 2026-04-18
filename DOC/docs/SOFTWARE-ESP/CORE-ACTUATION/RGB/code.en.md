@@ -75,8 +75,11 @@ bool node_rgb_is_initialized(void);
 
 void node_rgb_set_brightness(uint8_t v);
 
-/** Solid color across the strip and refresh */
-void node_rgb_fill(uint8_t r, uint8_t g, uint8_t b);
+/** Solid R,G,B (0–255) on all LEDs, then refresh */
+void node_rgb_rgb(uint8_t r, uint8_t g, uint8_t b);
+
+/** Named color string (MQTT/CLI): trims ASCII space; English case-insensitive; UTF-8 Chinese aliases supported. */
+esp_err_t node_rgb_str(const char *s);
 
 void node_rgb_clear(void);
 
@@ -106,6 +109,7 @@ void node_rgb_chase_reset(void);
 #include "node_rgb.h"
 #include "led_strip.h"
 #include "esp_log.h"
+#include <ctype.h>
 #include <string.h>
 
 static const char *TAG = "node_rgb";
@@ -120,6 +124,122 @@ static bool s_inited = false;
 static inline uint8_t scale(uint8_t c)
 {
     return (uint8_t)(((uint16_t)c * s_brightness) / 255);
+}
+
+typedef struct {
+    const char *name;
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+} node_rgb_named_color_t;
+
+/* UTF-8 Chinese literals; ASCII keys compared case-insensitively in code. */
+static const node_rgb_named_color_t s_named_colors[] = {
+    { "red", 255, 0, 0 },
+    { "红", 255, 0, 0 },
+    { "green", 0, 255, 0 },
+    { "绿", 0, 255, 0 },
+    { "blue", 0, 0, 255 },
+    { "蓝", 0, 0, 255 },
+    { "yellow", 255, 255, 0 },
+    { "黄", 255, 255, 0 },
+    { "cyan", 0, 255, 255 },
+    { "aqua", 0, 255, 255 },
+    { "青", 0, 255, 255 },
+    { "magenta", 255, 0, 255 },
+    { "fuchsia", 255, 0, 255 },
+    { "品红", 255, 0, 255 },
+    { "purple", 128, 0, 128 },
+    { "violet", 148, 0, 211 },
+    { "紫", 128, 0, 128 },
+    { "orange", 255, 140, 0 },
+    { "橙", 255, 140, 0 },
+    { "pink", 255, 105, 180 },
+    { "粉", 255, 105, 180 },
+    { "white", 255, 255, 255 },
+    { "白", 255, 255, 255 },
+    { "black", 0, 0, 0 },
+    { "off", 0, 0, 0 },
+    { "none", 0, 0, 0 },
+    { "黑", 0, 0, 0 },
+    { "关", 0, 0, 0 },
+    { "gold", 255, 215, 0 },
+    { "金", 255, 215, 0 },
+    { "brown", 139, 69, 19 },
+    { "褐", 139, 69, 19 },
+};
+
+static const char *skip_ascii_space(const char *s)
+{
+    while (*s != '\0' && isspace((unsigned char)*s)) {
+        s++;
+    }
+    return s;
+}
+
+static esp_err_t copy_trimmed_name(const char *name, char *out, size_t out_sz)
+{
+    if (!name) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    const char *p = skip_ascii_space(name);
+    const char *end = p + strlen(p);
+    while (end > p && isspace((unsigned char)end[-1])) {
+        end--;
+    }
+    size_t n = (size_t)(end - p);
+    if (n == 0) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    if (n + 1 > out_sz) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    memcpy(out, p, n);
+    out[n] = '\0';
+    return ESP_OK;
+}
+
+static int ascii_lower(int c)
+{
+    if (c >= 'A' && c <= 'Z') {
+        return c - 'A' + 'a';
+    }
+    return c;
+}
+
+/** @a entry must be ASCII-only (7-bit) for case-insensitive match. */
+static bool name_eq_ascii_ci(const char *a, const char *entry)
+{
+    for (;;) {
+        unsigned char ca = (unsigned char)*a++;
+        unsigned char ce = (unsigned char)*entry++;
+        if (ce == '\0') {
+            return ca == '\0';
+        }
+        if (ascii_lower((int)ca) != ascii_lower((int)ce)) {
+            return false;
+        }
+    }
+}
+
+static bool lookup_named_rgb(const char *buf, uint8_t *r, uint8_t *g, uint8_t *b)
+{
+    for (size_t i = 0; i < sizeof(s_named_colors) / sizeof(s_named_colors[0]); i++) {
+        const char *nm = s_named_colors[i].name;
+        bool match;
+        if ((unsigned char)nm[0] >= 0x80) {
+            match = (strcmp(buf, nm) == 0);
+        } else {
+            match = name_eq_ascii_ci(buf, nm);
+        }
+        if (match) {
+            *r = s_named_colors[i].r;
+            *g = s_named_colors[i].g;
+            *b = s_named_colors[i].b;
+            return true;
+        }
+    }
+    return false;
 }
 
 static void apply_fill(uint8_t r, uint8_t g, uint8_t b)
@@ -202,9 +322,27 @@ void node_rgb_set_brightness(uint8_t v)
     s_brightness = v;
 }
 
-void node_rgb_fill(uint8_t r, uint8_t g, uint8_t b)
+void node_rgb_rgb(uint8_t r, uint8_t g, uint8_t b)
 {
     apply_fill(r, g, b);
+}
+
+esp_err_t node_rgb_str(const char *s)
+{
+    char buf[48];
+    esp_err_t err = copy_trimmed_name(s, buf, sizeof(buf));
+    if (err != ESP_OK) {
+        return err;
+    }
+    if (!s_inited || !s_strip) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    uint8_t r, g, b;
+    if (!lookup_named_rgb(buf, &r, &g, &b)) {
+        return ESP_ERR_NOT_FOUND;
+    }
+    node_rgb_rgb(r, g, b);
+    return ESP_OK;
 }
 
 void node_rgb_clear(void)
@@ -326,7 +464,13 @@ void app_main(void)
     int count = 0;
 
     static TickType_t s_rgb_last_tick = 0;
-    static uint8_t s_rgb_idx = 0;
+    static uint8_t s_rgb_marquee_i = 0;
+
+    /* Single-LED marquee: cycle named colors (~220 ms per step). */
+    static const char *const k_rgb_marquee[] = {
+        "red", "orange", "yellow", "green", "cyan", "blue", "purple", "pink",
+    };
+    const size_t k_rgb_marquee_n = sizeof(k_rgb_marquee) / sizeof(k_rgb_marquee[0]);
 
     // Initialize NVS
     ret = nvs_flash_init();
@@ -361,10 +505,11 @@ void app_main(void)
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "node_rgb_init failed: %s", esp_err_to_name(ret));
     } else {
-        ESP_LOGI(TAG, "node_rgb: SK6812MINI-C GPIO%u (colors switched in main loop)", (unsigned)NODE_RGB_GPIO_DEFAULT);
-        node_rgb_fill(48, 0, 0);
+        ESP_LOGI(TAG, "node_rgb: GPIO%u marquee demo (named colors)", (unsigned)NODE_RGB_GPIO_DEFAULT);
+        node_rgb_chase_reset();
+        (void)node_rgb_str(k_rgb_marquee[0]);
         s_rgb_last_tick = xTaskGetTickCount();
-        s_rgb_idx = 1;
+        s_rgb_marquee_i = 1;
     }
 
     // spiffs_test();                                                  /* Run SPIFFS test */
@@ -418,23 +563,17 @@ void app_main(void)
         }
         led_toggle();
 
-        /* RGB：每 1 s 轮换红→绿→蓝（与主循环周期无关，只看 tick） */
+        /* RGB marquee: advance by tick, independent of the 1 s loop delay below. */
         if (node_rgb_is_initialized()) {
+            const TickType_t rgb_step = pdMS_TO_TICKS(220);
             TickType_t now = xTaskGetTickCount();
-            if (s_rgb_last_tick != 0 &&
-                (now - s_rgb_last_tick) >= pdMS_TO_TICKS(1000)) {
+            if (s_rgb_last_tick != 0 && (now - s_rgb_last_tick) >= rgb_step) {
                 s_rgb_last_tick = now;
-                switch (s_rgb_idx++ % 3) {
-                    case 0:
-                        node_rgb_fill(48, 0, 0);
-                        break;
-                    case 1:
-                        node_rgb_fill(0, 48, 0);
-                        break;
-                    default:
-                        node_rgb_fill(0, 0, 48);
-                        break;
+                const char *c = k_rgb_marquee[s_rgb_marquee_i % k_rgb_marquee_n];
+                if (node_rgb_str(c) != ESP_OK) {
+                    node_rgb_rgb(24, 24, 24);
                 }
+                s_rgb_marquee_i++;
             }
         }
 
@@ -446,5 +585,4 @@ void app_main(void)
 #ifdef __cplusplus
 }
 #endif
-
 ```

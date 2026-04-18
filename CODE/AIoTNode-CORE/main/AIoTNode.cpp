@@ -54,7 +54,13 @@ void app_main(void)
     int count = 0;
 
     static TickType_t s_rgb_last_tick = 0;
-    static uint8_t s_rgb_idx = 0;
+    static uint8_t s_rgb_marquee_i = 0;
+
+    /* Single-LED marquee: cycle named colors (~220 ms per step). */
+    static const char *const k_rgb_marquee[] = {
+        "red", "orange", "yellow", "green", "cyan", "blue", "purple", "pink",
+    };
+    const size_t k_rgb_marquee_n = sizeof(k_rgb_marquee) / sizeof(k_rgb_marquee[0]);
 
     // Initialize NVS
     ret = nvs_flash_init();
@@ -89,10 +95,11 @@ void app_main(void)
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "node_rgb_init failed: %s", esp_err_to_name(ret));
     } else {
-        ESP_LOGI(TAG, "node_rgb: SK6812MINI-C GPIO%u (colors switched in main loop)", (unsigned)NODE_RGB_GPIO_DEFAULT);
-        node_rgb_fill(48, 0, 0);
+        ESP_LOGI(TAG, "node_rgb: GPIO%u marquee demo (named colors)", (unsigned)NODE_RGB_GPIO_DEFAULT);
+        node_rgb_chase_reset();
+        (void)node_rgb_str(k_rgb_marquee[0]);
         s_rgb_last_tick = xTaskGetTickCount();
-        s_rgb_idx = 1;
+        s_rgb_marquee_i = 1;
     }
 
     // spiffs_test();                                                  /* Run SPIFFS test */
@@ -146,23 +153,17 @@ void app_main(void)
         }
         led_toggle();
 
-        /* RGB：每 1 s 轮换红→绿→蓝（与主循环周期无关，只看 tick） */
+        /* RGB marquee: advance by tick, independent of the 1 s loop delay below. */
         if (node_rgb_is_initialized()) {
+            const TickType_t rgb_step = pdMS_TO_TICKS(220);
             TickType_t now = xTaskGetTickCount();
-            if (s_rgb_last_tick != 0 &&
-                (now - s_rgb_last_tick) >= pdMS_TO_TICKS(1000)) {
+            if (s_rgb_last_tick != 0 && (now - s_rgb_last_tick) >= rgb_step) {
                 s_rgb_last_tick = now;
-                switch (s_rgb_idx++ % 3) {
-                    case 0:
-                        node_rgb_fill(48, 0, 0);
-                        break;
-                    case 1:
-                        node_rgb_fill(0, 48, 0);
-                        break;
-                    default:
-                        node_rgb_fill(0, 0, 48);
-                        break;
+                const char *c = k_rgb_marquee[s_rgb_marquee_i % k_rgb_marquee_n];
+                if (node_rgb_str(c) != ESP_OK) {
+                    node_rgb_rgb(24, 24, 24);
                 }
+                s_rgb_marquee_i++;
             }
         }
 

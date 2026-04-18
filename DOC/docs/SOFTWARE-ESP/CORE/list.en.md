@@ -14,7 +14,7 @@
 | Control       | SPI Bus          | node_spi            |  Used to connect SPI devices    |
 | Actuation     | SD Card Storage         | node_sdcard        |  Used for data storage        |
 | Communication | WIFI Wireless Communication     | node_wifi          |  Used for wireless network connection     |
-| Communication | IoT Communication        | node_iot           |  Used for IoT data interaction    |
+| Communication | IoT Communication        | node_mqtt           |  Used for IoT data interaction    |
 <!-- | Actuation     | LCD Display       | node_lcd            |  Used to display information        | -->
 
 

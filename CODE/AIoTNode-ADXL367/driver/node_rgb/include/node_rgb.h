@@ -37,8 +37,11 @@ bool node_rgb_is_initialized(void);
 
 void node_rgb_set_brightness(uint8_t v);
 
-/** Solid color across the strip and refresh */
-void node_rgb_fill(uint8_t r, uint8_t g, uint8_t b);
+/** Solid R,G,B (0–255) on all LEDs, then refresh */
+void node_rgb_rgb(uint8_t r, uint8_t g, uint8_t b);
+
+/** Named color string (MQTT/CLI): trims ASCII space; English case-insensitive; UTF-8 Chinese aliases supported. */
+esp_err_t node_rgb_str(const char *s);
 
 void node_rgb_clear(void);
 

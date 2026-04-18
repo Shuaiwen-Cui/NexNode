@@ -15,7 +15,7 @@
 | 控制          | SPI 总线          | node_spi            |  用于连接 SPI 设备    |
 | 执行          | SD 卡存储         | node_sdcard        |  用于数据存储        |
 | 通信          | WIFI 无线通信     | node_wifi          |  用于无线网络连接     |
-| 通信          | 物联网通信        | node_iot           |  用于物联网数据交互    |
+| 通信          | 物联网通信        | node_mqtt           |  用于物联网数据交互    |
 <!-- | 执行          | LCD 显示屏       | node_lcd            |  用于显示信息        | -->
 
 
