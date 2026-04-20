@@ -169,6 +169,7 @@ plugins:
             WSN-COMMUNICATION: 无线传感器网络-通信
             ESP-NOW: ESP-NOW通信
             ABC: 基础
+            RFCOM: 射频通讯
             STM32: STM32
             DNESP32S3M: DNESP32S3M
             PROJECT-CONSTRUCTION: 项目构建
@@ -429,11 +430,16 @@ nav:
       - COMMUNICATION:
           - ESP-NOW:
               - ABC: "WSN-ESP/COMMUNICATION/ESP-NOW/abc.md"
+          - RFCOM:
+              - NOTE: "WSN-ESP/COMMUNICATION/RFCOM/note.md"
+              - CODE: "WSN-ESP/COMMUNICATION/RFCOM/code.md"
+              - INTEGRATION: "WSN-ESP/COMMUNICATION/RFCOM/integration.md"
+              
   # - HARDWARE-STM32:
   #     - CORE-BOARD: "HARDWARE-STM/CORE-BOARD/core-board.md"
   - RELEASE:
       - ESP32:
-          - V1: "RELEASE/esp-v1.md"
+          - V1: "RELEASE/release-v1.md"
   # - KICK-START:
   #     - ESP32:
   #         - HARDWARE: "./KICK_START/ESP32/HARDWARE/hardware.md"

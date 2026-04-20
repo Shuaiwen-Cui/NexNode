@@ -47,7 +47,9 @@ The basic steps for ESP-NOW communication are as follows:
 
 ## FIRST ESP-NOW COMMUNICATION EXAMPLE
 
-Based on the AIoTNode-CPP-MORE version, divided into sender and receiver parts. Modifications are limited to the main.cpp file.
+!!! note "Note"
+    Although this example is presented in the point-to-point section, the transmitter code sets `receiver_mac` to the broadcast address `FF:FF:FF:FF:FF:FF`, so any ESP-NOW device on the same channel that can receive the broadcast frame may get the payload.
+    If you replace `receiver_mac` with the actual MAC address of a specific target device (and add the corresponding peer correctly), you can achieve true one-to-one point-to-point communication.
 
 ### TX - SENDER
 
@@ -87,7 +89,6 @@ Based on the AIoTNode-CPP-MORE version, divided into sender and receiver parts. 
 #include "node_led.h"
 #include "node_exit.h"
 #include "node_spi.h"
-#include "node_lcd.h"
 #include "node_timer.h"
 #include "node_rtc.h"
 #include "node_sdcard.h"
@@ -268,7 +269,6 @@ esp_err_t espnow_init(void)
 void send_task(void *pvParameters)
 {
     message_data_t message;  // Data to send
-    char display_buf[80];     // LCD display buffer
     
     ESP_LOGI(TAG, "Send task started...");
     
@@ -287,28 +287,12 @@ void send_task(void *pvParameters)
         
         if (ret == ESP_OK)
         {
-            // Simple display: only show 3 lines, sufficient spacing, unified 16-pixel font
-            lcd_clear(WHITE);
-            
-            // Line 1: Title (Y=0, occupies 0-16)
-            lcd_show_string(0, 0, 160, 16, 16, (char*)"ESP-NOW TX", GREEN);
-            
-            // Line 2: Send info (Y=24, 8-pixel spacing, occupies 24-40)
-            snprintf(display_buf, sizeof(display_buf), "Send #%d", send_count);
-            lcd_show_string(0, 24, 160, 16, 16, display_buf, BLACK);
-            
-            // Line 3: Receive info (Y=48, 8-pixel spacing, occupies 48-64)
-            snprintf(display_buf, sizeof(display_buf), "Recv #%d", recv_count);
-            lcd_show_string(0, 48, 160, 16, 16, display_buf, BLACK);
-            
             ESP_LOGI(TAG, "Send data #%d: %s", send_count, message.text);
         }
         else
         {
             // Send failed
             ESP_LOGE(TAG, "Send failed: %s", esp_err_to_name(ret));
-            lcd_clear(WHITE);
-            lcd_show_string(0, 16, 160, 16, 12, (char*)"Send Failed!", RED);
         }
         
         // 4. Toggle LED state (visual feedback)
@@ -350,11 +334,6 @@ void app_main(void)
     led_init();    // Initialize LED
     exit_init();   // Initialize external interrupt
     spi2_init();   // Initialize SPI interface
-    lcd_init();    // Initialize LCD display
-    
-    // Clear screen and show initialization message
-    lcd_clear(WHITE);
-    lcd_show_string(0, 0, 160, 16, 16, (char*)"Initializing...", BLUE);
     
     // Note: SD card initialization is skipped here because ESP-NOW doesn't need SD card
     // If SD card is needed, uncomment below
@@ -369,16 +348,10 @@ void app_main(void)
     // ========== Part 3: ESP-NOW Initialization ==========
     ESP_LOGI(TAG, "========== ESP-NOW Initialization ==========");
     
-    lcd_fill(0, 0, 160, 16, WHITE);
-    lcd_show_string(0, 0, 160, 16, 12, (char*)"Init ESP-NOW...", BLUE);
-    
     ret = espnow_init();
     if (ret != ESP_OK)
     {
-        // Initialization failed, show error on LCD and stop
-        lcd_clear(WHITE);
-        lcd_show_string(0, 0, 160, 16, 12, (char*)"ESP-NOW Init", RED);
-        lcd_show_string(0, 16, 160, 16, 12, (char*)"Failed!", RED);
+        // Initialization failed
         ESP_LOGE(TAG, "ESP-NOW initialization failed, program stopped");
         while (1) {
             vTaskDelay(1000);  // Infinite wait
@@ -386,9 +359,7 @@ void app_main(void)
     }
     
     // Initialization successful
-    lcd_clear(WHITE);
-    lcd_show_string(0, 0, 160, 16, 12, (char*)"ESP-NOW Ready!", GREEN);
-    vTaskDelay(pdMS_TO_TICKS(1000));  // Wait 1 second for user to see the message
+    vTaskDelay(pdMS_TO_TICKS(1000));  // Wait 1 second
     
     // ========== Part 4: Create Send Task ==========
     ESP_LOGI(TAG, "========== Create Send Task ==========");
@@ -459,7 +430,6 @@ void app_main(void)
 #include "node_led.h"
 #include "node_exit.h"
 #include "node_spi.h"
-#include "node_lcd.h"
 #include "node_timer.h"
 #include "node_rtc.h"
 #include "node_sdcard.h"
@@ -483,10 +453,6 @@ const char *TAG = "ESP_NOW_RX";
 
 // Receive counter (records the number of received messages)
 static int recv_count = 0;
-
-// Last received message (for LCD display)
-static message_data_t last_message;
-static bool message_received = false;
 
 /* ========== Callback Function: Send Completion Notification ========== */
 // Receivers usually don't need send callback, but keep this function in case reply is needed
@@ -526,10 +492,6 @@ void recv_callback(const esp_now_recv_info *recv_info, const uint8_t *data, int 
         message_data_t *msg = (message_data_t *)data;
         ESP_LOGI(TAG, "Message content: counter=%d, text=%s, value1=%d, value2=%d",
                  msg->counter, msg->text, msg->value1, msg->value2);
-        
-        // Save the last received message
-        memcpy(&last_message, msg, sizeof(message_data_t));
-        message_received = true;
         
         // Toggle LED to indicate data received
         led_toggle();
@@ -626,47 +588,6 @@ esp_err_t espnow_init(void)
     return ESP_OK;
 }
 
-/* ========== Display Update Task Function ========== */
-// This function runs in an independent FreeRTOS task, periodically updating LCD display
-void display_task(void *pvParameters)
-{
-    char display_buf[80];     // LCD display buffer
-    
-    ESP_LOGI(TAG, "Display task started...");
-    
-    while (1)  // Infinite loop
-    {
-        // Update LCD display
-        lcd_clear(WHITE);
-        
-        // Line 1: Title (Y=0, occupies 0-16)
-        lcd_show_string(0, 0, 160, 16, 16, (char*)"ESP-NOW RX", GREEN);
-        
-        // Line 2: Receive count (Y=24, 8px spacing, occupies 24-40)
-        snprintf(display_buf, sizeof(display_buf), "Recv #%d", recv_count);
-        lcd_show_string(0, 24, 160, 16, 16, display_buf, BLACK);
-        
-        // If message received, display message content
-        if (message_received)
-        {
-            // Line 3: Message text (Y=48, 8px spacing, occupies 48-64)
-            snprintf(display_buf, sizeof(display_buf), "Text: %s", last_message.text);
-            lcd_show_string(0, 48, 160, 16, 16, display_buf, BLUE);
-            
-            // Line 4: Counter value (Y=72, 8px spacing, occupies 72-88)
-            snprintf(display_buf, sizeof(display_buf), "Cnt: %d", last_message.counter);
-            lcd_show_string(0, 72, 160, 16, 16, display_buf, BLACK);
-        }
-        else
-        {
-            // Line 3: Waiting for message (Y=48, 8px spacing, occupies 48-64)
-            lcd_show_string(0, 48, 160, 16, 16, (char*)"Waiting...", BLACK);
-        }
-        
-        // Wait 500ms before updating display
-        vTaskDelay(pdMS_TO_TICKS(500));
-    }
-}
 
 /* ========== Main Function ========== */
 void app_main(void)
@@ -699,11 +620,6 @@ void app_main(void)
     led_init();    // Initialize LED
     exit_init();   // Initialize external interrupt
     spi2_init();   // Initialize SPI interface
-    lcd_init();    // Initialize LCD display
-    
-    // Clear screen and display initialization message
-    lcd_clear(WHITE);
-    lcd_show_string(0, 0, 160, 16, 16, (char*)"Initializing...", BLUE);
     
     // Note: SD card initialization is skipped here because ESP-NOW doesn't need SD card
     // If SD card is needed, uncomment the following
@@ -718,39 +634,17 @@ void app_main(void)
     // ========== Part 3: ESP-NOW Initialization ==========
     ESP_LOGI(TAG, "========== ESP-NOW Initialization ==========");
     
-    lcd_fill(0, 0, 160, 16, WHITE);
-    lcd_show_string(0, 0, 160, 16, 12, (char*)"Init ESP-NOW...", BLUE);
     
     ret = espnow_init();
     if (ret != ESP_OK)
     {
-        // Initialization failed, display error on LCD and stop
-        lcd_clear(WHITE);
-        lcd_show_string(0, 0, 160, 16, 12, (char*)"ESP-NOW Init", RED);
-        lcd_show_string(0, 16, 160, 16, 12, (char*)"Failed!", RED);
+        // Initialization failed, stop
         ESP_LOGE(TAG, "ESP-NOW initialization failed, program stopped");
         while (1) {
             vTaskDelay(1000);  // Infinite wait
         }
     }
     
-    // Initialization successful
-    lcd_clear(WHITE);
-    lcd_show_string(0, 0, 160, 16, 12, (char*)"ESP-NOW Ready!", GREEN);
-    vTaskDelay(pdMS_TO_TICKS(1000));  // Wait 1 second for user to see the message
-    
-    // ========== Part 4: Create Display Update Task ==========
-    ESP_LOGI(TAG, "========== Create Display Update Task ==========");
-    
-    // Create a FreeRTOS task to periodically update LCD display
-    // Parameter description:
-    // - display_task: Task function
-    // - "display_task": Task name
-    // - 4096: Task stack size (bytes)
-    // - NULL: Parameters passed to task
-    // - 5: Task priority (higher number = higher priority)
-    // - NULL: Task handle (not needed here)
-    xTaskCreate(display_task, "display_task", 4096, NULL, 5, NULL);
     
     ESP_LOGI(TAG, "✓ Program startup complete! Waiting for data...");
     
@@ -770,6 +664,6 @@ void app_main(void)
 #endif
 ```
 
-### DEMO
+<!-- ### DEMO
 
-<iframe width="800" height="450" src="https://www.youtube-nocookie.com/embed/zjPG3-lPeHM" frameborder="0" allowfullscreen></iframe>
+<iframe width="800" height="450" src="https://www.youtube-nocookie.com/embed/zjPG3-lPeHM" frameborder="0" allowfullscreen></iframe> -->

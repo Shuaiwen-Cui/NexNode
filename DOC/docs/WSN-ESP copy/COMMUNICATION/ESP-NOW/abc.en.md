@@ -1,21 +1,19 @@
-# ESP-NOW 通讯
+# ESP-NOW COMMUNICATION
 
-## 简介
+## INTRODUCTION
 
-ESP-NOW 是 Espressif 提供的一种低功耗、低延迟的无线通讯协议，适用于 ESP8266 和 ESP32 系列芯片。它允许设备之间直接进行点对点通信，而无需通过 Wi-Fi 路由器，从而实现更高效的通讯方式。其实现基于 IEEE 802.11 协议，但省略了传统 Wi-Fi 通信中的握手和连接过程。
+ESP-NOW is a low-power, low-latency wireless communication protocol provided by Espressif, suitable for ESP8266 and ESP32 series chips. It allows direct point-to-point communication between devices without the need for a Wi-Fi router, enabling a more efficient communication method. It is based on the IEEE 802.11 protocol but omits the handshake and connection processes of traditional Wi-Fi communication.
 
-ESP-NOW 特点：
+ESP-NOW Features:
+-   **Low Power Consumption**: ESP-NOW is designed for low-power applications, making it suitable for battery-powered devices, extending their lifespan.
 
--   **低功耗**：ESP-NOW 设计用于低功耗应用，适合电池供电的设备，延长设备的使用寿命。
+-   **Low Latency**: ESP-NOW provides fast data transmission, suitable for latency-sensitive application scenarios.
 
--   **低延迟**：ESP-NOW 提供快速的数据传输，适用于对延迟敏感的应用场景。
+-   **Point-to-Point Communication**: Devices can communicate directly with each other without the need for a Wi-Fi router, simplifying the network architecture.
 
--   **点对点通信**：设备之间可以直接通信，无需通过 Wi-Fi 路由器，简化了网络架构。
+-   **Multi-Device Support**: ESP-NOW supports communication between multiple devices, with support for up to 20 peer devices.
 
--   **多设备支持**：ESP-NOW 支持多个设备同时通信，最多可支持 20 个对等设备。
-
-![](ESP-NOW-ZH.png)
-
+![](ESP-NOW-EN.png)
 
 <div class="grid cards" markdown>
 
@@ -23,37 +21,35 @@ ESP-NOW 特点：
 
     ---
 
-    [:octicons-arrow-right-24: <a href="https://www.espressif.com/zh-hans/solutions/low-power-solutions/esp-now" target="_blank"> ESP-NOW 官方网站 </a>](#)
+    [:octicons-arrow-right-24: <a href="https://www.espressif.com/en/solutions/low-power-solutions/esp-now" target="_blank"> ESP-NOW Official Website </a>](#)
 
 -   :material-file:{ .lg .middle } __ESP-NOW API__
 
     ---
 
-    [:octicons-arrow-right-24: <a href="https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32s3/api-reference/network/esp_now.html" target="_blank"> ESP-NOW API 官方文档 </a>](#)
+    [:octicons-arrow-right-24: <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/network/esp_now.html" target="_blank"> ESP-NOW API Official Documentation </a>](#)
 
 </div>
 
-## ESP-NOW 通讯步骤
+## ESP-NOW COMMUNICATION STEPS
 
-ESP-NOW 通讯的基本步骤如下：
+The basic steps for ESP-NOW communication are as follows:
 
-1. 初始化 ESP-NOW 协议栈。
+1. Initialize the ESP-NOW protocol stack.
 
-2. 配置对等设备信息，包括 MAC 地址和加密密钥（如果需要）。
+2. Configure peer device information, including MAC address and encryption key (if needed).
 
-3. 注册发送和接收回调函数，以处理数据传输。
+3. Register send and receive callback functions to handle data transmission.
 
-4. 发送数据到指定的对等设备。
+4. Send data to the specified peer device.
 
-5. 在接收回调函数中处理接收到的数据。
+5. Handle received data in the receive callback function.
 
-## 初步尝试 - 点对点通讯
+## FIRST ESP-NOW COMMUNICATION EXAMPLE
 
-!!! note "说明"
-    当前示例虽然放在“点对点通讯”章节中，但发送端代码里的 `receiver_mac` 使用的是广播地址 `FF:FF:FF:FF:FF:FF`，因此同频道内可接收该广播帧的 ESP-NOW 设备都可能收到数据。
-    如果将 `receiver_mac` 改为某一台目标设备的实际 MAC 地址（并正确添加对应 peer），就可以实现真正的一对一点对点通讯。
+Based on the AIoTNode-CPP-MORE version, divided into sender and receiver parts. Modifications are limited to the main.cpp file.
 
-### TX - 发送端
+### TX - SENDER
 
 ```cpp
 /**
@@ -91,6 +87,7 @@ ESP-NOW 通讯的基本步骤如下：
 #include "node_led.h"
 #include "node_exit.h"
 #include "node_spi.h"
+#include "node_lcd.h"
 #include "node_timer.h"
 #include "node_rtc.h"
 #include "node_sdcard.h"
@@ -271,6 +268,7 @@ esp_err_t espnow_init(void)
 void send_task(void *pvParameters)
 {
     message_data_t message;  // Data to send
+    char display_buf[80];     // LCD display buffer
     
     ESP_LOGI(TAG, "Send task started...");
     
@@ -289,12 +287,28 @@ void send_task(void *pvParameters)
         
         if (ret == ESP_OK)
         {
+            // Simple display: only show 3 lines, sufficient spacing, unified 16-pixel font
+            lcd_clear(WHITE);
+            
+            // Line 1: Title (Y=0, occupies 0-16)
+            lcd_show_string(0, 0, 160, 16, 16, (char*)"ESP-NOW TX", GREEN);
+            
+            // Line 2: Send info (Y=24, 8-pixel spacing, occupies 24-40)
+            snprintf(display_buf, sizeof(display_buf), "Send #%d", send_count);
+            lcd_show_string(0, 24, 160, 16, 16, display_buf, BLACK);
+            
+            // Line 3: Receive info (Y=48, 8-pixel spacing, occupies 48-64)
+            snprintf(display_buf, sizeof(display_buf), "Recv #%d", recv_count);
+            lcd_show_string(0, 48, 160, 16, 16, display_buf, BLACK);
+            
             ESP_LOGI(TAG, "Send data #%d: %s", send_count, message.text);
         }
         else
         {
             // Send failed
             ESP_LOGE(TAG, "Send failed: %s", esp_err_to_name(ret));
+            lcd_clear(WHITE);
+            lcd_show_string(0, 16, 160, 16, 12, (char*)"Send Failed!", RED);
         }
         
         // 4. Toggle LED state (visual feedback)
@@ -336,6 +350,11 @@ void app_main(void)
     led_init();    // Initialize LED
     exit_init();   // Initialize external interrupt
     spi2_init();   // Initialize SPI interface
+    lcd_init();    // Initialize LCD display
+    
+    // Clear screen and show initialization message
+    lcd_clear(WHITE);
+    lcd_show_string(0, 0, 160, 16, 16, (char*)"Initializing...", BLUE);
     
     // Note: SD card initialization is skipped here because ESP-NOW doesn't need SD card
     // If SD card is needed, uncomment below
@@ -350,10 +369,16 @@ void app_main(void)
     // ========== Part 3: ESP-NOW Initialization ==========
     ESP_LOGI(TAG, "========== ESP-NOW Initialization ==========");
     
+    lcd_fill(0, 0, 160, 16, WHITE);
+    lcd_show_string(0, 0, 160, 16, 12, (char*)"Init ESP-NOW...", BLUE);
+    
     ret = espnow_init();
     if (ret != ESP_OK)
     {
-        // Initialization failed
+        // Initialization failed, show error on LCD and stop
+        lcd_clear(WHITE);
+        lcd_show_string(0, 0, 160, 16, 12, (char*)"ESP-NOW Init", RED);
+        lcd_show_string(0, 16, 160, 16, 12, (char*)"Failed!", RED);
         ESP_LOGE(TAG, "ESP-NOW initialization failed, program stopped");
         while (1) {
             vTaskDelay(1000);  // Infinite wait
@@ -361,7 +386,9 @@ void app_main(void)
     }
     
     // Initialization successful
-    vTaskDelay(pdMS_TO_TICKS(1000));  // Wait 1 second
+    lcd_clear(WHITE);
+    lcd_show_string(0, 0, 160, 16, 12, (char*)"ESP-NOW Ready!", GREEN);
+    vTaskDelay(pdMS_TO_TICKS(1000));  // Wait 1 second for user to see the message
     
     // ========== Part 4: Create Send Task ==========
     ESP_LOGI(TAG, "========== Create Send Task ==========");
@@ -394,7 +421,7 @@ void app_main(void)
 
 ```
 
-### RX - 接收端
+### RX - RECEIVER
 
 ```cpp
 /**
@@ -432,6 +459,7 @@ void app_main(void)
 #include "node_led.h"
 #include "node_exit.h"
 #include "node_spi.h"
+#include "node_lcd.h"
 #include "node_timer.h"
 #include "node_rtc.h"
 #include "node_sdcard.h"
@@ -455,6 +483,10 @@ const char *TAG = "ESP_NOW_RX";
 
 // Receive counter (records the number of received messages)
 static int recv_count = 0;
+
+// Last received message (for LCD display)
+static message_data_t last_message;
+static bool message_received = false;
 
 /* ========== Callback Function: Send Completion Notification ========== */
 // Receivers usually don't need send callback, but keep this function in case reply is needed
@@ -494,6 +526,10 @@ void recv_callback(const esp_now_recv_info *recv_info, const uint8_t *data, int 
         message_data_t *msg = (message_data_t *)data;
         ESP_LOGI(TAG, "Message content: counter=%d, text=%s, value1=%d, value2=%d",
                  msg->counter, msg->text, msg->value1, msg->value2);
+        
+        // Save the last received message
+        memcpy(&last_message, msg, sizeof(message_data_t));
+        message_received = true;
         
         // Toggle LED to indicate data received
         led_toggle();
@@ -590,6 +626,47 @@ esp_err_t espnow_init(void)
     return ESP_OK;
 }
 
+/* ========== Display Update Task Function ========== */
+// This function runs in an independent FreeRTOS task, periodically updating LCD display
+void display_task(void *pvParameters)
+{
+    char display_buf[80];     // LCD display buffer
+    
+    ESP_LOGI(TAG, "Display task started...");
+    
+    while (1)  // Infinite loop
+    {
+        // Update LCD display
+        lcd_clear(WHITE);
+        
+        // Line 1: Title (Y=0, occupies 0-16)
+        lcd_show_string(0, 0, 160, 16, 16, (char*)"ESP-NOW RX", GREEN);
+        
+        // Line 2: Receive count (Y=24, 8px spacing, occupies 24-40)
+        snprintf(display_buf, sizeof(display_buf), "Recv #%d", recv_count);
+        lcd_show_string(0, 24, 160, 16, 16, display_buf, BLACK);
+        
+        // If message received, display message content
+        if (message_received)
+        {
+            // Line 3: Message text (Y=48, 8px spacing, occupies 48-64)
+            snprintf(display_buf, sizeof(display_buf), "Text: %s", last_message.text);
+            lcd_show_string(0, 48, 160, 16, 16, display_buf, BLUE);
+            
+            // Line 4: Counter value (Y=72, 8px spacing, occupies 72-88)
+            snprintf(display_buf, sizeof(display_buf), "Cnt: %d", last_message.counter);
+            lcd_show_string(0, 72, 160, 16, 16, display_buf, BLACK);
+        }
+        else
+        {
+            // Line 3: Waiting for message (Y=48, 8px spacing, occupies 48-64)
+            lcd_show_string(0, 48, 160, 16, 16, (char*)"Waiting...", BLACK);
+        }
+        
+        // Wait 500ms before updating display
+        vTaskDelay(pdMS_TO_TICKS(500));
+    }
+}
 
 /* ========== Main Function ========== */
 void app_main(void)
@@ -622,6 +699,11 @@ void app_main(void)
     led_init();    // Initialize LED
     exit_init();   // Initialize external interrupt
     spi2_init();   // Initialize SPI interface
+    lcd_init();    // Initialize LCD display
+    
+    // Clear screen and display initialization message
+    lcd_clear(WHITE);
+    lcd_show_string(0, 0, 160, 16, 16, (char*)"Initializing...", BLUE);
     
     // Note: SD card initialization is skipped here because ESP-NOW doesn't need SD card
     // If SD card is needed, uncomment the following
@@ -636,17 +718,39 @@ void app_main(void)
     // ========== Part 3: ESP-NOW Initialization ==========
     ESP_LOGI(TAG, "========== ESP-NOW Initialization ==========");
     
+    lcd_fill(0, 0, 160, 16, WHITE);
+    lcd_show_string(0, 0, 160, 16, 12, (char*)"Init ESP-NOW...", BLUE);
     
     ret = espnow_init();
     if (ret != ESP_OK)
     {
-        // Initialization failed, stop
+        // Initialization failed, display error on LCD and stop
+        lcd_clear(WHITE);
+        lcd_show_string(0, 0, 160, 16, 12, (char*)"ESP-NOW Init", RED);
+        lcd_show_string(0, 16, 160, 16, 12, (char*)"Failed!", RED);
         ESP_LOGE(TAG, "ESP-NOW initialization failed, program stopped");
         while (1) {
             vTaskDelay(1000);  // Infinite wait
         }
     }
     
+    // Initialization successful
+    lcd_clear(WHITE);
+    lcd_show_string(0, 0, 160, 16, 12, (char*)"ESP-NOW Ready!", GREEN);
+    vTaskDelay(pdMS_TO_TICKS(1000));  // Wait 1 second for user to see the message
+    
+    // ========== Part 4: Create Display Update Task ==========
+    ESP_LOGI(TAG, "========== Create Display Update Task ==========");
+    
+    // Create a FreeRTOS task to periodically update LCD display
+    // Parameter description:
+    // - display_task: Task function
+    // - "display_task": Task name
+    // - 4096: Task stack size (bytes)
+    // - NULL: Parameters passed to task
+    // - 5: Task priority (higher number = higher priority)
+    // - NULL: Task handle (not needed here)
+    xTaskCreate(display_task, "display_task", 4096, NULL, 5, NULL);
     
     ESP_LOGI(TAG, "✓ Program startup complete! Waiting for data...");
     
@@ -666,6 +770,6 @@ void app_main(void)
 #endif
 ```
 
-<!-- ### 结果展示
+### DEMO
 
-<iframe width="800" height="450" src="https://www.youtube-nocookie.com/embed/zjPG3-lPeHM" frameborder="0" allowfullscreen></iframe> -->
+<iframe width="800" height="450" src="https://www.youtube-nocookie.com/embed/zjPG3-lPeHM" frameborder="0" allowfullscreen></iframe>
