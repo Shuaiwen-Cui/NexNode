@@ -65,7 +65,7 @@ PCB设计由EasyEDA完成，PCB由JLCPCB制造。
 
     ---
 
-    [:octicons-arrow-right-24: <a href="https://item.taobao.com/item.htm?id=561797456405&mi_id=0000k9hDSv9FgRyLOsEh44xvbEG1U2uKtDrdGmMKJ0rfMDo&spm=tbpc.boughtlist.suborder_itemtitle.1.7b3a2e8dcZTmLu&skuId=4620938568366" target="_blank"> 购买链接 </a>](#)
+    [:octicons-arrow-right-24: <a href="https://mobile.yangkeduo.com/goods2.html?_oak_share_ticket=01-0000000029-cb7b138a299ca374187be1ba94b0d1926704d77752cfec62300e6cf837752204-1780039564&_oak_share_time=1778743563&share_uin=DLDAUDMMIJDBJJP5AN7622ETVQ_GEXDA&page_from=101&refer_share_id=nPrCnaGsvTRyevMSE26dVj8li1WEdQ7N&refer_share_channel=message&share_oak_rcto=YWJINtlenUX433ozuDEBpE0sh8bPooDIzF-R1kkqGbtCEXkf1eBe8A5-&refer_share_uin=DLDAUDMMIJDBJJP5AN7622ETVQ_GEXDA&_oak_share_snapshot_num=600&pxq_secret_key=RGZI5IJIOSQTY3WX7Q5X2VDIIMNFM5UAT6FIA7NUPR7SP54B46EQ&goods_id=799959123746&_x_share_id=nPrCnaGsvTRyevMSE26dVj8li1WEdQ7N&refer_page_name=login&refer_page_id=10169_1778743567346_le5eo66u6q&refer_page_sn=10169&uin=DLDAUDMMIJDBJJP5AN7622ETVQ_GEXDA" target="_blank"> 购买链接 </a>](#)
 
 </div>
 

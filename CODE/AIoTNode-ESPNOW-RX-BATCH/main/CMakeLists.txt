@@ -8,25 +8,13 @@ set(include_dirs
     .
 )
 
+# No REQUIRES: ESP-IDF links `main` against all components in the project (see root CMakeLists.txt).
+# New components under EXTRA_COMPONENT_DIRS do not need to be listed here.
+
 # Register the component
 idf_component_register(
     SRC_DIRS ${src_dirs}
     INCLUDE_DIRS ${include_dirs}
-    REQUIRES
-        freertos
-        log
-        esp_system
-        nvs_flash
-        spi_flash
-        esp_psram
-        esp_wifi
-        node_espnow
-        node_led
-        node_exit
-        node_spi
-        node_timer
-        node_rtc
-        node_sdcard
 )
 
 # Add compilation options

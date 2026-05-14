@@ -63,7 +63,7 @@ PCB design is done using EasyEDA, and the PCB is manufactured by JLCPCB.
 
     ---
 
-    [:octicons-arrow-right-24: <a href="https://www.amazon.com/dp/B07Q6Z1Z9P" target="_blank"> Purchase Link </a>](#)
+    [:octicons-arrow-right-24: <a href="https://mobile.yangkeduo.com/goods2.html?_oak_share_ticket=01-0000000029-cb7b138a299ca374187be1ba94b0d1926704d77752cfec62300e6cf837752204-1780039564&_oak_share_time=1778743563&share_uin=DLDAUDMMIJDBJJP5AN7622ETVQ_GEXDA&page_from=101&refer_share_id=nPrCnaGsvTRyevMSE26dVj8li1WEdQ7N&refer_share_channel=message&share_oak_rcto=YWJINtlenUX433ozuDEBpE0sh8bPooDIzF-R1kkqGbtCEXkf1eBe8A5-&refer_share_uin=DLDAUDMMIJDBJJP5AN7622ETVQ_GEXDA&_oak_share_snapshot_num=600&pxq_secret_key=RGZI5IJIOSQTY3WX7Q5X2VDIIMNFM5UAT6FIA7NUPR7SP54B46EQ&goods_id=799959123746&_x_share_id=nPrCnaGsvTRyevMSE26dVj8li1WEdQ7N&refer_page_name=login&refer_page_id=10169_1778743567346_le5eo66u6q&refer_page_sn=10169&uin=DLDAUDMMIJDBJJP5AN7622ETVQ_GEXDA" target="_blank"> Purchase Link </a>](#)
 
 </div>
 
