@@ -3,7 +3,8 @@
 
 # Project information
 site_name: NexNode
-site_url: https://localhost:8000/ # build and run on server, to visit it, type in the server's IP address and port number like this: xxx.xxx.xxx.xxx:8000
+# ROLLBACK: site_url: https://localhost:8000/
+site_url: http://www.cuishuaiwen.com:9100/  # personal server build; GitHub Pages uses mkdocs.gh.yml
 site_author: Shuaiwen Cui
 site_description: >-
   
@@ -256,13 +257,19 @@ extra:
 
 # Extra Configuration 
 extra_javascript:
+  - javascripts/i18n-fix.js
   # - https://giscus.app/client.js
   # - javascripts/katex.js 
   # - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js  
   # - https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js
   # - javascripts/mathjax.js
   # For <model-viewer> web component (3D models)
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  # REMOVED 2026-08-31: polyfill.io changed hands in 2024 and was used to serve malicious
+  # scripts; some corporate networks and browsers now block the domain outright. MathJax 3
+  # and <model-viewer> both require a modern browser anyway, so no polyfill is needed.
+  # If an ES6 polyfill is ever required again, use a reputable mirror, e.g.
+  #   - https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6
+  # ROLLBACK: - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
   # - javascripts/embed-pdf.js
 
