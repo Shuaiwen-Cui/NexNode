@@ -1,0 +1,37 @@
+name: build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  esp-idf-build:
+    name: ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - CODE/AIoTNode-ZERO
+          - CODE/AIoTNode-CORE-BLANK
+          - CODE/AIoTNode-CORE
+          - CODE/AIoTNode-ADXL367
+          - CODE/AIoTNode-ADXL355
+          - CODE/AIoTNode-ESPNOW-TX
+          - CODE/AIoTNode-ESPNOW-RX
+          - CODE/AIoTNode-ESPNOW-TX-BATCH
+          - CODE/AIoTNode-ESPNOW-RX-BATCH
+    steps:
+      - uses: actions/checkout@v5
+
+      # ESP-IDF version must match the one the projects were configured with.
+      # sdkconfig says CONFIG_IDF_INIT_VERSION="6.0.0"; older toolchains fail
+      # before they reach the compiler.
+      - name: Build with ESP-IDF
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v6.0
+          target: esp32s3
+          path: ${{ matrix.project }}
