@@ -1,0 +1,9 @@
+{
+  "epoch": 1794037946.6818507,
+  "sha256": "53814bcb85fc1afe8281d4e8f613b57ee1a71b88e42cac0224dfc7fb1c7fb260",
+  "bytes": 365120,
+  "flash_verified": true,
+  "usb_wait_verified": true,
+  "standalone_retest_pending": true,
+  "001_untouched": true
+}

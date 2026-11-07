@@ -1,0 +1,242 @@
+// Controlled current baseline, NOT production trigger capture or battery lifetime.
+// Explicitly selected bench build only. No NVS/config/waveform modifications.
+#ifdef FLORES_POWER_BENCH
+#include <cstdio>
+#include <cstring>
+#include <cstdarg>
+#include <initializer_list>
+#include <dirent.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include "sdkconfig.h"
+#include "esp_attr.h"
+#include "esp_mac.h"
+#include "esp_random.h"
+#include "esp_pm.h"
+#include "esp_sleep.h"
+#include "esp_timer.h"
+#include "driver/gpio.h"
+#include "driver/usb_serial_jtag.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "node_rgb.h"
+#include "node_spi.h"
+#include "node_i2c.h"
+#include "node_sdcard.h"
+#include "node_acc_adxl355.h"
+#include "node_acc_adxl367.h"
+
+namespace {
+constexpr uint32_t MAGIC=0x50425731;
+constexpr int64_t PHASE_US=90000000;
+RTC_DATA_ATTR uint32_t run_magic=0;
+RTC_DATA_ATTR unsigned phase=0;
+RTC_DATA_ATTR char report_path[96]={};
+RTC_DATA_ATTR int64_t light_actual_us=0;
+RTC_DATA_ATTR uint8_t low_address=0;
+bool card_ready=false;
+node_acc_adxl367_dev_t low{};
+node_acc_adxl355_dev_t high{};
+uint8_t verified_low[2]{},verified_high_power=0;
+
+void mark(unsigned count)
+{
+    for(unsigned i=0;i<count;++i){
+        node_rgb_rgb(0,0,24);
+        vTaskDelay(pdMS_TO_TICKS(250));
+        node_rgb_clear();
+        vTaskDelay(pdMS_TO_TICKS(350));
+    }
+    node_rgb_clear();
+    vTaskDelay(pdMS_TO_TICKS(1000));
+}
+
+bool record(const char *fmt,...)
+{
+    if(!card_ready||!*report_path)return false;
+    FILE *f=fopen(report_path,"a");if(!f)return false;
+    va_list args;va_start(args,fmt);const int n=vfprintf(f,fmt,args);va_end(args);
+    bool ok=n>=0;ok &= fflush(f)==0;ok &= fsync(fileno(f))==0;ok &= fclose(f)==0;
+    return ok;
+}
+
+[[noreturn]] void failure(const char *why,int code)
+{
+    printf("POWERBENCH FAILED reason=%s code=%d; no current accepted\n",why,code);
+    record("FAILED reason=%s code=%d\n",why,code);
+    while(true){node_rgb_rgb(32,0,0);vTaskDelay(pdMS_TO_TICKS(300));node_rgb_clear();vTaskDelay(pdMS_TO_TICKS(300));}
+}
+
+void require(esp_err_t err,const char *why){if(err!=ESP_OK)failure(why,err);}
+
+void mount_card()
+{
+    if(card_ready)return;
+    spi2_init();require(sd_card_init(),"sd_mount");card_ready=true;
+}
+
+bool create_report()
+{
+    for(unsigned i=0;i<10;++i){
+        snprintf(report_path,sizeof(report_path),MOUNT_POINT "/POWERBENCH_000_%08lx.log",(unsigned long)esp_random());
+        int fd=open(report_path,O_CREAT|O_EXCL|O_WRONLY,0600);
+        if(fd>=0){const bool ok=close(fd)==0;return ok;}
+    }
+    return false;
+}
+
+void prepare_sensors()
+{
+    require(i2c_bus_init(),"i2c_bus");
+    esp_err_t e=ESP_FAIL;
+    for(uint8_t addr:{uint8_t(0x1d),uint8_t(0x53)}){
+        e=i2c_add_device(addr,100000,&low.i2c);
+        if(e==ESP_OK)e=node_acc_adxl367_init(&low);
+        if(e==ESP_OK){low_address=addr;break;}
+        if(low.i2c)i2c_remove_device(low.i2c);
+        low.i2c=nullptr;
+    }
+    require(e,"adxl367_2g_100hz_measure");
+    spi3_init();node_acc_adxl355_config_t cfg;node_acc_adxl355_config_default_eval(&cfg);
+    require(node_acc_adxl355_init(&high,&cfg,NODE_ACC_ADXL355_RANGE_2G,NODE_ACC_ADXL355_ODR_125_HZ),"adxl355_init");
+    require(node_acc_adxl355_disable_measurement(&high),"adxl355_standby");
+}
+
+void verify_sensor_registers(bool after_deep=false)
+{
+    if(after_deep){
+        // Reopen bus handles without resetting either sensor: verify retention.
+        require(i2c_bus_init(),"wake_i2c_bus");
+        require(i2c_add_device(low_address,100000,&low.i2c),"wake_i2c_device");
+        spi3_init();spi_device_interface_config_t cfg{};
+        cfg.clock_speed_hz=1000000;cfg.mode=0;cfg.spics_io_num=GPIO_NUM_7;cfg.queue_size=1;cfg.input_delay_ns=30;
+        require(spi_bus_add_device(SPI3_HOST,&cfg,&high.spi),"wake_spi_device");
+    }
+    uint8_t reg=0x2c;
+    require(i2c_write_read_data(low.i2c,&reg,1,verified_low,2,100),"read_367_filter_power");
+    if((verified_low[0]&0xc7)!=3||(verified_low[1]&3)!=2)failure("367_configuration_readback",verified_low[0]);
+    uint8_t tx[]={uint8_t((NODE_ACC_ADXL355_REG_POWER_CTL<<1)|1),0},rx[2]{};
+    spi_transaction_t t{};t.length=16;t.tx_buffer=tx;t.rx_buffer=rx;
+    require(spi_device_polling_transmit(high.spi,&t),"read_355_power");verified_high_power=rx[1];
+    if(!(verified_high_power&NODE_ACC_ADXL355_REG_POWER_CTL_STANDBY))failure("355_not_standby",verified_high_power);
+    printf("POWERBENCH SENSORS_VERIFIED after_deep=%d adxl367_filter=%02x adxl367_power=%02x adxl355_power=%02x\n",after_deep,verified_low[0],verified_low[1],verified_high_power);
+}
+
+void hold_selects(bool enable)
+{
+    for(gpio_num_t pin:{GPIO_NUM_7,SD_PIN_NUM_CS}){
+        if(enable){gpio_set_level(pin,1);gpio_hold_en(pin);}
+        else {gpio_set_direction(pin,GPIO_MODE_OUTPUT);gpio_set_level(pin,1);gpio_hold_dis(pin);}
+    }
+    if(enable)gpio_deep_sleep_hold_en();else gpio_deep_sleep_hold_dis();
+}
+
+void print_file()
+{
+    FILE *f=fopen(report_path,"r");if(!f)return;
+    char line[256];printf("POWERBENCH REPORT_BEGIN %s\n",report_path);
+    while(fgets(line,sizeof(line),f))printf("POWERBENCH RECORD %s",line);
+    fclose(f);printf("POWERBENCH REPORT_END\n");
+}
+
+void print_archived_reports()
+{
+    mount_card();
+    DIR *dir=opendir(MOUNT_POINT);if(!dir)return;
+    unsigned count=0;dirent *entry;
+    printf("POWERBENCH ARCHIVE_BEGIN\n");
+    while((entry=readdir(dir))&&count<32){
+        if(strncmp(entry->d_name,"POWERBENCH_000_",15))continue;
+        const size_t n=strlen(entry->d_name);if(n<4||strcmp(entry->d_name+n-4,".log"))continue;
+        char path[128];snprintf(path,sizeof(path),MOUNT_POINT "/%.96s",entry->d_name);
+        FILE *f=fopen(path,"r");if(!f)continue;
+        printf("POWERBENCH ARCHIVED %s\n",entry->d_name);
+        char line[256];while(fgets(line,sizeof(line),f))printf("POWERBENCH RECORD %s",line);
+        fclose(f);++count;
+    }
+    closedir(dir);printf("POWERBENCH ARCHIVE_END files=%u\n",count);
+}
+
+[[noreturn]] void finished()
+{
+    mark(4);
+    printf("POWERBENCH DONE; switch measurement supply OFF before restoring USB; automatic capture is NOT running\n");
+    // No continuous status LEDs. A host reconnect only reads the dedicated report.
+    bool printed=false;
+    while(true){
+        if(usb_serial_jtag_is_connected()&&!printed){print_file();printed=true;}
+        if(!usb_serial_jtag_is_connected())printed=false;
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+}
+
+void power_bench_main()
+{
+    uint8_t mac[6];require(esp_efuse_mac_get_default(mac),"mac_read");
+    const uint8_t expected[]={0x3c,0x0f,0x02,0xc1,0x22,0xd8};
+    if(memcmp(mac,expected,sizeof(expected))){printf("POWERBENCH WRONG_BOARD; 000 only\n");while(true)vTaskDelay(pdMS_TO_TICKS(1000));}
+    usb_serial_jtag_driver_config_t usb=USB_SERIAL_JTAG_DRIVER_CONFIG_DEFAULT();
+    if(!usb_serial_jtag_is_driver_installed())require(usb_serial_jtag_driver_install(&usb),"usb_driver");
+    hold_selects(false);
+    for(int pin=0;pin<GPIO_NUM_MAX;++pin)if(GPIO_IS_VALID_GPIO(pin))gpio_sleep_sel_dis(gpio_num_t(pin));
+    const node_rgb_config_t rgb=NODE_RGB_CONFIG_DEFAULT();require(node_rgb_init(&rgb),"rgb_init");node_rgb_clear();
+    const bool deep_wake=run_magic==MAGIC&&phase==3&&esp_sleep_get_wakeup_cause()==ESP_SLEEP_WAKEUP_TIMER;
+    printf("POWERBENCH 000 offline benchmark; phases 90s each; physical meter required; capture disabled\n");
+    if(deep_wake){
+        mount_card();
+        verify_sensor_registers(true);
+        if(!record("DEEP_WAKE verified=1 cause=timer requested_us=%lld light_observed_us=%lld sensor_367_filter=%02x sensor_367_power=%02x sensor_355_power=%02x\nDONE\n",(long long)PHASE_US,(long long)light_actual_us,verified_low[0],verified_low[1],verified_high_power))failure("deep_report_write",-1);
+        phase=4;finished();
+    }
+    run_magic=MAGIC;phase=0;report_path[0]=0;
+    // Keep firmware preparation separate from the standalone measurement.
+    // A USB-powered or host-connected run is never a valid sleep measurement.
+    vTaskDelay(pdMS_TO_TICKS(2000));
+    int64_t quiet_since=0,next_notice=0;
+    int64_t next_archive=0;
+    while(true){
+        const int64_t now=esp_timer_get_time();
+        if(usb_serial_jtag_is_connected()){
+            quiet_since=0;
+            if(now>=next_archive){print_archived_reports();fflush(stdout);next_archive=now+15000000;}
+            if(now>=next_notice){printf("POWERBENCH WAIT_USB_REMOVE; do not take current readings with PC USB attached\n");next_notice=now+3000000;}
+        }else if(!quiet_since)quiet_since=now;
+        else if(now-quiet_since>=10000000)break;
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+    // No Wi-Fi/ESP-NOW/NTP/NVS initialization. Fixed CPU; explicit sleep only.
+    esp_pm_config_t pm{};pm.max_freq_mhz=pm.min_freq_mhz=CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ;pm.light_sleep_enable=false;
+    require(esp_pm_configure(&pm),"fixed_cpu_config");
+    mount_card();prepare_sensors();verify_sensor_registers();
+    if(!create_report())failure("exclusive_report_create",-1);
+    if(!record("POWERBENCH_V1 node=000 cpu_mhz=%d phase_us=%lld\nBOUNDARY board_input_excludes_bms meter_values_manual\nRADIO never_initialized\nPERIPHERALS adxl367=2g_100hz_measuring adxl355=2g_standby sd=mounted_idle rgb=off_during_plateau\nVALIDITY controlled_continuous_sleep_baselines_not_production_duty_cycle_or_battery_lifetime\n",CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ,(long long)PHASE_US))failure("initial_report_write",-1);
+    if(!record("SENSOR_READBACK adxl367_filter=%02x adxl367_power=%02x adxl355_power=%02x\n",verified_low[0],verified_low[1],verified_high_power))failure("sensor_report",-1);
+    printf("POWERBENCH READY report=%s\n",report_path);
+    phase=1;mark(1);printf("POWERBENCH PHASE awake_idle\n");
+    const int64_t awake_start=esp_timer_get_time();
+    while(esp_timer_get_time()-awake_start<PHASE_US)vTaskDelay(pdMS_TO_TICKS(100));
+    if(!record("AWAKE_IDLE observed_us=%lld\n",(long long)(esp_timer_get_time()-awake_start)))failure("awake_report",-1);
+    phase=2;mark(2);printf("POWERBENCH PHASE light_sleep\n");
+    require(esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL),"clear_wake_sources");
+    require(esp_sleep_enable_timer_wakeup(PHASE_US),"light_timer");
+    // Light sleep retains the SPI peripheral routing (sleep selection disabled
+    // above). Do not reconfigure CS with gpio_set_direction on wake: that
+    // disconnects the SPI output matrix and makes subsequent reads return 0.
+    const int64_t light_start=esp_timer_get_time();
+    const esp_err_t light_error=esp_light_sleep_start();
+    light_actual_us=esp_timer_get_time()-light_start;
+    const auto cause=esp_sleep_get_wakeup_cause();
+    require(light_error,"light_sleep_enter");
+    if(cause!=ESP_SLEEP_WAKEUP_TIMER||light_actual_us<PHASE_US-1000000)failure("light_sleep_not_verified",int(cause));
+    verify_sensor_registers();
+    if(!record("LIGHT_SLEEP verified=1 cause=timer observed_us=%lld\n",(long long)light_actual_us))failure("light_report",-1);
+    phase=3;mark(3);printf("POWERBENCH PHASE deep_sleep\n");
+    if(!record("DEEP_ENTER requested_us=%lld\n",(long long)PHASE_US))failure("deep_enter_report",-1);
+    require(esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL),"clear_deep_wakes");
+    require(esp_sleep_enable_timer_wakeup(PHASE_US),"deep_timer");
+    hold_selects(true);
+    esp_deep_sleep_start();
+    failure("deep_sleep_returned",-1);
+}
+#endif

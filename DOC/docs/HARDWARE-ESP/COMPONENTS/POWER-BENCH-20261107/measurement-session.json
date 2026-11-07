@@ -1,0 +1,89 @@
+{
+  "epoch": 1794037219.698209,
+  "user_confirmed_series_wiring_without_photo": true,
+  "connection": "BMS5V+ -> red10A -> meter -> blackCOM -> board power+, ground unchanged",
+  "mainboard_usb_removed": true,
+  "001_untouched": true,
+  "status": "complete; production restored and runtime healthy",
+  "sleep_and_deep_entry_verified_in_standalone_run": false,
+  "current_readings": [
+    {
+      "epoch": 1794037364.6359863,
+      "phase": "awake_idle",
+      "display_value": 0.042,
+      "display_unit": "A",
+      "current_mA": 42.0,
+      "range": "DC A, red10A terminal per user setup",
+      "steady_after_led_off_5s_confirmed": true,
+      "scope": "board plus attached peripherals, excluding BMS; first coarse pilot, no measured input voltage yet",
+      "user_confirmed_stable": true
+    },
+    {
+      "epoch": 1794037625.2690532,
+      "phase": "reported_low_current_after_second_blue_tentative",
+      "display_value": 0.003,
+      "display_unit": "A",
+      "current_mA": 3.0,
+      "coarse_reading": true,
+      "sleep_exit_validation": "not verified; subsequent error indication"
+    },
+    {
+      "epoch": 1794037625.2690544,
+      "phase": "error_red_blink_not_deep_sleep",
+      "display_value": 0.042,
+      "display_unit": "A",
+      "current_mA": 42.0
+    }
+  ],
+  "standalone_power_on_user_reported": true,
+  "first_blue_observed_epoch": 1794037364.6359847,
+  "phase_duration_seconds": 90,
+  "last_update_epoch": 1794037427.121019,
+  "deep_sleep_result": "timer wake and both sensor readbacks verified in retrieved SD report",
+  "instrument_note": "0.001A display step is current A-range resolution, not the instrument ultimate resolution; finer mA ranges require separate safe setup.",
+  "failure_log": "FAILED reason=355_not_standby code=0",
+  "light_timer_exit_check_passed_before_failure": true,
+  "retest_cs_fix": {
+    "image_sha256": "53814bcb85fc1afe8281d4e8f613b57ee1a71b88e42cac0224dfc7fb1c7fb260",
+    "user_reported_42mA_before_observed_marker": true,
+    "first_observed_marker_count": 2,
+    "light_current_mA": 3,
+    "read_5s_after_marker": true,
+    "epoch": 1794038134.0359328,
+    "post_light_sensor_verification_pending": true,
+    "deep_result_pending": true,
+    "third_blue_marker_observed": true,
+    "deep_current_mA_coarse": 1,
+    "deep_read_5s_after_marker": true,
+    "deep_read_epoch": 1794038225.591585,
+    "post_light_sensor_verification_passed_by_control_flow": true,
+    "deep_timer_wake_verification_pending": true,
+    "precision_note": "10A terminal displayed 0.001A step; 1mA is a coarse indication, not a precision result",
+    "fourth_blue_marker_observed": true,
+    "post_wake_current_mA": 42,
+    "post_wake_read_5s_after_marker": true,
+    "fourth_marker_epoch": 1794038320.601475,
+    "deep_timer_and_sensor_checks_passed_by_fourth_marker": true,
+    "sd_report_retrieval_pending": false,
+    "sd_report_verified": true,
+    "light_observed_us": 89991618,
+    "sensor_registers_after_deep": {
+      "adxl367_filter": "23",
+      "adxl367_power": "02",
+      "adxl355_power": "01"
+    }
+  },
+  "production_restore": {
+    "sha256": "94839200766f678afd02e5169c99ba1f6c1e0a4bfc552d7f6d137c9df8989ab8",
+    "flash_hash_verified": true,
+    "sd_storage_OK": true,
+    "adxl367_healthy": true,
+    "adxl355_xyz_checked": true,
+    "armed": true,
+    "wifi_associated": true,
+    "mqtt_connected_acknowledged": true,
+    "edge_ai_selftests_passed": true,
+    "epoch": 1794038485.3721297,
+    "001_untouched": true
+  }
+}

@@ -1,0 +1,29 @@
+POWERBENCH WAIT_USB_REMOVE; do not take current readings with PC USB attached
+POWERBENCH WAIT_USB_REMOVE; do not take current readings with PC USB attached
+POWERBENCH ARCHIVE_BEGIN
+POWERBENCH ARCHIVED POWERBENCH_000_9059922b.log
+POWERBENCH RECORD POWERBENCH_V1 node=000 cpu_mhz=240 phase_us=90000000
+POWERBENCH RECORD BOUNDARY board_input_excludes_bms meter_values_manual
+POWERBENCH RECORD RADIO never_initialized
+POWERBENCH RECORD PERIPHERALS adxl367=2g_100hz_measuring adxl355=2g_standby sd=mounted_idle rgb=off_during_plateau
+POWERBENCH RECORD VALIDITY controlled_continuous_sleep_baselines_not_production_duty_cycle_or_battery_lifetime
+POWERBENCH RECORD SENSOR_READBACK adxl367_filter=23 adxl367_power=02 adxl355_power=01
+POWERBENCH RECORD AWAKE_IDLE observed_us=90099958
+POWERBENCH RECORD FAILED reason=355_not_standby code=0
+POWERBENCH ARCHIVED POWERBENCH_000_5c8fd6f9.log
+POWERBENCH RECORD POWERBENCH_V1 node=000 cpu_mhz=240 phase_us=90000000
+POWERBENCH RECORD BOUNDARY board_input_excludes_bms meter_values_manual
+POWERBENCH RECORD RADIO never_initialized
+POWERBENCH RECORD PERIPHERALS adxl367=2g_100hz_measuring adxl355=2g_standby sd=mounted_idle rgb=off_during_plateau
+POWERBENCH RECORD VALIDITY controlled_continuous_sleep_baselines_not_production_duty_cycle_or_battery_lifetime
+POWERBENCH RECORD SENSOR_READBACK adxl367_filter=23 adxl367_power=02 adxl355_power=01
+POWERBENCH RECORD AWAKE_IDLE observed_us=90099961
+POWERBENCH RECORD LIGHT_SLEEP verified=1 cause=timer observed_us=89991618
+POWERBENCH RECORD DEEP_ENTER requested_us=90000000
+POWERBENCH RECORD DEEP_WAKE verified=1 cause=timer requested_us=90000000 light_observed_us=89991618 sensor_367_filter=23 sensor_367_power=02 sensor_355_power=01
+POWERBENCH RECORD DONE
+POWERBENCH ARCHIVE_END files=2
+POWERBENCH WAIT_USB_REMOVE; do not take current readings with PC USB attached
+POWERBENCH WAIT_USB_REMOVE; do not take current readings with PC USB attached
+POWERBENCH WAIT_USB_REMOVE; do not take current readings with PC USB attached
+POWERBENCH WAIT_USB_REMOVE; do not take current readings with PC USB attached
