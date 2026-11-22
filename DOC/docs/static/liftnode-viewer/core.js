@@ -11,6 +11,7 @@
 import * as THREE from './vendor/three.module.min.js';
 import { OrbitControls } from './vendor/OrbitControls.js';
 import { STLLoader } from './vendor/STLLoader.js';
+import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { RoomEnvironment } from './vendor/RoomEnvironment.js';
 import { RoundedBoxGeometry } from './vendor/RoundedBoxGeometry.js';
 import { toCreasedNormals } from './vendor/BufferGeometryUtils.js';
@@ -68,8 +69,8 @@ const PARTS = [
     name: { en: 'LiftNode main board', zh: 'LiftNode 主控板' }, sub: { en: 'ESP32-S3-WROOM-1U · TF card · 2× USB-C', zh: 'ESP32-S3-WROOM-1U · TF 卡 · 双 USB-C' } },
   { id: 'extBoard', dir: [0, 0, 20], start: 0.33, anchor: [61.5, 51.5, 11.1], guides: [[30.5, 66.5, 7], [94.5, 8.5, 7]],
     name: { en: 'Sensor extension board', zh: '传感器扩展板' }, sub: { en: 'ADXL355 + ADXL367 accelerometers', zh: 'ADXL355 + ADXL367 加速度计' } },
-  { id: 'bms', dir: [-20, 0, 8], start: 0.36, anchor: [17, 34, 40], guides: [[12.3, 68, 62]],
-    name: { en: 'BMS board', zh: 'BMS 电源管理板' }, sub: { en: 'Charging & power management', zh: '充电与电源管理' } },
+  { id: 'bms', dir: [-22, 0, 8], start: 0.36, anchor: [24, 52, 44], guides: [[19.9, 66, 68]],
+    name: { en: 'BMS board', zh: 'BMS 电源管理板' }, sub: { en: 'Solar power manager · charging & 5 V output', zh: '太阳能电源管理 · 充电与 5V 输出' } },
   { id: 'bmsFrame', dir: [-42, 0, 8], start: 0.4, anchor: [9.5, 69, 71], guides: [[2.5, 10, 72], [2.5, 70, 72]],
     name: { en: 'BMS mounting frame', zh: 'BMS 挂载框' }, sub: { en: 'Slot-mounts the BMS board', zh: '插槽式固定 BMS 板' } },
   { id: 'base', dir: [0, 0, 0], start: 0.0, anchor: [62, 40, 3],
@@ -134,6 +135,8 @@ function makeMaterials() {
     white: new P({ color: 0xf2f0ea, roughness: 0.48 }),
     ferrite: new P({ color: 0x3a3b3e, roughness: 0.7 }),
     socket: new P({ color: 0x050505, roughness: 0.9 }),
+    bmsMask: new P({ color: 0x131416, roughness: 0.5, clearcoat: 0.2, clearcoatRoughness: 0.45 }),
+    bmsCopper: new P({ color: 0x1e2321, roughness: 0.55, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }),
     smdR: new P({ color: 0x1e1e1f, roughness: 0.5 }),
     smdC: new P({ color: 0xa7895f, roughness: 0.55 }),
     cell: new P({ color: 0xbfe6a6, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.15 }),
@@ -426,34 +429,23 @@ function buildExtBoard(M) {
   return board;
 }
 
-function buildBMS(M) {
-  const w = 56, h = 48;
-  const comps = [
-    { a: [0, 9], b: [14, 22.5], h: 7, mat: M.steel, r: 0.3 },        // USB-A
-    { a: [0, 27], b: [6, 34], h: 2.6, mat: M.steel, r: 0.6 },        // micro / type-C
-    { a: [43, 22], b: [51, 34], h: 6, mat: M.white, r: 0.3 },        // XH2.54 battery connector
-    { a: [20, 16], b: [27, 23], h: 3.6, mat: M.ferrite, r: 0.6 },    // inductor
-    { a: [30, 10], b: [35, 15], h: 1.4, mat: M.black },              // charger IC
-    { a: [30, 28], b: [36, 34], h: 1.0, mat: M.black },              // boost IC
-    { a: [16, 32], b: [24, 38], h: 2.4, mat: M.black, r: 0.3 },      // switch
-    { a: [38, 40], b: [40, 42], h: 0.8, mat: M.led },                // LEDs
-    { a: [41, 40], b: [43, 42], h: 0.8, mat: M.led },
-  ];
-  const board = buildBoard({
-    w, h, comps, seed: 23, traces: 55, smd: 40, mask: '#121315',
-    draw(g, Y) {
-      g.font = '500 1.4px Roboto, Arial';
-      g.fillText('BAT+', 44, Y(36)); g.fillText('BAT-', 44, Y(20));
-      g.fillText('5V OUT', 1, Y(25)); g.fillText('IN', 7, Y(30)); g.fillText('BMS · 1S Li-ion', 14, Y(44));
-      g.lineWidth = 0.2; g.strokeRect(13, Y(46), 22, 4);
-    },
-  }, M);
-  // connector pins in the XH header
-  for (let i = 0; i < 4; i++) box(board, M.gold, [46.4, 23.6 + i * 2.5, 1.6 + 1.5], [47.0, 24.2 + i * 2.5, 1.6 + 5.4]);
-  // local (x→model y, y→model z, z→model x), board seated in the frame slot at x ≈ 10.7
+/* BMS: the real board model (DFRobot Solar Power Manager, STEP → glTF, simplified + quantized).
+ * glTF frame (mm): PCB top at z = 0 (bottom −1.6), parts on +z, port edge (USB-A, DC) at x ≈ −54.
+ * Mounted on the outer face of the BMS frame (x = 16.5) with its ports facing the front-wall slot
+ * (x 17.5–26.5, z 13.5–62.5), so: glTF x → model y, glTF y → model z, glTF z → model x. */
+function buildBMS(gltfScene, M) {
+  const board = new THREE.Group();
+  gltfScene.traverse((o) => {
+    if (!o.isMesh) return;
+    o.userData.noEdges = true;
+    const n = o.material && o.material.name || '';
+    if (n.startsWith('Opaque(0,153,0)')) o.material = M.bmsMask;        // PCB: black solder mask as on the real board
+    else if (n.startsWith('Opaque(0,255,255)')) o.material = M.bmsCopper; // exported copper layer → dark copper under mask
+  });
+  board.add(gltfScene);
   const basis = new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 0));
   board.quaternion.setFromRotationMatrix(basis);
-  board.position.set(10.7, 12, 14);
+  board.position.set(19.9, 66.3, 7.5);
   return board;
 }
 
@@ -525,11 +517,11 @@ function buildMagnets(M, x) {
 function buildWires(M) {
   const g = new THREE.Group();
   // BMS output → mainboard screw terminal
-  tube(g, M.wireRed, [[13, 36, 22], [20, 40, 36], [26, 39, 31], [30.0, 39.5, 25]], 0.9);
-  tube(g, M.wireBlue, [[13, 40, 22], [20, 44, 38], [26, 43, 31], [30.0, 43.5, 25]], 0.9);
+  tube(g, M.wireRed, [[25.5, 38.5, 66], [28.6, 37.5, 56], [29.2, 38.5, 36], [30.0, 39.5, 25]], 0.9);
+  tube(g, M.wireBlue, [[25.5, 42, 66], [28.6, 43, 56], [29.2, 43.5, 36], [30.0, 43.5, 25]], 0.9);
   // battery leads → BMS battery connector
-  tube(g, M.wireRed, [[31.5, 59, 66], [25, 64, 62], [19, 61, 48], [17.5, 59.5, 43]], 0.8);
-  tube(g, M.wireBlack, [[31.5, 55, 66], [24, 60, 64], [18, 57, 50], [17.5, 57, 43]], 0.8);
+  tube(g, M.wireRed, [[31.5, 59, 66], [29.5, 62, 68], [27.5, 58, 68], [25.5, 56.5, 64]], 0.8);
+  tube(g, M.wireBlack, [[31.5, 55, 66], [29.5, 58, 69], [27.5, 55, 68.5], [25.5, 54, 64]], 0.8);
   // IPEX pigtail → SMA bulkhead
   tube(g, M.coax, [[77, 65.1, 22.6], [84, 68, 31], [92, 52, 38], [95.2, 37.5, 40]], 0.65);
   return g;
@@ -762,6 +754,7 @@ export async function mount(host) {
   const M = makeMaterials();
   const loader = new STLLoader();
   const localModels = new URL('./models/', import.meta.url).href;
+  const bmsPromise = new GLTFLoader().loadAsync(new URL('bms.glb', localModels).href);
   const stlGeoms = await Promise.all(STL_FILES.map(async ([id, file, where]) => {
     const geom = await loader.loadAsync(new URL(file, where === 'local' ? localModels : modelsBase).href);
     geom.deleteAttribute('color');
@@ -769,6 +762,7 @@ export async function mount(host) {
     return [id, toCreasedNormals(geom, 32 * DEG)];
   }));
   const stl = Object.fromEntries(stlGeoms);
+  const bmsGltf = await bmsPromise;
 
   const partGroups = {};
   const mk = (id, child) => { const g = new THREE.Group(); g.add(child); g.userData.partId = id; assembly.add(g); partGroups[id] = g; return g; };
@@ -778,7 +772,7 @@ export async function mount(host) {
   mk('bmsFrame', new THREE.Mesh(stl.bmsFrame, M.frame));
   mk('board', buildMainboard(M));
   mk('extBoard', buildExtBoard(M));
-  mk('bms', buildBMS(M));
+  mk('bms', buildBMS(bmsGltf.scene, M));
   mk('battery', buildBattery(M));
   mk('antenna', buildAntenna(M));
   mk('magnetsL', buildMagnets(M, -6.2));
@@ -1187,6 +1181,8 @@ export async function mount(host) {
       renderOnce();
     },
     resize(dpr) { resize(dpr); renderOnce(); },
+    /** Inspection hook (devtools / capture scripts): raw three.js objects. */
+    debug: { THREE, scene, camera, controls, partGroups, renderOnce, state },
     dispose() {
       cancelAnimationFrame(raf); io.disconnect(); ro.disconnect(); themeObs.disconnect();
       mql.removeEventListener('change', applyTheme); document.removeEventListener('visibilitychange', onVis); document.removeEventListener('fullscreenchange', onFs);
