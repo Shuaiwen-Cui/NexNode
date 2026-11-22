@@ -1,5 +1,9 @@
 # NexNode
 
+<div class="liftnode-hero"><video autoplay loop muted playsinline preload="auto" aria-label="NexNode 机械装配爆炸动画" poster="../static/liftnode-viewer/media/hero-zh.jpg" style="display:block;width:100%;aspect-ratio:16/9;border-radius:12px;background:#0b0e14;box-shadow:0 12px 32px rgba(0,0,0,.25)"><source src="../static/liftnode-viewer/media/hero-zh.mp4" type="video/mp4"></video></div>
+
+*NexNode 机械装配爆炸动画（盖板升起 → 四面侧壁展开 → 内部模块逐层分离）· [打开可交互 3D 模型 →](HARDWARE-ESP/MECHANICAL/mechanical.md)*
+
 ## 介绍
 
 这个项目致力于为面向未来的应用开发一款基于EdgeAI的MCU级IoT节点。

@@ -1,5 +1,9 @@
 # NEXNODE
 
+<div class="liftnode-hero"><video autoplay loop muted playsinline preload="auto" aria-label="NexNode exploded-view animation" poster="static/liftnode-viewer/media/hero-en.jpg" style="display:block;width:100%;aspect-ratio:16/9;border-radius:12px;background:#0b0e14;box-shadow:0 12px 32px rgba(0,0,0,.25)"><source src="static/liftnode-viewer/media/hero-en.mp4" type="video/mp4"></video></div>
+
+*NexNode mechanical assembly — lid lifts, walls unfold, modules separate layer by layer · [Open the interactive 3D model →](HARDWARE-ESP/MECHANICAL/mechanical.md)*
+
 ## INTRODUCTION
 
 This project dedicates to the development of an EdgeAI-powered MCU level IoT node for future-oriented applications.

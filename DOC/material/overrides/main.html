@@ -6,5 +6,7 @@
 {% block scripts %}
   {{ super() }}
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  {#- <liftnode-viewer> custom element (shared LiftNode hardware); the tiny loader only pulls three.js on pages that use it -#}
+  <script type="module" src="{{ 'static/liftnode-viewer/liftnode-viewer.js' | url }}"></script>
 {% endblock %}
 

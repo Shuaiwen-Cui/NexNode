@@ -2,6 +2,10 @@
 
 Mechanical design largely determines the flexibility and suitability of the node during deployment and installation. In this project, the node's mechanical design balances functionality and aesthetics, aiming to remain as compact as possible while still supporting long-term deployment.
 
+<div class="liftnode-3d"><liftnode-viewer lang="en" brand="NEXNODE"></liftnode-viewer></div>
+
+*Interactive exploded view: drag to orbit, scroll to zoom, use the toolbar to explode the assembly or switch between studio / X-ray / blueprint rendering. The enclosure, lid, battery plate and BMS frame are the Fusion 360 exports (the one-piece enclosure is split into base + four walls only so it can unfold); PCBs, battery, antenna and magnets are simplified stand-ins.*
+
 ![](Overview.png){width=100%}
 
 *Mechanical design overview: (a) overall dimension diagram; (b) key component annotation diagram*

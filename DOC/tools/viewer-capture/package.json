@@ -1,0 +1,14 @@
+{
+  "name": "liftnode-viewer-capture",
+  "private": true,
+  "type": "module",
+  "description": "Renders the LiftNode 3D exploded-view loop to MP4/GIF",
+  "scripts": {
+    "render": "node render.mjs",
+    "render:zh": "node render.mjs --lang zh"
+  },
+  "dependencies": {
+    "ffmpeg-static": "5.2.0",
+    "puppeteer-core": "23.10.4"
+  }
+}

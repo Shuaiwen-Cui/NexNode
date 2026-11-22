@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LiftNode 3D</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #07090d; }
+    liftnode-viewer { height: 100vh !important; border-radius: 0 !important; }
+  </style>
+</head>
+<body>
+  <!--
+    Full-window viewer. Query parameters:
+      ?lang=zh            Chinese labels
+      ?theme=light        light background (default dark)
+      ?brand=NEXNODE      overlay title for sister projects sharing this hardware
+      ?capture=1          hide controls, drive frames via window.lnv.renderAt(t) (used by the video renderer)
+  -->
+  <liftnode-viewer id="v" eager></liftnode-viewer>
+  <script type="module">
+    const q = new URLSearchParams(location.search);
+    const v = document.getElementById('v');
+    v.setAttribute('lang', q.get('lang') || 'en');
+    v.setAttribute('theme', q.get('theme') || 'dark');
+    if (q.get('capture')) v.setAttribute('capture', '');
+    if (q.get('brand')) v.setAttribute('brand', q.get('brand'));
+    document.documentElement.lang = q.get('lang') || 'en';
+    v.addEventListener('ready', (e) => { window.lnv = e.detail; window.lnvReady = true; });
+    await import('./liftnode-viewer.js');
+  </script>
+</body>
+</html>
