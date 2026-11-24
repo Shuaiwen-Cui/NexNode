@@ -60,6 +60,16 @@ To mount the battery onto the enclosure, we designed a dedicated mounting plate 
 - Switch
 - Wires
 
+## POWER WIRING
+
+![](power-wiring.png){width=100%}
+
+*Power wiring between the boards (rendered from the 3D models; terminal positions and polarity from the EasyEDA design and the power-module silkscreen)*
+
+- **Battery → switch → power-management module.** The battery positive lead runs through the self-locking push switch to the **+** pole of the module's battery-input screw terminal (upper-right green terminal, silkscreen "3.7V BAT"); the battery negative lead goes directly to the **−** pole of the same terminal.
+- **Power-management module → main board.** The module's output screw terminal (upper-left green terminal, silkscreen "OUT", 5 V) is wired to the main-board screw terminal **P1**: **+** to VIN (pin 1, lower hole), **−** to GND (pin 2, upper hole). Because the two terminals have opposite pole order, the pair crosses once.
+- On the main board, VIN passes the reverse-polarity diode D2 (1N5819) to the 5 V rail, and the LDO derives 3.3 V.
+
 ## ANTENNA
 
 The antenna is an external antenna used with the ESP32-S3-WROOM-1U module, corresponding to the IPEX connector. We designed a circular opening on the enclosure for antenna installation.

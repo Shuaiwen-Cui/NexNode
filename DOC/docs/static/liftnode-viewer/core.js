@@ -65,9 +65,9 @@ const PARTS = [
     name: { en: 'Li-ion battery pack', zh: '锂离子电池组' }, sub: { en: '18650 × 3P · 3.7 V · 10.5 Ah', zh: '18650 三并 · 3.7 V · 10.5 Ah' } },
   { id: 'plate', dir: [0, 0, 48], start: 0.25, anchor: [96, 6, 55.5], guides: [[27.5, 3, 51], [97.5, 72, 51]],
     name: { en: 'Battery mounting plate', zh: '电池挂载板' }, sub: { en: 'Seats on internal ledge', zh: '搭在内壁台阶上' } },
-  { id: 'board', dir: [0, 0, 48], start: 0.29, anchor: [70.5, 54.5, 24.4], guides: [[30.5, 8.5, 19.6], [94.5, 66.5, 19.6]],
+  { id: 'board', dir: [0, 0, 48], start: 0.29, anchor: [70.5, 54.5, 24.4], guides: [[30, 7.5, 19.6], [95, 67.5, 19.6]],
     name: { en: 'LiftNode main board', zh: 'LiftNode 主控板' }, sub: { en: 'ESP32-S3-WROOM-1U · TF card · 2× USB-C', zh: 'ESP32-S3-WROOM-1U · TF 卡 · 双 USB-C' } },
-  { id: 'extBoard', dir: [0, 0, 20], start: 0.33, anchor: [61.5, 51.5, 11.1], guides: [[30.5, 66.5, 7], [94.5, 8.5, 7]],
+  { id: 'extBoard', dir: [0, 0, 20], start: 0.33, anchor: [61.5, 51.5, 11.1], guides: [[30, 67.5, 7], [95, 7.5, 7]],
     name: { en: 'Sensor extension board', zh: '传感器扩展板' }, sub: { en: 'ADXL355 + ADXL367 accelerometers', zh: 'ADXL355 + ADXL367 加速度计' } },
   { id: 'bms', dir: [-22, 0, 8], start: 0.36, anchor: [24, 52, 44], guides: [[19.9, 66, 68]],
     name: { en: 'BMS board', zh: 'BMS 电源管理板' }, sub: { en: 'Solar power manager · charging & 5 V output', zh: '太阳能电源管理 · 充电与 5V 输出' } },
@@ -80,6 +80,37 @@ const STAGGER_SPAN = 0.5;
 const COMPONENT_COUNT = 10; // physical items: body, lid, plate, BMS frame, main board, extension board, BMS, battery, antenna, magnets
 /* hovering any wall highlights the whole enclosure-wall group (one callout) */
 const ALIAS = { wallBack: 'wallFront', wallLeft: 'wallFront', wallRight: 'wallFront', magnetsL: 'magnetsR' };
+/* Academic figure layouts (thesis). n = callout number (top → bottom reading order).
+ * axial  : classic explode along Z with the one-piece enclosure kept whole (dir = model-mm offset).
+ * unfold : the web view's fully exploded state (walls hinged open), re-styled for print. */
+const FIGURE_LAYOUTS = {
+  axial: {
+    lid:      { dir: [0, 0, 173],   n: 1, side: 'L' },
+    battery:  { dir: [0, 0, 140],   n: 2, side: 'R' },
+    plate:    { dir: [0, 0, 117],   n: 3, side: 'R' },
+    board:    { dir: [0, 0, 110.4], n: 4, side: 'R' },
+    extBoard: { dir: [0, 0, 91],    n: 5, side: 'L', anchor: [34, 12, 8.6] },  // front-left corner: leader passes under the BMS
+    bms:      { dir: [-38, 0, 70],  n: 6, side: 'L' },
+    bmsFrame: { dir: [-64, 0, 70],  n: 7, side: 'L' },
+    antenna:  { dir: [58, 0, 0],    n: 8, side: 'R' },
+    bodyFull: { dir: [0, 0, 0],     n: 9, side: 'L', anchor: [62, 0, 40],
+      name: { en: 'Enclosure body', zh: '外壳主体' }, sub: { en: '8228 resin · SLA printed', zh: '8228 树脂 · 光固化打印' } },
+    magnetsR: { dir: [0, 0, -34],   n: 10, side: 'R' },
+    magnetsL: { dir: [0, 0, -34] },
+  },
+  unfold: {
+    // side: which callout column (L/R) — fixed here so leaders never cross the antenna
+    lid: { n: 1, side: 'L' }, battery: { n: 2, side: 'L' }, plate: { n: 3, side: 'L', anchor: [30, 6, 55.5] },
+    board: { n: 4, side: 'L', anchor: [50, 9, 21.2] }, extBoard: { n: 5, side: 'R', anchor: [92, 12, 8.6] }, bms: { n: 6, side: 'L' },
+    bmsFrame: { n: 7, side: 'L' }, antenna: { n: 8, side: 'R' }, wallFront: { n: 9, side: 'L' }, base: { n: 10, side: 'R' },
+    magnetsR: { n: 11, side: 'R' },
+  },
+};
+const WALL_IDS = ['base', 'wallFront', 'wallBack', 'wallLeft', 'wallRight'];
+FIGURE_LAYOUTS.assembled = Object.fromEntries([
+  ...PARTS.filter((p) => !WALL_IDS.includes(p.id)).map((p) => [p.id, { dir: [0, 0, 0] }]),
+  ['bodyFull', { dir: [0, 0, 0] }],
+]);
 const SHELL = new Set(['lid', 'base', 'wallFront', 'wallBack', 'wallLeft', 'wallRight']);
 
 /* [part id, file, folder] — enclosure pieces come from the split, the rest straight from Fusion. */
@@ -135,6 +166,8 @@ function makeMaterials() {
     white: new P({ color: 0xf2f0ea, roughness: 0.48 }),
     ferrite: new P({ color: 0x3a3b3e, roughness: 0.7 }),
     socket: new P({ color: 0x050505, roughness: 0.9 }),
+    pcbBottom: new P({ color: 0x0d0e10, roughness: 0.6 }),
+    ceramic: new P({ color: 0xe9e6df, roughness: 0.35, clearcoat: 0.3 }),
     bmsMask: new P({ color: 0x131416, roughness: 0.5, clearcoat: 0.2, clearcoatRoughness: 0.45 }),
     bmsCopper: new P({ color: 0x1e2321, roughness: 0.55, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }),
     smdR: new P({ color: 0x1e1e1f, roughness: 0.5 }),
@@ -275,10 +308,15 @@ function buildBoard(spec, M) {
   return group;
 }
 
-/* 2.54 mm headers. Main board ↔ extension board are joined by four 2×5 blocks:
- * male pins on the underside of the main board plug into female sockets on the extension board. */
+/* 2.54 mm headers. Main board ↔ expansion board are joined by four 2×5 blocks (EasyEDA U1–U4 / H1–H4):
+ * male pins on the underside of the main board plug into female sockets on the expansion board. */
 const PITCH = 2.54;
-const STACK_HEADERS = [[6.2, 43], [4.8, 21], [54.8, 43.5], [57.2, 18.2]]; // block centres (board-local mm)
+// All board coordinates below are taken from the EasyEDA project (ProPrj_AIoT-NTU-Prototype_2026-03-28.epro):
+// both boards are 65 × 60 mm, origin at the lower-left corner, x right, y toward the module edge.
+const BOARD_W = 65, BOARD_H = 60;
+const STACK_HEADERS = [[7, 43], [58, 43], [7, 17], [58, 17]]; // block centres (board-local mm)
+const EXT_HOLES = [[4, 5], [61, 5], [4, 55], [61, 55]];       // M2.5 holes on the enclosure standoffs
+const BOARD_ORIGIN = [30, 7.5];                                // board-local (0,0) in the enclosure frame
 const FEMALE_H = 8.5, SPACER_H = 2.5;
 const headerRect = ([cx, cy], cols = 2, rows = 5) => ({ a: [cx - cols * PITCH / 2, cy - rows * PITCH / 2], b: [cx + cols * PITCH / 2, cy + rows * PITCH / 2] });
 function pinGrid([cx, cy], cols = 2, rows = 5) {
@@ -294,138 +332,98 @@ function instancedAt(parent, geom, mat, pts, z, scale) {
   parent.add(inst);
   return inst;
 }
-function gearLogo(g, cx, cy, r) {
-  g.save(); g.lineWidth = r * 0.28;
-  g.beginPath(); g.arc(cx, cy, r * 0.72, 0.35 * Math.PI, 2.15 * Math.PI); g.stroke();
-  for (let i = 0; i < 8; i++) {
-    const a = (i / 8) * Math.PI * 2 + 0.2;
-    if (a > 1.95 * Math.PI || a < 0.3 * Math.PI) continue;
-    g.save(); g.translate(cx + Math.cos(a) * r * 0.95, cy + Math.sin(a) * r * 0.95); g.rotate(a);
-    g.fillRect(-r * 0.16, -r * 0.14, r * 0.32, r * 0.28); g.restore();
-  }
-  g.lineWidth = r * 0.07; g.beginPath(); // bridge cables
-  g.moveTo(cx - r * 0.55, cy + r * 0.35); g.lineTo(cx + r * 0.2, cy - r * 0.55); g.lineTo(cx + r * 0.25, cy + r * 0.35);
-  g.moveTo(cx - r * 0.1, cy + r * 0.35); g.lineTo(cx + r * 0.2, cy - r * 0.55); g.lineTo(cx + r * 1.2, cy - r * 0.05);
-  g.stroke();
-  g.font = `700 ${r * 0.6}px Roboto, Arial`; g.fillText('LIFT', cx + r * 0.85, cy - r * 0.45);
-  g.restore();
+
+/* Bare PCB whose top face carries the EasyEDA 3D-view render of the real layout (copper, silkscreen,
+ * pads and small passives); larger parts are added as 3D bodies at their EasyEDA placements. */
+function texturedPcb(M, tex) {
+  const g = new THREE.Group();
+  const top = new THREE.MeshPhysicalMaterial({ map: tex, roughness: 0.55, clearcoat: 0.22, clearcoatRoughness: 0.42, specularIntensity: 0.55 });
+  const pcb = new THREE.Mesh(new THREE.BoxGeometry(BOARD_W, BOARD_H, 1.6), [M.fr4, M.fr4, M.fr4, M.fr4, top, M.pcbBottom]);
+  pcb.position.set(BOARD_W / 2, BOARD_H / 2, 0.8);
+  g.add(pcb);
+  return g;
 }
 
-/* Main board (top of the stack): ESP32-S3-WROOM-1U, TF slot, 2× USB-C, screw terminal, slide switch.
- * Layout follows the EasyEDA render / photos (DOC/docs/MAIN BOARD.png). */
+/* Main board (top of the stack). Placements (mm, board-local) from the EasyEDA PCB:
+ * MCU-ESP32S3N16R8 (42, 49.5); P1 VIN terminal KF301-2P (3.68, 30.0), pin 1 = VIN at y 27.46, pin 2 = GND at y 32.54;
+ * USB-POWER (18.35, 5); USB-USART (50.62, 5); TF_CARD (34.42, 9.58); ON/OFF (61.34, 29.77); BOOT (63, 42.5); RST (63, 10);
+ * LDO SOT-223 (51.43, 28.0); RGBLED 5050 (23.11, 28.76); VM 2-pin (13.97, 43.74); U1–U4 headers on the bottom side. */
 function buildMainboard(M) {
-  const w = 64, h = 58;
-  const holes = [[3.57, 4.07], [60.43, 4.07], [3.57, 53.93], [60.43, 53.93]];
+  const board = texturedPcb(M, M.mainTop);
+  const T = 1.6;
 
-  const lab = makeCanvas(16, 15.6, 40);
-  lab.g.fillStyle = '#e4e6ea'; lab.g.fillRect(0, 0, 16, 15.6);
-  lab.g.fillStyle = '#7f858d';
-  lab.g.font = '700 1.25px Roboto, Arial'; lab.g.fillText('ESPRESSIF', 1.0, 2.4);
-  lab.g.font = '600 1.3px Roboto, Arial'; lab.g.fillText('ESP32-S3-WROOM-1U', 1.0, 4.3);
-  lab.g.font = '400 0.9px Roboto Mono, monospace';
-  lab.g.fillText('MCN16R8', 1.0, 5.8); lab.g.fillText('WiFi · BLE 5', 1.0, 7.0);
+  // ESP32-S3-WROOM-1U: module PCB + RF shield (notched for the U.FL connector) with laser marking
+  const lab = makeCanvas(15.6, 13.0, 40);
+  lab.g.fillStyle = '#e8eaee'; lab.g.fillRect(0, 0, 15.6, 13.0);
+  lab.g.fillStyle = '#80868e';
+  lab.g.font = '700 1.2px Roboto, Arial'; lab.g.fillText('ESPRESSIF', 1.0, 2.2);
+  lab.g.font = '600 1.15px Roboto, Arial'; lab.g.fillText('ESP32-S3-WROOM-1U', 1.0, 4.0);
+  lab.g.font = '400 0.85px Roboto Mono, monospace';
+  lab.g.fillText('N16R8', 1.0, 5.4); lab.g.fillText('2AC7Z-ESPS3WROOM1', 1.0, 6.6);
   const qr = rng(3);
-  for (let i = 0; i < 11; i++) for (let j = 0; j < 11; j++) if (qr() < 0.5 || (i < 2 && j < 2)) lab.g.fillRect(9.6 + i * 0.45, 9.0 + j * 0.45, 0.45, 0.45);
-  const shieldTop = new THREE.MeshPhysicalMaterial({ map: canvasTexture(lab.c), metalness: 1, roughness: 0.32 });
+  for (let i = 0; i < 10; i++) for (let j = 0; j < 10; j++) if (qr() < 0.5 || (i < 2 && j < 2)) lab.g.fillRect(10.2 + i * 0.42, 7.6 + j * 0.42, 0.42, 0.42);
+  const shieldTop = new THREE.MeshPhysicalMaterial({ map: canvasTexture(lab.c), metalness: 1, roughness: 0.34 });
+  box(board, M.black, [33.0, 40.3, T], [51.0, 59.5, T + 0.8]);
+  const sA = box(board, M.steel, [34.3, 41.6, T + 0.8], [49.9, 54.6, T + 3.2]);
+  sA.material = [M.steel, M.steel, M.steel, M.steel, shieldTop, M.steel];
+  box(board, M.steel, [34.3, 54.6, T + 0.8], [45.0, 58.8, T + 3.2]);
+  box(board, M.gold, [46.9, 56.0, T + 0.8], [49.1, 58.2, T + 1.0]);
+  cyl(board, M.gold, [48.0, 57.1, T + 1.4], 1.05, 0.9, 'z', 24);                 // U.FL
 
-  const comps = [
-    { a: [31, 38.8], b: [49, 58], h: 0.8, mat: M.black },                                   // module PCB
-    { a: [32, 39.4], b: [48, 55], h: 2.4, z0: 0.8, mat: M.steel, noPad: true,
-      matArr: [M.steel, M.steel, M.steel, M.steel, shieldTop, M.steel] },                   // RF shield
-    { a: [26, -0.8], b: [42, 14], h: 1.9, mat: M.steel },                                    // TF slot
-    { a: [13.5, -1.2], b: [22.5, 6.3], h: 3.2, mat: M.steel, r: 1.2 },                       // USB-C power
-    { a: [44.5, -1.2], b: [53.5, 6.3], h: 3.2, mat: M.steel, r: 1.2 },                       // USB-C uart
-    { a: [-0.6, 29], b: [5, 37], h: 10, mat: M.blue, r: 0.5 },                               // screw terminal (VIN)
-    { a: [19, 25.5], b: [24, 30.5], h: 1.6, mat: M.white },                                  // RGB LED
-    { a: [44, 25], b: [50.5, 28.5], h: 1.6, mat: M.black },                                  // LDO SOT-223
-    { a: [40, 14], b: [44, 18], h: 0.9, mat: M.black },                                      // USB-UART bridge
-    { a: [58.5, 26], b: [64, 31.5], h: 3.5, mat: M.steel, r: 0.3 },                          // power slide switch
-    { a: [61, 43], b: [64.6, 47], h: 2, mat: M.black },                                      // BOOT
-    { a: [61, 8.5], b: [64.6, 12.5], h: 2, mat: M.black },                                   // RST
-    { a: [13.5, 34], b: [17, 37], h: 1.1, mat: M.black },                                    // SOT-23 Q3
-    ...STACK_HEADERS.map((c) => ({ ...headerRect(c), h: 0 })),
-  ];
-  const board = buildBoard({
-    w, h, holes, comps, seed: 11, traces: 80, smd: 62,
-    draw(g, Y) {
-      g.lineWidth = 0.22;
-      roundRect(g, 11.6, Y(51.4), 16.6, 4.2, 1.2); g.stroke();
-      g.font = '500 3.1px Georgia, serif'; g.fillText('LiftNode', 13.0, Y(48.3));
-      gearLogo(g, 20, Y(42.5), 3.2);
-      g.font = '500 1.2px Roboto, Arial';
-      const put = (s, x, y) => g.fillText(s, x, Y(y));
-      put('USB-POWER', 13.2, 7.2); put('USB-USART', 44.4, 7.2); put('TF_CARD', 29.6, 15.0);
-      put('MCU-ESP32S3N16R8', 31.2, 37.4); put('USB-UART-INTERFACE', 36.2, 20.0);
-      ['P12', 'P11', 'P10', 'P9', '3V3'].forEach((s, i) => put(s, 8.2, 15.4 + i * 2.54));
-      ['GND|7', 'P15', 'P16', 'P17', '3V3'].reverse().forEach((s, i) => put(s, 9.0, 38.2 + i * 2.54));
-      ['3V3', '40', '41', '42|TX', 'RX'].forEach((s, i) => put(s, 49.6, 38.6 + i * 2.54));
-      ['P13', 'P14', 'P21', 'P47', '3V3'].forEach((s, i) => put(s, 51.6, 13.4 + i * 2.54));
-      put('VIN', 0.6, 27.6); put('RGBLED', 18.6, 31.6); put('PWR', 25.4, 22.4);
-      put('BOOT', 60.4, 48.6); put('RST', 60.8, 13.8); put('ON/OFF', 57.4, 32.6);
-      g.strokeRect(58.8, Y(57.2), 4.6, 4.6);
-    },
-  }, M);
-
-  // screw terminal details, RGB lens, IPEX, switch lever, button plungers
-  for (const y of [31, 35]) {
-    cyl(board, M.steel, [2.2, y, 1.6 + 10.05], 1.4, 0.4, 'z');
-    box(board, M.black, [1.7, y - 0.7, 1.6 + 10.1], [2.7, y + 0.7, 1.6 + 10.35]);
+  // USB-C receptacles and TF socket on the front edge
+  for (const cx of [18.35, 50.62]) {
+    box(board, M.steel, [cx - 4.47, -0.4, T], [cx + 4.47, 7.9, T + 3.2], 1.2);
+    box(board, M.black, [cx - 3.4, -0.45, T + 0.9], [cx + 3.4, -0.35, T + 2.3], 0.4);
   }
-  box(board, M.led, [20, 26.5, 3.2], [23, 29.5, 3.4]);
-  cyl(board, M.gold, [46.5, 56.6, 0.8 + 1.6 + 0.6], 1.1, 1.2, 'z');
-  box(board, M.black, [64, 28, 2.4], [66.6, 29.5, 4.2]);
-  box(board, M.black, [26.6, -0.9, 1.7], [41.4, -0.3, 2.9]); // TF slot mouth
-  box(board, M.steel, [64.6, 44.3, 2.3], [65.4, 45.7, 3.3]);
-  box(board, M.steel, [64.6, 9.8, 2.3], [65.4, 11.2, 3.3]);
+  box(board, M.steel, [26.3, -0.3, T], [42.7, 15.0, T + 1.9]);
+  box(board, M.black, [27.2, -0.4, T + 0.3], [41.8, -0.2, T + 1.4]);
 
-  // stacking headers: plastic spacer + male pins under the board, solder fillets on top
+  // P1 VIN screw terminal (KF301-2P, blue): wire entries face the board edge (−x), screws on top
+  box(board, M.blue, [0.2, 24.92, T], [7.6, 35.08, T + 9.4], 0.4);
+  for (const y of [27.46, 32.54]) {
+    cyl(board, M.steel, [3.9, y, T + 9.45], 1.55, 0.3, 'z', 24);
+    box(board, M.black, [3.2, y - 1.3, T + 9.6], [4.6, y + 1.3, T + 9.75]);
+    box(board, M.socket, [0.12, y - 1.6, T + 2.2], [0.22, y + 1.6, T + 5.4]);   // wire entry
+  }
+
+  // ON/OFF slide switch (lever toward the right-hand edge), BOOT / RST side buttons
+  box(board, M.steel, [57.8, 25.3, T], [64.9, 34.2, T + 3.6], 0.3);
+  box(board, M.black, [64.9, 27.9, T + 1.6], [66.5, 29.8, T + 3.0], 0.2);
+  for (const [y0, y1] of [[40.1, 44.7], [7.7, 12.3]]) {
+    box(board, M.black, [61.2, y0, T], [65.0, y1, T + 3.5], 0.3);
+    box(board, M.steel, [65.0, (y0 + y1) / 2 - 0.9, T + 1.2], [66.0, (y0 + y1) / 2 + 0.9, T + 2.6], 0.3);
+  }
+
+  // LDO (SOT-223), RGB LED (5050), VM jumper header
+  box(board, M.black, [49.6, 24.8, T], [53.1, 31.2, T + 1.6], 0.15);
+  box(board, M.steel, [47.4, 26.3, T], [49.6, 29.7, T + 0.25]);
+  for (const y of [25.7, 28.0, 30.3]) box(board, M.steel, [53.1, y - 0.35, T], [54.9, y + 0.35, T + 0.25]);
+  box(board, M.white, [20.6, 26.3, T], [25.6, 31.3, T + 1.6], 0.2);
+  cyl(board, M.led, [23.11, 28.76, T + 1.62], 1.8, 0.06, 'z', 32);
+  box(board, M.black, [12.7, 41.2, T], [15.25, 46.3, T + 2.5], 0.15);
+  instancedAt(board, new THREE.BoxGeometry(0.64, 0.64, 6), M.gold, [[13.97, 42.47], [13.97, 45.01]], T + 2.5 + 3 - 0.5);
+
+  // stacking headers on the underside: plastic spacer + male pins; solder fillets on the top pads
   const pins = STACK_HEADERS.flatMap((c) => pinGrid(c));
   for (const c of STACK_HEADERS) { const r = headerRect(c); box(board, M.black, [r.a[0], r.a[1], -SPACER_H], [r.b[0], r.b[1], 0], 0.2); }
   instancedAt(board, new THREE.BoxGeometry(0.64, 0.64, 8.5), M.gold, pins, -SPACER_H - 8.5 / 2 + 2.5);
-  instancedAt(board, new THREE.SphereGeometry(0.85, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), M.nickel, pins, 1.6, [1, 1, 0.7]);
+  instancedAt(board, new THREE.SphereGeometry(0.85, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), M.nickel, pins, T, [1, 1, 0.6]);
 
-  board.position.set(30.5, 8.5, 7 + 1.6 + FEMALE_H + SPACER_H);
+  board.position.set(BOARD_ORIGIN[0], BOARD_ORIGIN[1], 7 + 1.6 + FEMALE_H + SPACER_H);
   return board;
 }
 
-/* Sensor extension board (bottom of the stack): ADXL355 + ADXL367, four 2×5 female sockets.
- * Sits on the enclosure standoffs; the main board plugs into it. */
+/* Expansion board (bottom of the stack): ADXL355 (32.5, 45.0) and ADXL367 (32.13, 16.95), female sockets
+ * H1–H4 under the main-board headers; screwed to the enclosure standoffs. */
 function buildExtBoard(M) {
-  const w = 64, h = 58;
-  const holes = [[3.57, 4.07], [60.43, 4.07], [3.57, 53.93], [60.43, 53.93]];
-  const comps = [
-    { a: [28, 40], b: [34, 46], h: 0.9, mat: M.black },                                     // ADXL355 LCC base
-    { a: [28.7, 40.7], b: [33.3, 45.3], h: 1.2, z0: 0.9, mat: M.steel, noPad: true, r: 0.4 }, // ADXL355 lid
-    { a: [29.5, 14], b: [32.5, 17], h: 0.9, mat: M.black },                                  // ADXL367
-    ...STACK_HEADERS.map((c) => ({ ...headerRect(c), h: 0 })),
-  ];
-  const board = buildBoard({
-    w, h, holes, comps, seed: 31, traces: 26, smd: 12, vias: true,
-    draw(g, Y) {
-      g.lineWidth = 0.22;
-      roundRect(g, 22.5, Y(56.4), 19, 4.6, 1.2); g.stroke();
-      g.font = '500 3.3px Georgia, serif'; g.fillText('LiftNode', 24.4, Y(52.9));
-      g.font = '600 1.15px Roboto, Arial';
-      g.fillText('ADXL355', 28.2, Y(47.2)); g.fillText('ADXL367', 28.4, Y(18.2));
-      // accelerometer axes
-      g.lineWidth = 0.3; g.beginPath();
-      g.moveTo(16, Y(6)); g.lineTo(16, Y(15)); g.moveTo(16, Y(6)); g.lineTo(26, Y(6)); g.moveTo(16, Y(6)); g.lineTo(12.4, Y(2.6));
-      g.moveTo(15, Y(13.8)); g.lineTo(16, Y(15)); g.lineTo(17, Y(13.8));
-      g.moveTo(24.8, Y(7)); g.lineTo(26, Y(6)); g.lineTo(24.8, Y(5));
-      g.stroke();
-      g.font = '500 2.2px Georgia, serif'; g.fillText('Y', 17, Y(15.4)); g.fillText('X', 24.6, Y(8.2)); g.fillText('Z', 11.2, Y(3.6));
-      gearLogo(g, 44, Y(7.5), 3.6);
-      g.font = '600 1.2px Roboto, Arial';
-      ['GND', 'P15', 'P16', 'P4', 'EN'].forEach((s, i) => g.fillText(s, 0.6, Y(48.5 - i * 2.54)));
-      ['RX', 'P42', 'P41', 'P40', '3V3'].forEach((s, i) => g.fillText(s, 49.4, Y(48.8 - i * 2.54)));
-    },
-  }, M);
-  // female sockets with dark pin openings
-  for (const c of STACK_HEADERS) { const r = headerRect(c); box(board, M.black, [r.a[0], r.a[1], 1.6], [r.b[0], r.b[1], 1.6 + FEMALE_H], 0.15); }
-  const pins = STACK_HEADERS.flatMap((c) => pinGrid(c));
-  instancedAt(board, new THREE.BoxGeometry(1.0, 1.0, 0.06), M.socket, pins, 1.6 + FEMALE_H + 0.03);
-  for (const [x, y] of holes) cyl(board, M.steel, [x, y, 1.6 + 0.7], 2.25, 1.4, 'z', 24);
-  board.position.set(30.5, 8.5, 7);
+  const board = texturedPcb(M, M.extTop);
+  const T = 1.6;
+  box(board, M.ceramic, [29.5, 42.2, T], [35.5, 47.8, T + 2.1], 0.25);          // ADXL355 ceramic LCC
+  box(board, M.black, [31.0, 15.8, T], [33.25, 18.1, T + 0.87], 0.1);           // ADXL367 LGA
+  for (const c of STACK_HEADERS) { const r = headerRect(c); box(board, M.black, [r.a[0], r.a[1], T], [r.b[0], r.b[1], T + FEMALE_H], 0.15); }
+  instancedAt(board, new THREE.BoxGeometry(1.0, 1.0, 0.06), M.socket, STACK_HEADERS.flatMap((c) => pinGrid(c)), T + FEMALE_H + 0.03);
+  for (const [x, y] of EXT_HOLES) cyl(board, M.steel, [x, y, T + 0.7], 2.25, 1.4, 'z', 24);
+  board.position.set(BOARD_ORIGIN[0], BOARD_ORIGIN[1], 7);
   return board;
 }
 
@@ -517,13 +515,13 @@ function buildMagnets(M, x) {
 function buildWires(M) {
   const g = new THREE.Group();
   // BMS output → mainboard screw terminal
-  tube(g, M.wireRed, [[25.5, 38.5, 66], [28.6, 37.5, 56], [29.2, 38.5, 36], [30.0, 39.5, 25]], 0.9);
-  tube(g, M.wireBlue, [[25.5, 42, 66], [28.6, 43, 56], [29.2, 43.5, 36], [30.0, 43.5, 25]], 0.9);
+  tube(g, M.wireRed, [[25.5, 38.5, 66], [28.4, 36.5, 56], [29.4, 35.2, 36], [30.2, 34.96, 25]], 0.9);
+  tube(g, M.wireBlue, [[25.5, 42, 66], [28.4, 41.4, 56], [29.4, 40.2, 36], [30.2, 40.04, 25]], 0.9);
   // battery leads → BMS battery connector
   tube(g, M.wireRed, [[31.5, 59, 66], [29.5, 62, 68], [27.5, 58, 68], [25.5, 56.5, 64]], 0.8);
   tube(g, M.wireBlack, [[31.5, 55, 66], [29.5, 58, 69], [27.5, 55, 68.5], [25.5, 54, 64]], 0.8);
   // IPEX pigtail → SMA bulkhead
-  tube(g, M.coax, [[77, 65.1, 22.6], [84, 68, 31], [92, 52, 38], [95.2, 37.5, 40]], 0.65);
+  tube(g, M.coax, [[78, 64.6, 23.2], [85, 68, 31], [92, 52, 38], [95.2, 37.5, 40]], 0.65);
   return g;
 }
 
@@ -598,6 +596,9 @@ input[type=range]::-moz-range-thumb { width:10px; height:10px; border-radius:50%
   font-size:11px; letter-spacing:.22em; text-transform:uppercase; transition:opacity .6s; }
 .loading.done { opacity:0; }
 .capture .toolbar, .capture .hint { display:none; }
+.stage.figure { --bg:#ffffff; background:#ffffff; }
+.stage.figure.transparent { background:transparent; }
+.figure .brand, .figure .readout, .figure .vig, .figure .labels, .figure svg.lead, .figure .hint, .figure .toolbar { display:none; }
 @container (max-width: 980px) { .stage:not(.capture) .readout { display:none; } }
 @container (max-width: 760px) { .hint { display:none; } input[type=range] { width:84px; } .sep { margin:0 1px; } button { padding:7px 9px; } }
 .capture .brand { left:56px; top:48px; } .capture .brand b { font-size:20px; } .capture .brand span { font-size:15px; margin-top:8px; }
@@ -755,6 +756,10 @@ export async function mount(host) {
   const loader = new STLLoader();
   const localModels = new URL('./models/', import.meta.url).href;
   const bmsPromise = new GLTFLoader().loadAsync(new URL('bms.glb', localModels).href);
+  const texLoader = new THREE.TextureLoader();
+  const [mainTex, extTex] = await Promise.all(['mainboard-top.jpg', 'extboard-top.jpg'].map((f) => texLoader.loadAsync(new URL(f, localModels).href)));
+  for (const t of [mainTex, extTex]) { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = renderer.capabilities.getMaxAnisotropy(); }
+  M.mainTop = mainTex; M.extTop = extTex;
   const stlGeoms = await Promise.all(STL_FILES.map(async ([id, file, where]) => {
     const geom = await loader.loadAsync(new URL(file, where === 'local' ? localModels : modelsBase).href);
     geom.deleteAttribute('color');
@@ -762,6 +767,13 @@ export async function mount(host) {
     return [id, toCreasedNormals(geom, 32 * DEG)];
   }));
   const stl = Object.fromEntries(stlGeoms);
+  const figureMode = host.hasAttribute('figure');
+  let bodyFullGeom = null;
+  if (figureMode) {
+    const g = await loader.loadAsync(new URL('ENCLOSURE-3D-BODY.stl', modelsBase).href);
+    g.deleteAttribute('color');
+    bodyFullGeom = toCreasedNormals(g, 32 * DEG);
+  }
   const bmsGltf = await bmsPromise;
 
   const partGroups = {};
@@ -805,6 +817,16 @@ export async function mount(host) {
   }
   wires.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.userData.mat = o.material; o.userData.wire = true; meshes.push(o); } });
   const basePos = Object.fromEntries(PARTS.map((p) => [p.id, partGroups[p.id].position.clone()]));
+  let bodyFull = null;
+  if (bodyFullGeom) {
+    const mesh = new THREE.Mesh(bodyFullGeom, M.shellBody);
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    const em = new THREE.LineBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.5, depthWrite: false });
+    edgeMats.bodyFull = em;
+    mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(bodyFullGeom, 22), em));
+    bodyFull = new THREE.Group(); bodyFull.add(mesh); bodyFull.visible = false;
+    assembly.add(bodyFull);
+  }
 
   /* dashed travel lines (classic exploded-view leaders): assembled point → current point */
   const guideList = PARTS.flatMap((p) => (p.guides || []).map((pt) => ({ p, pt })));
@@ -1154,6 +1176,115 @@ export async function mount(host) {
   { const ld = $('.loading'); if (capture) ld.remove(); else { ld.classList.add('done'); setTimeout(() => ld.remove(), 700); } }
   if (!capture) kick(); else renderOnce();
 
+  /* ---------- academic figure (thesis): white background, near-orthographic camera, print styling */
+  function figure(opts = {}) {
+    if (!bodyFull) throw new Error('figure() needs the figure attribute on <liftnode-viewer>');
+    const layoutName = opts.layout || 'axial';
+    const LAYOUT = FIGURE_LAYOUTS[layoutName];
+    const theta = (opts.theta ?? 36) * DEG, elev = (opts.elev ?? 24) * DEG;
+    const marginX = opts.marginX ?? 0.2, marginY = opts.marginY ?? 0.05;
+    stage.classList.add('figure');
+    stage.classList.toggle('transparent', !!opts.transparent);
+    state.mode = 'studio'; state.xray = 0; state.xrayTarget = 0; applyXray(0);
+    for (const m of meshes) m.material = m.userData.mat;
+    ground.visible = false; blob.visible = false; stageRing.visible = false;
+    renderer.shadowMap.enabled = opts.shadows ?? true;
+    renderer.toneMappingExposure = opts.exposure ?? 1.0;
+    scene.environmentIntensity = opts.env ?? 0.85;
+    gtao.enabled = opts.ao ?? true;
+    rim.color.set(0xffffff); rim.intensity = 1.1;   // neutral light for print (no blue cast on the PCBs)
+
+    // layout
+    const walls = ['base', 'wallFront', 'wallBack', 'wallLeft', 'wallRight'];
+    if (layoutName === 'unfold') {
+      applyExplode(1);
+      for (const id of walls) partGroups[id].visible = true;
+      bodyFull.visible = false;
+    } else {
+      for (const id of walls) partGroups[id].visible = false;
+      bodyFull.visible = true;
+      for (const p of PARTS) {
+        const L = LAYOUT[p.id]; if (!L) continue;
+        const g = partGroups[p.id];
+        g.quaternion.identity();
+        g.position.set(basePos[p.id].x + L.dir[0], basePos[p.id].y + L.dir[1], basePos[p.id].z + L.dir[2]);
+        g.updateMatrix();
+      }
+      const gp = guideGeom.attributes.position.array;
+      guideList.forEach(({ p, pt }, i) => {
+        _piv.set(...pt).applyMatrix4(partGroups[p.id].matrix);
+        gp.set([pt[0], pt[1], pt[2], _piv.x, _piv.y, _piv.z], i * 6);
+      });
+      guideGeom.attributes.position.needsUpdate = true;
+      guides.computeLineDistances();
+    }
+    if (opts.only) {
+      for (const p of PARTS) partGroups[p.id].visible = opts.only.includes(p.id);
+      bodyFull.visible = opts.only.includes('bodyFull');
+    }
+    wires.visible = false;
+    guideMat.color.set(0x6b7280); guideMat.opacity = opts.guides === false || layoutName === 'assembled' ? 0 : 0.7;
+    for (const id in edgeMats) {
+      const shell = SHELL.has(id) || id === 'bodyFull';
+      edgeMats[id].color.set(0x111111); edgeMats[id].opacity = shell ? 0.55 : 0.16;
+    }
+    scene.updateMatrixWorld(true);
+
+    // near-orthographic camera (axonometric look), framed on the projected bounding box
+    const roots = [];
+    if (bodyFull.visible) roots.push(bodyFull);
+    for (const p of PARTS) if (partGroups[p.id].visible && (LAYOUT[p.id] || layoutName === 'unfold')) roots.push(partGroups[p.id]);
+    const box = new THREE.Box3(); for (const o of roots) box.expandByObject(o);
+    const center = box.getCenter(new THREE.Vector3());
+    const dir = new THREE.Vector3(Math.cos(elev) * Math.sin(theta), Math.sin(elev), Math.cos(elev) * Math.cos(theta));
+    const D = 6000;
+    camera.clearViewOffset();
+    camera.near = D - 1500; camera.far = D + 1500;
+    camera.position.copy(center).addScaledVector(dir, D); camera.lookAt(center); camera.updateMatrixWorld();
+    const view = new THREE.Box3(), v = new THREE.Vector3();
+    for (const o of roots) o.traverse((m) => {
+      if (!m.isMesh || !m.geometry || m.isInstancedMesh) return;
+      if (!m.geometry.boundingBox) m.geometry.computeBoundingBox();
+      const bb = m.geometry.boundingBox;
+      for (let i = 0; i < 8; i++) {
+        v.set(i & 1 ? bb.max.x : bb.min.x, i & 2 ? bb.max.y : bb.min.y, i & 4 ? bb.max.z : bb.min.z)
+          .applyMatrix4(m.matrixWorld).applyMatrix4(camera.matrixWorldInverse);
+        view.expandByPoint(v);
+      }
+    });
+    const vc = view.getCenter(new THREE.Vector3()), vs = view.getSize(new THREE.Vector3());
+    const right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0);
+    const up = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1);
+    const target = center.clone().addScaledVector(right, vc.x).addScaledVector(up, vc.y);
+    camera.position.copy(target).addScaledVector(dir, D); camera.lookAt(target);
+    const aspect = state.w / state.h;
+    const halfH = Math.max(vs.y / 2 / (1 - 2 * marginY), vs.x / 2 / aspect / (1 - 2 * marginX));
+    camera.fov = 2 * Math.atan(halfH / D) / DEG;
+    camera.aspect = aspect;
+    camera.updateProjectionMatrix(); camera.updateMatrixWorld();
+    composer.render();
+
+    // callout anchors in CSS px
+    const anchors = [];
+    for (const [id, L] of Object.entries(LAYOUT)) {
+      if (!L.n) continue;
+      const p = PARTS.find((q) => q.id === id) || {};
+      const a = new THREE.Vector3(...(L.anchor || p.anchor));
+      (id === 'bodyFull' ? bodyFull : partGroups[id]).localToWorld(a);
+      a.project(camera);
+      anchors.push({ n: L.n, id, x: (a.x * 0.5 + 0.5) * state.w, y: (-a.y * 0.5 + 0.5) * state.h,
+        name: (L.name || p.name)[lang], sub: (L.sub || p.sub)[lang], names: L.name || p.name, side: L.side });
+    }
+    anchors.sort((a, b) => a.n - b.n);
+    const points = (opts.points || []).map(([x, y, z]) => {
+      const v = assembly.localToWorld(new THREE.Vector3(x, y, z)).project(camera);
+      return [(v.x * 0.5 + 0.5) * state.w, (-v.y * 0.5 + 0.5) * state.h];
+    });
+    const halfWpx = (vs.x / 2) / (halfH * aspect) * (state.w / 2), halfHpx = (vs.y / 2) / halfH * (state.h / 2);
+    const modelBox = { left: state.w / 2 - halfWpx, right: state.w / 2 + halfWpx, top: state.h / 2 - halfHpx, bottom: state.h / 2 + halfHpx };
+    return { width: state.w, height: state.h, anchors, modelBox, points };
+  }
+
   /* ---------- cinematic timeline (used by capture mode and app.renderAt) */
   const LOOP = 16;
   function timeline(t) {
@@ -1167,6 +1298,7 @@ export async function mount(host) {
 
   const app = {
     LOOP,
+    figure,
     setExplode(v) { state.tween = null; state.explode = clamp01(v); updateToggle(state.explode > 0.5 ? 1 : 0); kick(); },
     explode() { playTo(1); }, assemble() { playTo(0); },
     setMode(m) { setMode(m); kick(); },

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LiftNode Figure</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #fff; overflow: hidden; }
+    body.transparent, body.transparent html { background: transparent; }
+    liftnode-viewer { position: absolute; inset: 0; height: 100% !important; border-radius: 0 !important; }
+    #overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <!--
+    Print/thesis figure of the LiftNode exploded view (used by DOC/tools/viewer-capture/figure.mjs).
+    Query: ?layout=axial|unfold  &theta=36&elev=24  &transparent=1
+    Then call  window.makeFigure({ labels: 'none' | 'number' | 'zh' | 'en' })  → returns the overlay SVG markup.
+  -->
+  <liftnode-viewer id="v" eager capture figure theme="light" lang="en"></liftnode-viewer>
+  <svg id="overlay" xmlns="http://www.w3.org/2000/svg"></svg>
+  <script type="module">
+    const q = new URLSearchParams(location.search);
+    const v = document.getElementById('v');
+    if (q.get('transparent')) document.body.classList.add('transparent');
+    const SVGNS = 'http://www.w3.org/2000/svg';
+    const FONT = {
+      en: "'Times New Roman', Times, serif",
+      zh: "'Times New Roman', SimSun, 'Songti SC', 'Noto Serif CJK SC', serif",  // Latin in Times, CJK in SimSun
+      num: "'Times New Roman', Times, serif",
+    };
+    // print scale: the page is 1600 CSS px wide ≈ 160 mm text width → 10 px per mm
+    const STYLE = { stroke: '#1f1f1f', line: 1.5, dot: 3.6, ball: 18, numSize: 25, textSize: 30, gapY: 58, pad: 14 };
+
+    let fig = null;
+    v.addEventListener('ready', (e) => {
+      window.lnv = e.detail;
+      fig = e.detail.figure({
+        layout: q.get('layout') || 'axial',
+        theta: q.has('theta') ? +q.get('theta') : undefined,
+        elev: q.has('elev') ? +q.get('elev') : undefined,
+        marginX: q.has('marginX') ? +q.get('marginX') : undefined,
+        transparent: !!q.get('transparent'),
+      });
+      window.figureInfo = fig;
+      window.figureReady = true;
+    });
+
+    const el = (tag, attrs, text) => {
+      const n = document.createElementNS(SVGNS, tag);
+      for (const [k, val] of Object.entries(attrs)) n.setAttribute(k, val);
+      if (text != null) n.textContent = text;
+      return n;
+    };
+
+    /* Callouts: two columns either side of the model, rows sorted by anchor height so leaders do
+     * not cross; leaders are straight, ending in a small dot on the part (technical-drawing style). */
+    const BASE_STYLE = { ...STYLE };
+    // renumber: true → callout numbers follow reading order (left column top→bottom, then right column)
+    window.makeFigure = ({ labels = 'none', style = {}, renumber = false } = {}) => {
+      Object.assign(STYLE, BASE_STYLE, style);
+      const svg = document.getElementById('overlay');
+      svg.innerHTML = '';
+      const W = fig.width, H = fig.height;
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      svg.setAttribute('width', W); svg.setAttribute('height', H);
+      if (labels === 'none') return svg.outerHTML;
+
+      const cx = (fig.modelBox.left + fig.modelBox.right) / 2;
+      const items = fig.anchors.map((a) => ({ ...a, left: a.side ? a.side === 'L' : a.x < cx }));
+      // keep the two columns balanced
+      const nl = items.filter((i) => i.left).length, half = Math.ceil(items.length / 2);
+      if (!items.some((i) => i.side) && Math.abs(nl - (items.length - nl)) > 2) {
+        items.sort((a, b) => a.x - b.x).forEach((it, i) => { it.left = i < half; });
+      }
+      const g = el('g', { id: 'callouts', fill: 'none', stroke: STYLE.stroke, 'stroke-width': STYLE.line, 'stroke-linecap': 'round' });
+      svg.appendChild(g);
+      const columns = [];
+      for (const left of [true, false]) {
+        // rows sorted by anchor height, de-overlapped, then kept inside the page
+        const col = items.filter((i) => i.left === left).sort((a, b) => a.y - b.y);
+        columns.push({ left, col });
+        let y = -Infinity;
+        for (const it of col) { it.ly = Math.max(it.y, y + STYLE.gapY); y = it.ly; }
+        const top = STYLE.gapY, bottom = H - STYLE.gapY;
+        const over = col.length ? col[col.length - 1].ly - bottom : 0;
+        if (over > 0) col.forEach((it) => { it.ly -= over; });
+        if (col.length && col[0].ly < top) { const d = top - col[0].ly; col.forEach((it) => { it.ly += d; }); }
+
+        const edgeX = left ? fig.modelBox.left - 34 : fig.modelBox.right + 34;
+        // untangle: swap the rows of any two leaders that intersect (rows stay evenly spaced)
+        const seg = (it) => [it.x, it.y, edgeX, it.ly];
+        const cross = (p, q) => {
+          const [ax, ay, bx, by] = p, [cx2, cy2, dx, dy] = q;
+          const o = (px, py, qx, qy, rx, ry) => Math.sign((qx - px) * (ry - py) - (qy - py) * (rx - px));
+          return o(ax, ay, bx, by, cx2, cy2) !== o(ax, ay, bx, by, dx, dy) && o(cx2, cy2, dx, dy, ax, ay) !== o(cx2, cy2, dx, dy, bx, by);
+        };
+        for (let pass = 0, swapped = true; swapped && pass < col.length * col.length; pass++) {
+          swapped = false;
+          for (let i = 0; i < col.length; i++) for (let j = i + 1; j < col.length; j++) {
+            if (cross(seg(col[i]), seg(col[j]))) { [col[i].ly, col[j].ly] = [col[j].ly, col[i].ly]; swapped = true; }
+          }
+        }
+      }
+      if (renumber) {
+        let n = 1;
+        for (const { col } of columns) for (const it of [...col].sort((a, b) => a.ly - b.ly)) it.n = n++;
+      }
+      window.figureNumbers = items.map(({ n, id, names }) => ({ n, id, en: names.en })).sort((a, b) => a.n - b.n);
+      for (const { left, col } of columns) {
+        const edgeX = left ? fig.modelBox.left - 34 : fig.modelBox.right + 34;
+        for (const it of col) {
+          const name = labels === 'number' ? null : (it.names[labels] || it.name);
+          let endX = edgeX;
+          if (labels === 'number') {
+            const bx = left ? edgeX - STYLE.ball : edgeX + STYLE.ball;
+            g.appendChild(el('circle', { cx: bx, cy: it.ly, r: STYLE.ball, fill: '#fff' }));
+            g.appendChild(el('text', { x: bx, y: it.ly, 'text-anchor': 'middle', 'dominant-baseline': 'central',
+              'font-family': FONT.num, 'font-size': STYLE.numSize, fill: STYLE.stroke, stroke: 'none' }, String(it.n)));
+          } else {
+            const tx = left ? edgeX - STYLE.pad : edgeX + STYLE.pad;
+            g.appendChild(el('text', { x: tx, y: it.ly, 'text-anchor': left ? 'end' : 'start', 'dominant-baseline': 'central',
+              'font-family': FONT[labels] || FONT.en, 'font-size': STYLE.textSize, fill: STYLE.stroke, stroke: 'none' }, name));
+          }
+          // leader: label edge → short horizontal shoulder → anchor
+          const shoulderX = left ? endX + 16 : endX - 16;
+          g.appendChild(el('polyline', { points: `${endX},${it.ly} ${shoulderX},${it.ly} ${it.x.toFixed(1)},${it.y.toFixed(1)}` }));
+          g.appendChild(el('circle', { cx: it.x.toFixed(1), cy: it.y.toFixed(1), r: STYLE.dot, fill: STYLE.stroke, stroke: 'none' }));
+        }
+      }
+      // report labels that would be clipped by the page edge (the export script fails on this)
+      const clipped = [...svg.querySelectorAll('text')].filter((t) => {
+        const b = t.getBBox(); return b.x < 4 || b.x + b.width > W - 4;
+      }).map((t) => t.textContent);
+      window.figureClipped = clipped;
+      return svg.outerHTML;
+    };
+
+    await import('./liftnode-viewer.js');
+  </script>
+</body>
+</html>
